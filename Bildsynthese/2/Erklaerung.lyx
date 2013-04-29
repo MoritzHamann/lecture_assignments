@@ -95,7 +95,7 @@ textwidth}{1pt}
 \end_layout
 
 \begin_layout Subsection*
-Aufageb 2.1
+Aufgabe 2.1
 \end_layout
 
 \begin_layout Standard
@@ -111,7 +111,7 @@ Den Aliasingeffekten kann man durch sogenanntes Supersampling entgegengewirkt
  werden.
  Hierbei werden mehrere Strahlen durch ein Pixel geschickt und diese anschließen
 d gewichtend aufaddiert.
- Diese gewichte können unterschiedlich gesetzt werden.
+ Diese Gewichte können unterschiedlich gesetzt werden.
  Wir haben hierzu einen Kauskern verwendet.
  Die Variable 
 \begin_inset Quotes eld
@@ -134,6 +134,93 @@ Die Qualität des Anti-Aliasing kann durch die Menge der Abtastwerte verwendet
  Wir haben drei Voreinstellungen für die Größe des Gaußkerns implementiert,
  die einzeln ein-, bzw.
  auskommentiert werden können.
+\end_layout
+
+\begin_layout Subsection*
+Aufgabe 2.3
+\end_layout
+
+\begin_layout Standard
+Um eine Blende (und die daraus entstehende Schärfentiefe) zu simulieren,
+ muss der Strahlengang durch eine fiktive dünne Linse berechnet werden.
+ Dazu müssen als erstes ein paar Konstanten definiert werden.
+ Die Brennweite der Linse 
+\emph on
+focal_length
+\emph default
+, sowie der Abstand der Linse zum virtuellen Sensor der Kamera 
+\emph on
+f
+\emph default
+.
+ Dadurch kann mit Hilfe der Formel für dünne Linsen:
+\begin_inset Formula 
+\[
+\frac{1}{f}+\frac{1}{S_{2}}=\frac{1}{focal\text{\_}length}
+\]
+
+\end_inset
+
+der Abstand 
+\begin_inset Formula $S_{2}$
+\end_inset
+
+ der Ebene 
+\begin_inset Formula $E_{2}$
+\end_inset
+
+ berechnet werden, in der sich alle Strahlen - ausgehend vom gleichen Punkt
+ auf dem Sensor - durch die dünne Linse wieder schneiden.
+ Anschliessend kann man mit Hilfe der Blendenzahl 
+\emph on
+dof
+\emph default
+, sowie dem Abstand 
+\emph on
+f
+\emph default
+ von Sensor und Blende, die Öffnung 
+\emph on
+D
+\emph default
+ der Blende berechnet werden:
+\begin_inset Formula 
+\[
+D=\frac{f}{dof}
+\]
+
+\end_inset
+
+Weiterhin benötigt man den Schnittpunkt 
+\emph on
+R
+\emph default
+ auf der Ebene 
+\begin_inset Formula $E_{2}$
+\end_inset
+
+ auf der sich alle Strahlen schneiden.
+ Diesen berechnet man indem man den Strahl durch den Mittelpunkt der Linse
+ (über 
+\emph on
+getRayPerspective
+\emph default
+ im Code) mit 
+\begin_inset Formula $E_{2}$
+\end_inset
+
+ schneiden lässt.
+ Nun wählt man kreisförmig Punkte auf Linse auf (deren Abstand zu 
+\emph on
+g_eye < D
+\emph default
+ ist) und addiert die Radiance der Strahlen von diesen Punkten durch 
+\emph on
+R
+\emph default
+ auf.
+ Nach abschließender Normierung durch die Anzahl der Strahlen erhält man
+ den Farbwert für diesen Pixel.
 \end_layout
 
 \end_body
