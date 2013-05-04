@@ -134,9 +134,11 @@ void initCamera()
 
  	// Aufgabe 2.1 (2. Teilaufgabe): Berechnen Sie g_forward, g_right und g_up aus g_lookat, fov und ratio
 	
-	g_forward = g_lookat - g_eye;
-	//g_right = cross(g_forward,g_up);
-	g_up = normalize(cross(g_forward, g_right));
+	float tan_fov = tan(fov);
+    
+	g_forward = normalize(g_lookat - g_eye);
+	g_right = normalize(cross(g_forward,forward_up_plane))*tan_fov*ratio;
+	g_up = normalize(cross(g_forward, g_right))*tan_fov;
 	
 	// Ende Aufgabe 2.1 (2. Teilaufgabe)
 
