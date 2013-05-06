@@ -308,13 +308,18 @@ vec3 cartesianToSpherical(vec3 cart) {
   float r = 0.0;
 
   r = sqrt(pow(cart.x,2)+pow(cart.y,2)+pow(cart.z,2));
-  if (phi != 0){
+  
+  // if x == 0 then phi = 0
+  if (cart.x != 0)
+  {
     phi = atan(cart.y/cart.x);
   }
-  else{
-    phi = (carty > 0 ? // pi : -pi
+  
+  // if r == 0 then theta = 0
+  if (r != 0)
+  {
+    theta = acos(cart.z/r);
   }
-  theta = acos(cart.z/r);
 	
   return vec3(phi, theta, r);
 }
@@ -325,9 +330,9 @@ vec3 sampleEnvMap(vec3 dir)
 {
 
   // Aufgabe 3.3
-  vec3 color = vec3( 0.5);
-  vec3 angles;
-  vec2 coords = vec2(0.5);
+  vec3 color = vec3(0.5);
+  vec3 angles = cartesianToSpherical(dir);
+  vec2 coords = vec2(angles.x, angles.y);
 	
   color = texture2D( envMapTexture, coords).xyz;
 
@@ -601,7 +606,7 @@ void initCamera()
   vec3 vert = vec3(0.0, 1.0, 0.0);
 
   // Aufgabe 3.2
-  g_lookat = vec3(0.0, 0.0, 0.0);
+  g_lookat = sphericalToCartesian(vec3(lookAtAngles.x, lookAtAngles.y, 1.0));
   // Ende Aufgabe 3.2
 	
   float FoV = 45.0 / 180.0 * 3.1415962;
