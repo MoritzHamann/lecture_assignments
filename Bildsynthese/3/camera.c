@@ -346,8 +346,14 @@ vec3 sampleEnvMap(vec3 dir)
 
 vec3 getReflectedDirection(vec3 dir, vec3 normal) 
 {
-  vec3 reflected = dir - normal*(2.0*dot(normal,dir));
+  vec3 reflected;
 
+  // cumpute angle between dir and normal
+  float phi = acos(dot(dir,-normal)/(length(dir)*length(normal)));
+  
+  // compute reflected direction from angle and normal
+  reflected = (length(dir)*length(normal)*cos(phi))/normal;
+  
   return reflected;
 }
 
@@ -439,12 +445,12 @@ vec4 radiance(Ray ray, vec3 eye)
 
               // Aufgabe 3.4
               // reflexion
-              vec3 r;
-              vec4 refcolor; 
+              vec3 r = getReflectedDirection(ray.direction, n);
+              vec4 refcolor = vec4(sampleEnvMap(ray.direction), 1.0); 
 
               switch(BRDF_number){
               case(0):
-                
+                color = refcolor * g_spheres[i].color;
 				// Ende Aufgabe 3.4
                 break;
               case(1):
@@ -501,10 +507,22 @@ vec4 gamma(vec4 color)
   vec4 amped_col = color;
   if(gain_switch > 0){
     // Aufgabe 3.5
-    amped_col.r = color.r*gain_number;
-    amped_col.g = color.g*gain_number;
-    amped_col.b = color.b*gain_number;
-   
+	// Clampting function: arctan(x-3.14)+1.26
+    amped_col.r = color.r * (atan(gain_number-3.14)+1.26);
+	if (amped_col.r < 0)
+		amped_col.r = 0;
+	if (amped_col.r > 255)
+		amped_col.r = 255;
+    amped_col.g = color.g * (atan(gain_number-3.14)+1.26);
+	if (amped_col.g < 0)
+		amped_col.g = 0;
+	if (amped_col.g > 255)
+		amped_col.g = 255;
+    amped_col.b = color.b * (atan(gain_number-3.14)+1.26);
+	if (amped_col.b < 0)
+		amped_col.b = 0;
+	if (amped_col.b > 255)
+		amped_col.b = 255;
     // Ende Aufgabe 3.5
   }
 		
