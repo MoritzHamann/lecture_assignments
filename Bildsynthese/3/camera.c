@@ -309,15 +309,18 @@ vec3 cartesianToSpherical(vec3 cart) {
 
   r = sqrt(pow(cart.x,2)+pow(cart.y,2)+pow(cart.z,2));
   
-  // if x == 0 then phi = 0
-  if (cart.x != 0)
-  {
-    phi = atan(cart.y/cart.x);
-  }
+  if (r != 0){
+
+    // if x == 0 => phi = +- pi/2
+    if (cart.x != 0)
+    {
+      phi = atan(cart.y/cart.x);
+    }
+    else {
+      float pi = 3.14159265359;
+      phi = (cart.y > 0) ? pi/2 : 3*pi/2;
+    }
   
-  // if r == 0 then theta = 0
-  if (r != 0)
-  {
     theta = acos(cart.z/r);
   }
 	
