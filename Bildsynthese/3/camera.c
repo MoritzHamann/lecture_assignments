@@ -294,8 +294,8 @@ vec3 sphericalToCartesian(vec3 spherical) {
   vec3 cart;
 
   cart.x = sin(theta) * cos(phi) * r;
-  cart.y = sin(theta) * sin(phi) * r;
-  cart.z = cos(theta) * r;
+  cart.z = sin(theta) * sin(phi) * r;
+  cart.y = cos(theta) * r;
 	
   return cart;
 }
@@ -309,20 +309,13 @@ vec3 cartesianToSpherical(vec3 cart) {
 
   r = sqrt(pow(cart.x,2)+pow(cart.y,2)+pow(cart.z,2));
   
-  if (r != 0){
-
-    // if x == 0 => phi = +- pi/2
-    if (cart.x != 0)
-    {
-      phi = atan(cart.y/cart.x);
-    }
-    else {
-      float pi = 3.14159265359;
-      phi = (cart.y > 0) ? pi/2 : 3*pi/2;
-    }
+  // funktion atan2 integriert die Überprüfung des möglichen teilen durch 0.
+  // funktion atan2 im shader als überlagerte atan funktion implementiert.
+  phi = atan(-cart.x, cart.z);
   
-    theta = acos(cart.z/r);
-  }
+  // r kann nicht 0 sein
+  theta = acos(cart.y/r);
+  
 	
   return vec3(phi, theta, r);
 }
@@ -335,7 +328,10 @@ vec3 sampleEnvMap(vec3 dir)
   // Aufgabe 3.3
   vec3 color = vec3(0.5);
   vec3 angles = cartesianToSpherical(dir);
-  vec2 coords = vec2(angles.x, angles.y);
+  
+  // Da die EnvMap nur von 0 bis 1 abgetastet werden kann müssen die jeweiligen
+  // spherischen koordinatern nochmal durch 2Pi bzw. Pi geteilt werden.
+  vec2 coords = vec2(angles.x/(2*M_PI), angles.y/M_PI);
 	
   color = texture2D( envMapTexture, coords).xyz;
 
@@ -346,13 +342,8 @@ vec3 sampleEnvMap(vec3 dir)
 
 vec3 getReflectedDirection(vec3 dir, vec3 normal) 
 {
-  vec3 reflected;
-
-  // cumpute angle between dir and normal
-  float phi = acos(dot(dir,-normal)/(length(dir)*length(normal)));
-  
-  // compute reflected direction from angle and normal
-  reflected = (length(dir)*length(normal)*cos(phi))/normal;
+  // orginale implementierung ist richtig :)
+  vec3 reflected = dir - normal*(2.0*dot(normal,dir));
   
   return reflected;
 }
@@ -446,7 +437,7 @@ vec4 radiance(Ray ray, vec3 eye)
               // Aufgabe 3.4
               // reflexion
               vec3 r = getReflectedDirection(ray.direction, n);
-              vec4 refcolor = vec4(sampleEnvMap(ray.direction), 1.0); 
+              vec4 refcolor = vec4(sampleEnvMap(r), 1.0); 
 
               switch(BRDF_number){
               case(0):
@@ -505,24 +496,25 @@ vec4 gamma(vec4 color)
   // Gamma-Korrektur
 		
   vec4 amped_col = color;
+  vec3 sat_loc = vec3(0.0);
+  float sat_glob = 0.0;
   if(gain_switch > 0){
     // Aufgabe 3.5
-	// Clampting function: arctan(x-3.14)+1.26
-    amped_col.r = color.r * (atan(gain_number-3.14)+1.26);
-	if (amped_col.r < 0)
-		amped_col.r = 0;
-	if (amped_col.r > 255)
-		amped_col.r = 255;
-    amped_col.g = color.g * (atan(gain_number-3.14)+1.26);
-	if (amped_col.g < 0)
-		amped_col.g = 0;
-	if (amped_col.g > 255)
-		amped_col.g = 255;
-    amped_col.b = color.b * (atan(gain_number-3.14)+1.26);
-	if (amped_col.b < 0)
-		amped_col.b = 0;
-	if (amped_col.b > 255)
-		amped_col.b = 255;
+    amped_col.r = color.r*gain_number;
+    amped_col.g = color.g*gain_number;
+    amped_col.b = color.b*gain_number;
+    
+    sat_loc.x = (amped_col.r-1.0)/amped_col.r;
+    sat_loc.y = (amped_col.g-1.0)/amped_col.g;
+    sat_loc.z = (amped_col.b-1.0)/amped_col.b;
+    
+    sat_glob = max(max(sat_loc.x, sat_loc.y),max(sat_loc.y, sat_loc.z));
+    if( sat_glob > 0.0 )
+    {
+        amped_col.r = amped_col.r * sat_glob;
+        amped_col.g = amped_col.g * sat_glob;
+        amped_col.b = amped_col.b * sat_glob;
+    }
     // Ende Aufgabe 3.5
   }
 		
