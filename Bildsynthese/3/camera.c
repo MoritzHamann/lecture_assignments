@@ -442,7 +442,7 @@ vec4 radiance(Ray ray, vec3 eye)
               switch(BRDF_number){
               case(0):
                 color = refcolor * g_spheres[i].color;
-				// Ende Aufgabe 3.4
+                // Ende Aufgabe 3.4
                 break;
               case(1):
                 // Aufgabe 3.6 Lambert
@@ -455,7 +455,7 @@ vec4 radiance(Ray ray, vec3 eye)
                 // Ende Aufgabe 3.6
                 break;
               case(2):
-				// Aufgabe 3.7 Ward
+                // Aufgabe 3.7 Ward
                 
                 color = vec4(0.0, 0.0, 0.0, 1.0);
                 for(int j = 0; j < numLights; ++j) 
@@ -464,16 +464,16 @@ vec4 radiance(Ray ray, vec3 eye)
                   }
 						
                 color /= float( numLights);
-				// Ende Aufgabe 3.7
+                // Ende Aufgabe 3.7
                 break;
               case(3):
-			    // Aufgabe 3.8 Blinn-Phong
+                // Aufgabe 3.8 Blinn-Phong
                 
                 color = vec4(0.0, 0.0, 0.0, 1.0);
                 for(int j = 0; j < numLights; ++j) 
                   {
                   }
-			    // Ende Aufgabe 3.8
+                // Ende Aufgabe 3.8
                 
                 color /= float( numLights);
                 break;
@@ -504,17 +504,24 @@ vec4 gamma(vec4 color)
     amped_col.g = color.g*gain_number;
     amped_col.b = color.b*gain_number;
     
-    sat_loc.x = (amped_col.r-1.0)/amped_col.r;
-    sat_loc.y = (amped_col.g-1.0)/amped_col.g;
-    sat_loc.z = (amped_col.b-1.0)/amped_col.b;
+    //sat_loc.x = (amped_col.r-1.0)/amped_col.r;
+    //sat_loc.y = (amped_col.g-1.0)/amped_col.g;
+    //sat_loc.z = (amped_col.b-1.0)/amped_col.b;
     
-    sat_glob = max(max(sat_loc.x, sat_loc.y),max(sat_loc.y, sat_loc.z));
-    if( sat_glob > 0.0 )
-    {
-        amped_col.r = amped_col.r * sat_glob;
-        amped_col.g = amped_col.g * sat_glob;
-        amped_col.b = amped_col.b * sat_glob;
-    }
+    //sat_glob = max(max(sat_loc.x, sat_loc.y),max(sat_loc.y, sat_loc.z));
+    //sat_glob = max(max(amped_col.r, amped_col.g), max(amped_col.g, amped_col.b));
+    //if( sat_glob > 1.0 )
+    //{
+    //    amped_col.r = amped_col.r * sat_glob;
+    //    amped_col.g = amped_col.g * sat_glob;
+    //    amped_col.b = amped_col.b * sat_glob;
+    //}
+    
+    // keep linear scaling if color is below 0.5 and otherwise use logaritmic scaling
+    amped_col.r = (amped_col.r > 0.5) ? log((amped_col.r+1.5)*0.5+0.5) : amped_col.r;
+    amped_col.g = (amped_col.g > 0.5) ? log((amped_col.g+1.5)*0.5+0.5) : amped_col.g;
+    amped_col.b = (amped_col.b > 0.5) ? log((amped_col.b+1.5)*0.5+0.5) : amped_col.b;
+
     // Ende Aufgabe 3.5
   }
 		
