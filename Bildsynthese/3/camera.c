@@ -453,12 +453,12 @@ vec4 radiance(Ray ray, vec3 eye)
                 for(int j = 0; j < numLights; ++j) 
                   {
                     // cos of angle between normal and light direction
-                    lightangle = -1.0 * dot(n, lightDirections[j]);
+                    lightangle = dot(n, lightDirections[j]);
                     
                     // only calculate lightrays which come from above the surface
                     if (lightangle > 0){
                         NumberOfRays++;
-                        color.rgb += lightangle * albedo * lightColors[j];
+                        color.rgb += lightangle * albedo * lightColors[j] * g_spheres[i].color.rgb;
                         color.a += 1;
                     }
                   }
