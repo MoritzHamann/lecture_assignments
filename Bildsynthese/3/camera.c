@@ -447,11 +447,23 @@ vec4 radiance(Ray ray, vec3 eye)
               case(1):
                 // Aufgabe 3.6 Lambert
                 color = vec4(0.0, 0.0, 0.0, 1.0);
+                float lightangle = 0;
+                float albedo = 1/M_PI;
+                int NumberOfRays = 0;
                 for(int j = 0; j < numLights; ++j) 
                   {
+                    // cos of angle between normal and light direction
+                    lightangle = -1.0 * dot(n, lightDirections[j]);
+                    
+                    // only calculate lightrays which come from above the surface
+                    if (lightangle > 0){
+                        NumberOfRays++;
+                        color.rgb += lightangle * albedo * lightColors[j];
+                        color.a += 1;
+                    }
                   }
 					
-                color /= float( numLights);
+                color /= NumberOfRays;
                 // Ende Aufgabe 3.6
                 break;
               case(2):
