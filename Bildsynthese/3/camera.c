@@ -362,7 +362,18 @@ vec3 BlinnPhongBRDF( vec3 n, vec3 v, vec3 l, vec3 diffuseCol, vec3 specularCol, 
 
 // n = normal; v = ray.direction; l = light.direction
 vec3 wardBRDF( vec3 n, vec3 v, vec3 l, vec3 diffuseCol, vec3 specularCol, float sigma) {
-  vec3 result = vec3(0.0);
+  
+  vec3 result = vec3(0,0,0);
+  vec3 h = normalize(normalize(l) + v);
+  
+  // diffuse part
+  result += 1/M_PI * diffuseCol * dot(l,n);
+  
+  // specular part
+  result += specularCol * 1 / (sqrt( dot(l,n) * dot(v,n)) * 4 * M_PI 
+                * pow(sigma, 2))
+                * exp( -pow(tan(acos(dot(h,n))), 2)/ pow(sigma, 2));
+
   
   return result;
 }
@@ -463,19 +474,35 @@ vec4 radiance(Ray ray, vec3 eye)
                     }
                   }
 					
-                color /= NumberOfRays;
+                color /= float(NumberOfRays);
                 // Ende Aufgabe 3.6
                 break;
               case(2):
                 // Aufgabe 3.7 Ward
-                
+
                 color = vec4(0.0, 0.0, 0.0, 1.0);
+                NumberOfRays = 0;
+                
+                // we use the material silicon-nitrade
+                vec3 diffuseColor = vec3(0.0113,0.00846,0.00485);
+                vec3 specColor = vec3(0.0173,0.013,0.0115);
+                float sigma = 0.00767;
+                
                 for(int j = 0; j < numLights; ++j) 
                   {
-				  
+                    // cos of angle between normal and light direction
+                    lightangle = dot(n, lightDirections[j]);
+                    
+                    // only calculate lightrays which come from above the surface
+                    if (lightangle > 0){
+                        NumberOfRays++;
+
+                        color.rgb += wardBRDF(n,v,lightDirections[j], diffuseColor, specColor, sigma) * lightColors[j];
+                        color.a += 1;
+                    }
                   }
 						
-                color /= float( numLights);
+                color /= float(NumberOfRays);
                 // Ende Aufgabe 3.7
                 break;
               case(3):
