@@ -356,6 +356,14 @@ vec3 compProd(vec3 a, vec3 b) {
 vec3 BlinnPhongBRDF( vec3 n, vec3 v, vec3 l, vec3 diffuseCol, vec3 specularCol, float sigma) {
 
   vec3 result = vec3(0.0);
+  vec3 h = normalize(normalize(l) + v);
+  float delta = acos(dot(n,h)/(length(n)*length(h)));
+  
+  //diffuse part
+  result += diffuseCol/M_PI;
+  
+  // specular part
+  result += specularCol * (sigma + 2)/(2*M_PI) * pow(cos(delta),sigma); 
 	
   return result;
 }
@@ -497,7 +505,7 @@ vec4 radiance(Ray ray, vec3 eye)
                     if (lightangle > 0){
                         NumberOfRays++;
 
-                        color.rgb += wardBRDF(n,v,lightDirections[j], diffuseColor, specColor, sigma) * lightColors[j];
+                        color.rgb += wardBRDF(n,v,lightDirections[j], diffuseColor, specColor, sigma) * lightColors[j] * g_spheres[i].color.rgb;
                         color.a += 1;
                     }
                   }
@@ -509,8 +517,24 @@ vec4 radiance(Ray ray, vec3 eye)
                 // Aufgabe 3.8 Blinn-Phong
                 
                 color = vec4(0.0, 0.0, 0.0, 1.0);
+                NumberOfRays = 0;
+                
+                // we use the material silicon-nitrade
+                diffuseColor = vec3(0.0146,0.011,0.00606);
+                specColor = vec3(0.0394,0.00299,0.00319);
+                sigma = 5.17*pow(10.0,4.0);
                 for(int j = 0; j < numLights; ++j) 
                   {
+                    // cos of angle between normal and light direction
+                    lightangle = dot(n, lightDirections[j]);
+                    
+                    // only calculate lightrays which come from above the surface
+                    if (lightangle > 0){
+                        NumberOfRays++;
+
+                        color.rgb += BlinnPhongBRDF(n,v,lightDirections[j], diffuseColor, specColor, sigma) * lightColors[j] * g_spheres[i].color.rgb;
+                        color.a += 1;
+                    }
                   }
                 // Ende Aufgabe 3.8
                 
@@ -542,19 +566,6 @@ vec4 gamma(vec4 color)
     amped_col.r = color.r*gain_number;
     amped_col.g = color.g*gain_number;
     amped_col.b = color.b*gain_number;
-    
-    //sat_loc.x = (amped_col.r-1.0)/amped_col.r;
-    //sat_loc.y = (amped_col.g-1.0)/amped_col.g;
-    //sat_loc.z = (amped_col.b-1.0)/amped_col.b;
-    
-    //sat_glob = max(max(sat_loc.x, sat_loc.y),max(sat_loc.y, sat_loc.z));
-    //sat_glob = max(max(amped_col.r, amped_col.g), max(amped_col.g, amped_col.b));
-    //if( sat_glob > 1.0 )
-    //{
-    //    amped_col.r = amped_col.r * sat_glob;
-    //    amped_col.g = amped_col.g * sat_glob;
-    //    amped_col.b = amped_col.b * sat_glob;
-    //}
     
     // keep linear scaling if color is below 0.5 and otherwise use logaritmic scaling
     amped_col.r = (amped_col.r > 0.5) ? log((amped_col.r+1.5)*0.5+0.5) : amped_col.r;
