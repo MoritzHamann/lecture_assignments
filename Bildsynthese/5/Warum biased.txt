@@ -1,0 +1,3 @@
+Warum ist dieser ansatz im Allgemeinen 'biased'?
+
+Vorgehensweisen die 'unbiased' sind, würden keine Fehler durch vereinfachende Annahmen oder Interpolation einführen. Da diese Vorgehensweise jedoch nach einer bestimmten Anzhal an 'bounces' den Algorithmus abbricht und den Farbwert für diesen Pfad auf Schwarz setzt, ist diese Methode 'biased'. Wäre sie 'unbiased' müsste der Pfad so lange verfolgt werden, bis er auf die 'Environment Map' trifft.
