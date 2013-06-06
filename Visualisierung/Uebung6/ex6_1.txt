@@ -1,0 +1,1 @@
+The major difference between the analytical solution and the solution of the isoline algorithm is that, while the analytical solution computes exact values along the whole isoline, the isoline algorithm only does an interpolation between the descrete points on the line of the grid. This is because the grid is made up of a descrete set of data values at the vertices of each cell.
