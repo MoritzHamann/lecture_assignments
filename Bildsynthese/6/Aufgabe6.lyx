@@ -1,0 +1,460 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1cm
+\topmargin 2cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Bildsynthese, Blatt 6
+\end_layout
+
+\begin_layout Author
+Moritz Hamann - 2508568, Boitumelo Ruf - 2835202
+\end_layout
+
+\begin_layout Section*
+Aufgabe 6.1
+\end_layout
+
+\begin_layout Subsection*
+Dreieck
+\end_layout
+
+\begin_layout Standard
+Aus Symmetriegründen sieht man, das die Flächen 
+\begin_inset Formula $A_{1}$
+\end_inset
+
+, 
+\begin_inset Formula $A_{2}$
+\end_inset
+
+ und 
+\begin_inset Formula $A_{3}$
+\end_inset
+
+ gleich groß sind.
+ Weiterhin sind die Ein- und Ausfallswinkel der Formfaktoren 
+\begin_inset Formula $F_{1,2}$
+\end_inset
+
+ und 
+\begin_inset Formula $F_{1,3}$
+\end_inset
+
+ aus Symmetriegründen gleich.
+ Daraus lässt sich schließen, dass gelten muss:
+\begin_inset Formula 
+\[
+F_{1,2}=F_{1,3}
+\]
+
+\end_inset
+
+Weiterhin muss gelten:
+\begin_inset Formula 
+\[
+\sum_{j}F_{i,j}\text{=1}
+\]
+
+\end_inset
+
+und wegen des Reziprozitätsgesetzes:
+\begin_inset Formula 
+\begin{eqnarray*}
+A_{i}F_{i,j} & = & A_{j}F_{j,i}\\
+F_{i,j} & = & F_{j,i}
+\end{eqnarray*}
+
+\end_inset
+
+da 
+\begin_inset Formula $A_{i}=A_{j}$
+\end_inset
+
+.
+ Man sieht also sofort, das für das Dreieck gilt:
+\begin_inset Formula 
+\begin{eqnarray*}
+F_{i,j} & = & \frac{1}{2}\,\,\text{für }i,j\in\left\{ 1,2,3\right\} \\
+F_{i,i} & = & 0
+\end{eqnarray*}
+
+\end_inset
+
+Mit den Werten 
+\begin_inset Formula $\left\{ \rho_{1}=0,\rho_{2}=\frac{1}{2},\rho_{3}=\frac{3}{4}\right\} $
+\end_inset
+
+ für das Albedo und 
+\begin_inset Formula $\left\{ E_{1}=1,E_{2}=0,E_{3}=0\right\} $
+\end_inset
+
+ für die Emissionswerte, lässt sich folgendes LGS für 
+\begin_inset Formula $B_{i}$
+\end_inset
+
+ aufstellen:
+\begin_inset Formula 
+\begin{eqnarray*}
+B & = & E+TB
+\end{eqnarray*}
+
+\end_inset
+
+mit 
+\begin_inset Formula 
+\[
+B=\begin{pmatrix}B_{1}\\
+B_{2}\\
+B_{3}
+\end{pmatrix},\, E=\begin{pmatrix}1\\
+0\\
+0
+\end{pmatrix},\, T=\begin{pmatrix}0 & 0 & 0\\
+0 & \frac{1}{2} & 0\\
+0 & 0 & \frac{3}{4}
+\end{pmatrix}\begin{pmatrix}0 & \frac{1}{2} & \frac{1}{2}\\
+\frac{1}{2} & 0 & \frac{1}{2}\\
+\frac{1}{2} & \frac{1}{2} & 0
+\end{pmatrix}
+\]
+
+\end_inset
+
+Die Lösung dieses LGS ist:
+\begin_inset Formula 
+\begin{eqnarray*}
+B & = & (1-T)^{\text{-1}}E\\
+B & = & \begin{pmatrix}1\\
+0.37\\
+0.51
+\end{pmatrix}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Quadrat
+\end_layout
+
+\begin_layout Standard
+Ähnlich wie beim Dreieck kann man auch mit Hilfe der Symetrie begründen
+ das 
+\begin_inset Formula $F_{1,2}$
+\end_inset
+
+ und 
+\begin_inset Formula $F_{1,3}$
+\end_inset
+
+ gleich sein müssen.
+ Allerdings existiert noch 
+\begin_inset Formula $F_{1,4}$
+\end_inset
+
+, was druchaus unterschiedlich sein kann.
+ Es gilt aber weiterhin, dass 
+\begin_inset Formula $\sum_{j}F_{i,j}=1$
+\end_inset
+
+ (da die Szene abgeschlossen ist).
+ In den Folien war als Sonderfall der Formfaktor zweiter benachbarter Seiten
+ eines Würfels mit 
+\begin_inset Formula $F_{i,j}\approx\frac{1}{5}$
+\end_inset
+
+ angeben.
+ Wir setzen deshalb hier
+\begin_inset Formula 
+\[
+F_{1,2}=F_{1,3}=\frac{1}{5}
+\]
+
+\end_inset
+
+Daraus folt mit 
+\begin_inset Formula $F_{i,i}=0$
+\end_inset
+
+ dann für 
+\begin_inset Formula $F_{1,4}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+F_{1,4}=1-2*\frac{1}{5}=\frac{3}{5}
+\]
+
+\end_inset
+
+Da die Flächen wieder gleich groß sind gilt mit dem Reziprozitätsgesetz
+ wieder 
+\begin_inset Formula $F_{i,j}=F_{j,i}$
+\end_inset
+
+.
+ Ähnlich wie beim Dreieck lässt sich mithilfe der gegeben Albedo und Emissionswe
+rten das LGS für 
+\begin_inset Formula $B_{i}$
+\end_inset
+
+ aufstellen
+\begin_inset Formula 
+\[
+B=E+TB
+\]
+
+\end_inset
+
+mit
+\begin_inset Formula 
+\[
+B=\begin{pmatrix}B_{1}\\
+B_{2}\\
+B_{3}\\
+B_{4}
+\end{pmatrix},E=\begin{pmatrix}1\\
+0\\
+0\\
+0
+\end{pmatrix},T=\begin{pmatrix}0 & 0 & 0 & 0\\
+0 & \frac{1}{2} & 0 & 0\\
+0 & 0 & \frac{3}{4} & 0\\
+0 & 0 & 0 & \frac{1}{4}
+\end{pmatrix}\begin{pmatrix}0 & \frac{1}{5} & \frac{1}{5} & \frac{3}{5}\\
+\frac{1}{5} & 0 & \frac{3}{5} & \frac{1}{5}\\
+\frac{1}{5} & \frac{3}{5} & 0 & \frac{1}{5}\\
+\frac{3}{5} & \frac{1}{5} & \frac{1}{5} & 0
+\end{pmatrix}
+\]
+
+\end_inset
+
+Die Lösung ist wieder gegeben durch:
+\begin_inset Formula 
+\begin{eqnarray*}
+B & = & (1-T)^{-1}E\\
+B & = & \begin{pmatrix}1\\
+0.19\\
+0.26\\
+0.17
+\end{pmatrix}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Aufgabe 6.2
+\end_layout
+
+\begin_layout Standard
+Die 3 einzelnen Transformationen sind (in dieser Reihenfolge) eine Translation:
+\begin_inset Formula 
+\[
+U=\begin{pmatrix}1 & 0 & 0 & 1\\
+0 & 1 & 0 & 1\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{pmatrix}
+\]
+
+\end_inset
+
+sowie eine Rotation um 45° um die 3.
+ Achse:
+\begin_inset Formula 
+\[
+R=\begin{pmatrix}\frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} & 0 & 0\\
+\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{pmatrix}
+\]
+
+\end_inset
+
+und eine Skalierung um den Faktor 
+\begin_inset Formula $\sqrt{2}$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+S=\begin{pmatrix}\sqrt{2} & 0 & 0 & 0\\
+0 & \sqrt{2} & 0 & 0\\
+0 & 0 & \sqrt{2} & 0\\
+0 & 0 & 0 & 1
+\end{pmatrix}
+\]
+
+\end_inset
+
+Die gesammte Matrix 
+\begin_inset Formula $T$
+\end_inset
+
+ ist somit:
+\begin_inset Formula 
+\begin{eqnarray*}
+T & = & U*R*S\,\,\text{und die Inverse}\\
+T^{-1} & = & (U*R*S)^{-1}\\
+ & = & S^{-1}*R^{-1}*U^{\text{-1}}
+\end{eqnarray*}
+
+\end_inset
+
+mit den Einzelinversen:
+\begin_inset Formula 
+\[
+S^{-1}=\begin{pmatrix}\frac{1}{\sqrt{2}} & 0 & 0 & 0\\
+0 & \frac{1}{\sqrt{2}} & 0 & 0\\
+0 & 0 & \frac{1}{\sqrt{2}} & 0\\
+0 & 0 & 0 & 1
+\end{pmatrix},R^{-1}=\begin{pmatrix}\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} & 0 & 0\\
+\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{pmatrix},U^{-1}=\begin{pmatrix}1 & 0 & 0 & -1\\
+0 & 1 & 0 & -1\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Aufgabe 6.3
+\end_layout
+
+\begin_layout Standard
+Die erste Matrix ist eine Rotation um 45° gegen den Uhrzeigersinn, die zweite
+ Matrix eine Skalierung um den Faktor 
+\begin_inset Formula $\frac{1}{2}$
+\end_inset
+
+ und die dritte Matrix eine Translation um den Vektor 
+\begin_inset Formula $v=\begin{pmatrix}4\\
+2
+\end{pmatrix}$
+\end_inset
+
+.
+ Um das transformierte Bild zu bekommen, muss als erstes die Skalierung
+ (
+\begin_inset Formula $M_{2}$
+\end_inset
+
+), dann die Translation (
+\begin_inset Formula $M_{3}$
+\end_inset
+
+) und am Schluss die Rotation (
+\begin_inset Formula $M_{1}$
+\end_inset
+
+) angewendet werden.
+ Das dies stimmt kann leicht überprüft werden, in dem wir die komplette
+ Matrix für alle 3 Operatoren ausrechnen
+\begin_inset Formula 
+\[
+M=M_{1}*M_{3}*M_{2}=\begin{pmatrix}3.53 & -0.53 & 1.41\\
+3.53 & 3.53 & 4.24\\
+0 & 0 & 1
+\end{pmatrix}
+\]
+
+\end_inset
+
+und anschließend den Punkt 
+\begin_inset Formula $p=\begin{pmatrix}1\\
+3
+\end{pmatrix}$
+\end_inset
+
+ (welcher die Dachspitze representiert) transformieren
+\begin_inset Formula 
+\begin{eqnarray*}
+p' & = & M*p\\
+p' & = & \begin{pmatrix}0.7\\
+5.6
+\end{pmatrix}
+\end{eqnarray*}
+
+\end_inset
+
+was der transformierten Dachspitze entspricht.
+\end_layout
+
+\end_body
+\end_document
