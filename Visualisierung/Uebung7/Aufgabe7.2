@@ -1,0 +1,9 @@
+1.) The Result of the algorithms is an isosurface for an specific level of a scalar field. The prerequisites for the algorithm are: the data is a scalarfield, the mesh is a rectilinear grid, scalarvalues are given for each node. The Algorithm first checks for each node if the value is below (-) or above (+) the given level. For each square/cube where the nodes have different values (+/-) it looks in a lookup table for the right configuration of isolines.
+
+2.) If the nodes along a diagonal of the square have the same sign, but the other two have an other, there are two possible solutions. This is, because in the square exists a saddle point in the data. One can determine the right one, by calculating the asymptotes of the data, their intersection and the value of the scalarfield on the intersection. Depending on the value one can decide which solution is the right one.
+
+3.) Yes there are also ambiguous cases. One example would be a cube, which the nodes have all the same sign, except two. These two are aligned on the same side of the cube along the diagonal of that side.
+
+4.) The Gradient for each node is needed, to calculate the resulting polygon normal.
+
+5.) The 3 dimensional Dataset is divided into 2 dimensional slices. On each slice the contour of the same object is extracted. Then with triangles, the contours for each slide are connected. The problem is, that there can be many contours on each slide, an there may be a high variation between slices.
