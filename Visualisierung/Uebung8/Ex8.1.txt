@@ -1,0 +1,56 @@
+1)
+Because the kernels are assumed to be circles the values of the Pixel in the footprint are symetrical.
+splat(-1.5) = splat(1.5) = 0.1821655
+splat(-0.5) = splat(0.5) = 0.4978956
+
+2)
+Luminance of pixels for all volume sample points:
+	x0: 
+	Weight =  1.5
+	Alpha = 0.25
+	Pixels:
+		p(-1.5) = p(1.5) = 1.5 * 0.1821655 = 0.273245
+		p(-0.5) = p(0.5) = 1.5 * 0.4978956 = 0.746843
+
+	x1:
+	Weight = 0
+	Alpha = 0.4
+	Pixels:
+		p(-1.5) = p(1.5) = 0 * 0.1821655 = 0
+		p(-0.5) = p(0.5) = 0
+
+	x2:
+	Weight = 4
+	Alpha = 0.2
+	Pixels:
+		p(-1.5) = p(1.5) = 4 * 0.1821655 = 0.728662
+		p(-0.5) = p(0.5) = 4 * 0.4978956 = 1.991582
+
+3)
+Composition Equation: C_out = C_in * (1-alpha) + c * alpha
+
+Viewplane
+  10 ---
+	|  C = 0
+   9 ---  
+	|  C = 0
+   8 ---
+	|  C = C_x1(1.5) * 0.44 = 0
+   7 ---
+	|  C = C_x2(1.5) * 0.2 = 0.1457324 
+   6 ---
+	|  C = C_x2(0.5) * 0.2 = 0.3983164
+   5 ---
+	|  C = (C_x2(-0.5) * 0.2) * (1-0.25) + (C_x0(1.5) * 0.25
+	|    = 0.36704855
+   4 ---
+	|  C = (C_x2(-1.5) * 0.2) * (1-0.25) + (C_x0(0.5) * 0.25
+	|    = 0.29601005
+   3 ---
+	|  C = C_x0(-0.5) * 0.25 = 0.18671075
+   2 ---
+	|  C = C_x0(-1.5) * 0.25 = 0.06831125
+   1 ---
+	|  C = 0
+   0 ---
+	 
