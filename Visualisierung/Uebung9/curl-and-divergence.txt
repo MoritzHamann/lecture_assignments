@@ -1,0 +1,19 @@
+The curl for a two dimensional vectorfield is defined as
+
+    curl(F(x,y)) = dFy/dx - dFx/dy
+
+therefore the curl for the given vektorfield is
+
+    curl(F(x,y)) = alpha - (-1) = alpha+1
+    curl(F(x,y)) = -1   for alpha = -2
+
+which means the curl at every point of the vectorfield is equal.
+
+
+The divergence of a two dimensional vectorfield is defined as
+
+    div(F(x,y)) = dFx/dx + dFy/dy
+
+therefore the divergence of the given vectorfield is
+
+    div(F(x,y)) = 0 + 0 = 0

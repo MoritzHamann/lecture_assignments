@@ -1,0 +1,170 @@
+#version 330
+
+uniform sampler3D vol;
+uniform float step_size;
+uniform float max_attribute_value;
+
+//inverse model view projection matrix
+uniform mat4 invmvp;
+//camera position
+uniform vec3 camera;
+//mode to select magnitude, curl, divergence
+uniform int mode;
+
+uniform float alpha;
+
+layout(location = 0) out vec4 gl_FragColor;
+
+//incoming coordinates
+in vec3 texCoords;
+in vec3 geom_position;
+
+vec4 colormapping(vec3 _pos ){
+	vec3 out_color = vec3(1.0f, 1.0f, 1.0f);
+	
+	//look up vector at position _pos
+	//pos is contains normalized coordinates with values [0 .. 1]
+	
+	float val = 0;
+    
+	
+	if(mode == 1){
+		//!!!ADD CODE HERE!!!
+		//calc magnetude
+        vec4 values = texture(vol, _pos);
+		val = sqrt(pow(values.x, 2.0) + pow(values.y, 2.0) + pow(values.z, 2.0));
+	}
+	if(mode == 2){
+		//!!!ADD CODE HERE!!!
+		//calc curl
+        vec3 stepx = vec3(step_size, 0.0, 0.0);
+        vec3 stepy = vec3(0.0, step_size, 0.0);
+        vec3 stepz = vec3(0.0, 0.0, step_size);
+        
+        vec4 minus_x = texture(vol, _pos - stepx);
+        vec4 plus_x = texture(vol, _pos + stepx);
+        
+        vec4 minus_y = texture(vol, _pos - stepy);
+        vec4 plus_y = texture(vol, _pos + stepy);
+        
+        vec4 minus_z = texture(vol, _pos - stepz);
+        vec4 plus_z = texture(vol, _pos + stepz);
+		
+		float dir_x = (plus_y.z - minus_y.z)/(2.0 * step_size) - (plus_z.y - minus_z.y)/(2.0 * step_size);
+        float dir_y = (plus_z.x - minus_z.x)/(2.0 * step_size) - (plus_x.z - minus_x.z)/(2.0 * step_size);
+        float dir_z = (plus_x.y - minus_x.y)/(2.0 * step_size) - (plus_y.x - minus_y.x)/(2.0 * step_size);
+        
+		val = sqrt(pow(dir_x, 2) + pow(dir_y, 2) + pow(dir_z, 2));
+	}
+	
+	if(mode == 3){
+		//!!!ADD CODE HERE!!!
+		//calc divergenc
+        
+        vec3 stepx = vec3(step_size, 0.0, 0.0);
+        vec3 stepy = vec3(0.0, step_size, 0.0);
+        vec3 stepz = vec3(0.0, 0.0, step_size);
+        
+        vec4 minus_x = texture(vol, _pos - stepx);
+        vec4 plus_x = texture(vol, _pos + stepx);
+        
+        vec4 minus_y = texture(vol, _pos - stepy);
+        vec4 plus_y = texture(vol, _pos + stepy);
+        
+        vec4 minus_z = texture(vol, _pos - stepz);
+        vec4 plus_z = texture(vol, _pos + stepz);
+        
+        
+		
+		val = (plus_x.x - minus_x.x)/(2.0 * step_size) + (plus_y.y - minus_y.y)/(2.0 * step_size) + (plus_z.z - minus_z.z)/(2.0 * step_size);
+	}
+		
+	//if val is greater than the user defined level return green
+	if(abs(val) > max_attribute_value){
+		return vec4(0,1,0,1);
+	}
+	
+	//Normalize val to [0 .. 1]
+	val = val/max_attribute_value;
+	if(mode == 3){
+		val = val + 1;
+		val = val/2.0;
+	}
+	
+	//!!!ADD CODE HERE!!!
+	// Mapping val in range [0 .. 1] to color (0 = blue, 0.5 = white, 1 = red)
+    if (val < 0.5){
+        out_color = vec3(0.0, 0.0, 1.0);
+    }
+    else if (val >= 0.5 && val < 1){
+        out_color = vec3(1.0, 1.0, 1.0);
+    }
+    else {
+        out_color = vec3(1.0,0.0,0.0);
+    }
+	
+	return vec4(out_color, alpha);
+}
+
+void main( void )
+{
+    vec3 geomDir, geomPos, dir, pos;
+	vec4 vec;
+	vec4 col;
+	vec4 dst;
+	int i=0;
+
+	// Compute the ray's starting point
+	geomPos = geom_position;
+	pos = texCoords;
+	geomDir = vec3(1.0);	
+	
+	//!!!ADD CODE HERE!!!
+	//Compute the ray direction and assign it to geomDir in 3 steps
+	//1) calculate direction vector form camera to the current postion
+    geomDir = geom_position - camera;
+
+	//2) Revers the rotation caused by the model view matrix
+	//	 Therefor you can use invmvp
+    geomDir = vec3(invmvp * vec4(geomDir, 0.0));
+    
+	//3) Normalize the geomDir
+    geomDir = normalize(geomDir);
+	
+    //adapting direction
+	dir = geomDir*step_size;
+	
+	//clear dest. color
+	dst = vec4(0.0);
+
+	//avoid infinite loops
+	while(i < 512) 
+	{	
+			//do stuff with vector, e.g., magnitude and store the color
+			//col = vec4(length(vec.xyz));
+			col = colormapping(pos);
+			
+			// Perform blending
+			dst.rgb += (1.0 - dst.a)*col.a*col.rgb;
+			dst.a += (1.0 - dst.a)*col.a;
+
+			//clamp alpha values to avoid weird visual effects
+			clamp(dst.a,0.0,1.0);
+
+			// Move one step forward
+			pos += dir;
+			
+			//check boundary
+			if(pos.x < 0.0 || pos.x > 1.0) i=1000;
+			if(pos.y < 0.0 || pos.y > 1.0) i=1000;
+			if(pos.z < 0.0f || pos.z > 1.0f) i=1000;
+			
+			//increase loop counter
+			i++;
+	}
+		
+	
+	//store final color
+	gl_FragColor = dst;
+}
+
