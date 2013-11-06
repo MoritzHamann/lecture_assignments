@@ -1,0 +1,13 @@
+Assignment 1, Computer Vision
+=============================
+
+Moritz Hamann - 2508568,
+Boitumelo Ruf - 2835202
+
+Problem 2:
+~~~~~~~~~~
+b) We used for sigma 1 and for the gradient magnitude treshold 20.
+d) We used r_max=80, r_min=20, and treshold 0.52
+
+Notes. Hough transform is very critical in the treshold value. 0.55 didn't
+find all circles.

@@ -550,12 +550,11 @@ long    i, j, r;       /* loop variables */
 for (i=1; i<=nx; i++)
   for (j=1; j<=ny; j++)
     {
-    /*!           TODO               !*/
-    /*! SUPPLEMENT MISSING CODE HERE !*/
-
-
-
-    /*!     END OF MISSING CODE      !*/
+      if (u_mag[i][j]==255){
+	for (r=r_min; r<=r_max; r++){
+	  vote_circle(h[r], c_list, r_max, r_min, nx, ny, i, j, r);
+	}
+      }
     }
 return;
 
