@@ -1,0 +1,436 @@
+\documentclass{article}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{a4wide}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{color}
+%\usepackage{hyperref}
+
+\newtheorem{definition}{Definition}
+\newtheorem{observation}{Observation}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{theorem}{Theorem}
+
+\newtheorem*{example}{Example}
+
+\newcommand{\Problem}[1]{\par\vspace{3mm}\noindent{\bf Problem{\hspace{1mm}}#1}\hspace{1mm}}
+\newcommand{\Solution}{\par\vspace{3mm}\noindent{\bf Solution}\hspace{1mm}}
+
+\newcommand{\NP}{\mathbf{NP}} %{\complsuperclassfont{NP}}
+\renewcommand{\P}{\mathbf{P}} %{\complsuperclassfont{P}}
+
+\newcommand{\Hide}[1]{}
+
+\newcommand{\ignore}[1]{}
+
+
+\newcommand{\setR}{\mathbb{R}}
+\newcommand{\setN}{\mathbb{N}}
+\newcommand{\mat}[1]{ \begin{pmatrix} #1 \end{pmatrix}}
+
+
+\begin{document}
+
+\title{Discrete Optimization}
+\maketitle
+
+\tableofcontents
+\newpage
+
+\vfill
+\subsection*{Remarks}
+The following scribe notes were developed during the summer term 2011
+in parallel to a lecture given by Nikola Milosavljevic and Stefan Funke.
+Some modifications and additions were made during the winter term 2012/3 when the
+same lecture was held again by Stefan Funke and partly Martin Seybold. Further
+changes during the winter term 2013/4. 
+The scribe notes do not necessarily reflect everything that was covered in class
+but should rather be seen as additional source to your own write-up.
+
+\textcolor{blue}{\emph{Knowledge of Bellmann-Ford- and Dijkstra-Algorithm is of need.}}
+
+
+\newpage
+
+\section{Network Flow}
+\subsection{MaxFlow}
+Given a directed graph $G(V,E)$ with distinguished nodes $s\in V$ (source) and $t$ (sink), a capacity function $c:E\rightarrow \mathbb{R}^+$ \textcolor{blue}{\emph{($c:E\rightarrow \mathbb{Z}^+_0$)}} we are interested in determining a maximum \emph{flow} from $s$ to $t$, that is, a function $f:E\rightarrow \mathbb{R}^+$ \textcolor{blue}{\emph{($f:E\rightarrow \mathbb{Z}^+_0$)}} assigning each edge a
+non-negative flow value such that:
+\begin{itemize}
+\item $\displaystyle \sum_{e=(v,.)} f(e)=\sum_{e=(.,v)} f(e)$ for all $v\in V-\{s,t\}$, that is, the inflow equals the outflow for any node $v$ which is different from source or sink ({\bf flow conservation constraint})
+\item $f(e)\leq c(e)$ for all $e\in E$, that is the flow on an edge never exceeds the capacity of the edge ({\bf capacity constraint})
+\end{itemize}
+
+
+Goal is to maximize the value of the flow, that is, the outflow $\sum_{e=(s,.}f(e)$ from $s$ which happens to be equivalent to the inflow $\sum_{e=(.,t)} f(e)$ into $t$ (no unit of flow can get lost or be added at any other node due to the flow conservation constraints).
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=6cm]{Figs/flow1.pdf} 
+\hspace{1cm}
+\includegraphics[width=6cm]{Figs/flow1b.pdf}
+\end{center}
+\caption{Left: Sample Flow (red) of value $10$ for a small network. Capacities are given in black. Right: Better Flow (blue) of value $15$.}\label{fig:flow1}
+\end{figure}
+
+Consider Figure \ref{fig:flow1},left, for an example of a valid flow (in red) for given edge capacities (in black). The value of this flow is $10$, no edge capacity is violated and at all nodes except for source and sink, the inflow equals the outflow.
+
+\textcolor{blue}{\emph{Optimal flow in example is easily derivable by looking at it, but whats the corresponding algorithm?}}
+
+How could we compute such a flow? A first attempt at an algorithm could be as follows:
+\begin{verbatim}
+   1. start with a zero-flow
+   2. find a path consisting of edges with non-zero remaining capacities from s to t;
+      send as much flow as possible across this path 
+   3. repeat 2. as long as possible
+\end{verbatim}
+In step 2, the maximum amount of flow to be sent across a path is determined by its bottleneck -- the edge with smallest capacity along the path.
+In fact, our algorithm might compute the flow depicted in Figure \ref{fig:flow1}, left, if the first path found was $s\rightarrow a\rightarrow b\rightarrow t$; then no further path of non-zero remaining capacities from $s$ to $t$ exists and the algorithm terminates. One important question remains open, though: Is the resulting flow optimal?
+
+Unfortunately it turns out that it is not optimal. In Figure \ref{fig:flow1}, right, we see a flow (in blue) of value $15$, which could be the result of our algorithm (if the e.g. first the path $s\rightarrow a\rightarrow t$ followed by $s\rightarrow b \rightarrow t$ and $s\rightarrow a \rightarrow b \rightarrow t$ was picked) which could not be constructed from the flow on the left. So we better think of a refined algorithm.
+
+The crucial observation that leads to an algorithm which actually computes a maximum flow can  be explained in Figure \ref{fig:flow1}, left. While there is no edge to send flow from $b$ to $a$, in presence of the red flow, there is still the possibility to send flow from $b$ to $a$ by \emph{sending less flow} from $a$ to $b$. In fact this corresponds to a virtual edge from $b$ to $a$ with capacity $10$ (since with the red flow being present, we can send at most $10$ units of flow less from $a$ to $b$).
+
+Based on this observation we define for a given network $G(V,E,c)$ and flow $f:E\rightarrow \mathbb{R}^+$ the so-called \emph{residual network} $G_f(V, E_f, c_f)$ as follows:
+\begin{itemize}
+\item for any edge $e\in E$ with $c(e)>f(e)$ we have $e\in E_f$ with $c_f(e)=c)(e)-f(e)$
+\item for any edge $e=(v,w)\in E$ with $f(e)>0$ we have an edge $e_R=(w,v)\in E_f$ with $c_f(e_R)=f(e)$
+\end{itemize}
+The first rule creates edges with non-zero remaining capacity in $G_f$, the second introduces all the virtual reverse edges for edges across which actual flow is sent. See Figure 6 for a flow in $G$ and the resulting residual network.
+\begin{figure}
+\begin{center}
+\includegraphics[width=6cm]{Figs/flow1.pdf} 
+\hspace{1cm}
+\includegraphics[width=6cm]{Figs/flowRN1.pdf}
+
+\vspace{1cm}
+\includegraphics[width=6cm]{Figs/flowRN2.pdf}
+\hspace{1cm}
+\includegraphics[width=6cm]{Figs/flowRN3.pdf}
+\end{center}
+\caption{Sample Flow (red) for a small network (upper left). Resulting residual network with possible augmenting path(upper right). Resulting total flow (lower left). Last residual network without $s$-$t$ path.}\label{fig:flowRN}
+\end{figure}
+
+Extending our first attempt at an algorithm in a natural way is then to search for $s$-$t$ paths in this residual network, sending flow across such a path (the amount of which is determined by the \emph{bottleneck} of the path, that is, its minimum capacity edge) if such exists, rebuilding the residual network etc. until no further path in the residual network exists. In fact this is the algorithm which we will be using and proving correctness for, it is called the \emph{Ford-Fulkerson} algorithm (google it!).	
+
+\begin{verbatim}
+   FORD-FULKERSON
+   1. start with the zero-flow f=0
+   2. Construct the residual network G_f
+   3. find a path consisting of edges with non-zero remaining capacities from s to t in G_f;
+      send as muchflow as possible across this path; add this flow to f
+      if no such path exists, stop the algorithm and return f
+   4. goto 2.
+\end{verbatim}
+
+It is not hard to see that this algorithm (like the previous, incorrect one) terminates:
+
+\begin{lemma}
+The algorithm terminates in $\min\left(\sum_{e=(s,.)} c(e), \sum_{e=(.,t)} c(e)\right)$ steps.
+\end{lemma}
+\begin{proof}
+In each round of the algorithm the net flow from $s$ to $t$ increases by at least $1$, hence
+the total number of rounds is upper bounded by the sum of the outgoing capacities of $s$ and
+the incoming capacities of $t$.
+\end{proof}
+
+For the new algorithm we can also prove that it computes indeed the maximum possible flow from $s$ to $t$.
+To that end we first need a simple observation to derive upper bounds.
+
+\begin{definition}
+Let $G(V,E)$ be a directed graph, $A\subset V$  be a subset of the nodes.
+The \emph{directed cut} induced by $A$ is defined as $\mbox{dcut}(A):=\{e=(v,w): v\in A, w\notin A\}$, that is,
+the set of edges which have their source in $A$ and their target not in $A$.
+\end{definition}
+
+It is not hard to see that any such directed cut induces an upper bound on the maximum flow from $s$ to $6$
+\begin{lemma}
+For a directed graph $G(V,E)$ with edge capacities $c:E\rightarrow \mathbb{R}^+$ let $A\subset V$ be a subset of the nodes with $s\in A$, $t\notin A$, then $\sum_{e\in\mbox{dcut}(A)} c(e)$ is an upper bound on the max flow from $s$ to $t$.
+\end{lemma}
+\begin{proof}
+Consider a maximum flow from $s$ to $t$; any unit of this flow has to cross the boundary from $A$ to $V-A$ somewhere. The amount of flow that can cross this boundary is bounded by the above quantity.
+\end{proof}
+
+The idea of our correctness proof is to consider the residual network of the final flow that our algorithm has produced and use this to exhibit a set $A$ inducing a directed cut which realizes an upper bound matching the flow our algorithm has produced.
+
+To that end consider the set $A^*$ which consists of all nodes that are reachable from $s$ in the residual network $G_f$ of the flow $f$ that our algorithm has computed and consider the edges leaving and entering $A^*$.
+\begin{lemma}
+Let $f$ be the flow produced by our algorithm for a network $G(V,E)$ with edge capacities $c:E\rightarrow \mathbb{R}^+$, $e=(v,w)\in E$ with $\{v,w\}\cap A^*=1$. Then we have:
+\begin{itemize}
+\item if $v\in A^*$, that is, we have an edge $(v,w)$ out of  $A^*$, then $f(e)=c(e)$
+\item if $w\in A^*$, that is, we have an edge $(v,w)$ into $A^*$, then $f(e)=0$ 
+\end{itemize}
+\end{lemma}
+\begin{proof}
+For the first part, observe that if $f(e)>0$, then there is an edge from $v$ to $w$ in the residual network of positive capacity making $w$ reachable from $s$ in $G_f$, contradicting the fact that $w\notin A^*$.
+For the second part, note that if $f(e)>0$, then there is a back edge $(w,v)$ out of $A^*$ in $G_f$ with positive capacity, making $v$ reachable from $s$, also contradicting non-membership of $v$ in $A^*$.
+\end{proof}
+
+This almost concludes the correctness proof for the Ford-Fulkerson algorithm. Due to the previous Lemma we know that the value of the flow $f$ produced is $\displaystyle \sum_{e=(v,w): v\in A^*, w\notin A^*} f(e)=\sum_{e=(v,w): v\in A^*, w\notin A^*} c(e)$, but as the directed cut induced by $A^*$ implies an upper bound of\\ $\displaystyle\sum_{e=(v,w): v\in A^*, w\notin A^*} f(e)$, the two bounds match and we have shown optimality of $f$.
+
+\begin{corollary}
+The Ford-Fulkerson algorithm terminates and computes a maximum flow.
+\end{corollary}
+
+Note that the running time of Ford-Fulkerson in this version can only be bounded by $O(C(n+m))$ where $C$ denotes the sum of capacities. $O(m+n)$ time is required for each construction of the residual network and construction of an augmenting path. Unfortunately $C$ might not be polynomial in the input size. See Figure \ref{FIG:FFbad} for an example where FF might take a very long time (for a bad sequence of augmenting paths).
+\begin{figure}
+\centering
+\includegraphics[width=6cm]{Figs/FF-bad.pdf}
+\caption{Example where FF might take a long time.}\label{FIG:FFbad}
+\end{figure}
+
+
+\subsubsection{Capacity Scaling}
+In the following we will describe a modification of the original FF algorithm that allows to prove a polynomial running time. The idea is first to search for augmenting paths with large bottlenecks only, and only if such paths cannot be found anymore, search for augmenting paths with smaller bottlenecks. The algorithm can be described as follows:
+\begin{verbatim}
+	start with a zero-flow f
+	D= next smaller power of two of max capacity
+	while (D>=1) do
+	   Gf=residual network of G wrt f restricted to edges of capacity >=D
+	   while there is an augmenting path in Gf do
+	      augment f, recompute Gf
+	   done
+	   D=D/2
+	done
+\end{verbatim}
+
+Observe that the algorithm certainly terminates and produces a maximum flow as each augmentation increases the flow by at least $1$ and when $D=1$, $G_f$ is the residual network as in the original Ford-Fulkerson algorithm.
+Let us try to argue now that the number of augmentations is polynomially bounded.
+Note that the outer loop is executed $O(\log C)$ times where $C$ denotes the maximum capacity of an edge in the network.
+
+\begin{lemma}
+Let $f_D$ be the flow after completing augmentations with capacity value $D$. Then the maximum flow of the network is bounded by $val(f_D)+mD$.
+\end{lemma}
+\begin{proof}
+Consider the residual network $G_{f_D}$ after the last augmentation with capacity value $D$ (including all edges with capacity less than $D$). Let $A$ be the set of nodes reachable from $s$ if all edges of capacity $<D$ are removed from $G_{f_D}$. $A$ induces a directed cut of some capacity $C$. If we subtract the current flow $f_D$ from the edge capacities of the edges leaving $A$, we know that all these edges have remaining capacity $<D$. There can be at most $m$ such edges, hence the $C-val(f_D)<mD$.
+\end{proof}
+
+\begin{lemma}
+For fixed $D$, the inner while loop is executed at most $2m$ times.
+\end{lemma}
+\begin{proof}
+Starting with a flow $f$ for fixed $D$, we know (from the previous round with $2D$ that the total flow is bounded by $val(f)+2Dm$. In each round of the inner while loop, the flow is increased by at least $D$, hence there can be at most $2m$ round of the inner while loop.
+\end{proof}
+
+\begin{theorem}
+Ford-Fulkerson with capacity scaling terminates after $O(2m(m+n)\log C)=O(m^2\log C)$ steps.
+\end{theorem}
+
+\subsubsection{Shortest Augmenting Path (Edmonds-Karp Algorithm)}
+Capacity scaling leads to a running time guarantee which still depends on the magnitude of the capacities.
+In the following we will show that when augmenting always using a \emph{shortest} path (in terms of hop distance), the running time can be bounded by $O(m^2n)$.
+
+So consider in the following the variant of Ford-Fulkerson, where we always augment on a \emph{shortest path} in the current residual network $G_f$. Such a shortest path can be computed using Breadth-First-Search in $O(m+n)$.
+
+We will prove the following two lemmas 
+\begin{lemma}\label{lem:SPnondec}
+During the course of the algorithm, the length of the augmenting paths never decreases.
+\end{lemma}
+\begin{lemma}\label{lem:SPinc}
+After at most $O(m)$ augmentations, the length of the augmenting path increases by at least one.
+\end{lemma}
+
+The two lemmas immediately lead to the following theorem:
+\begin{theorem}
+Ford-Fulkerson with shortest-path augmentation terminates after $O(m^2n)$ steps.
+\end{theorem}
+
+Let us prove the two lemmas in the following:
+\begin{proof}(Lemma \ref{lem:SPnondec})
+Let $l(v)$ be the distance of $v$ from $s$ in the residual network. $G_l$ the subgraph of residual network which only contains edges $(u,v)$ with $l(v)=l(u)+1$. A path $\pi$ in the residual network is a shortest path if it is a path in $G_l$. When augmenting along a path $\pi$, two things can happen along this path: (a) edges in the residual network disappear (as their capacity is fully used up) or (b) back edges are created which have not been present before. None of these modifications to the residual network can increase the level of any node, though. Therefore, the distance to any node -- in particular also to $t$ -- never decreases.
+\end{proof}
+
+\begin{proof}(Lemma \ref{lem:SPinc})
+Let $E_k$ be the set of edges at the beginning of a phase when the distance between $s$ and $t$ is $k$. As soon as the shortest path from $s$ to $t$ uses an edge not in $E_k$ it has length larger $k$. Since with every augmentation, at least one edge (the bottleneck edge) is eliminated from $E_k$, after at most $m$ steps, the length of the shortest path from $s$ to $t$ must increase.
+\end{proof}
+
+\subsubsection{Non-integral Capacities}
+So far we have always assumed \emph{integral} edge capacities, our termination and running time argumentation crucially relied on that. If edge capacities are real numbers, though, termination cannot be guaranteed and there are simple examples where Ford-Fulkerson not even converges towards the maximum flow (google it!).
+
+
+
+\subsection{MinCostFlow}
+\textcolor{blue}{\emph{MinCostFlow is a generalization of MaxFlow, as we can now model more than one source or sink.}}
+
+Let us now consider an extension of the maxFlow problem where we also have to take into account \emph{costs}.
+So we are given a directed network $G(V,E)$ with capacities $cap:E\rightarrow \mathbb{N}$ and costs $c:E\rightarrow \mathbb{Z}$. Furthermore, we have a function $b:V\rightarrow \mathbb{Z}$ which determines whether a node $v$ has a supply/surplus \textcolor{blue}{\emph{"`Ueberfluss"'}} of flow ($b(v)>0$) or a demand of flow ($b(v)<0)$; there might also be nodes which only act as relays ($b(v)=0$).
+
+We assume that the surplus equals the demand, that is, $\displaystyle \sum_{v:b(v)<0} b(v)=-\sum_{v:b(v)>0} b(v)$.
+The goal of the minCostFlow problem is to determine a flow $f:E\rightarrow \mathbb{N}$ such that
+\begin{itemize}
+\item $\forall e\in E: 0\leq f(e)\leq cap(e)$ (flow on an edge does not exceed the capacity \textcolor{blue}{\emph{capacity constraint}})
+\item $\forall v\in V$: $\displaystyle b(v)+\sum_{e=(w,v)}f(e)=\sum_{e=(v,w)}f(e)$ (incoming and outgoing flow together with the surplus/deficit of the vertex balance out)
+\item $\displaystyle\min \sum_{e\in E} f(e)c(e)$ (minimizing the total cost of the flow)
+\end{itemize}
+
+See Figure \ref{fig:minCostFlow-Ex1} for an example of a mcf instance as well as a feasible, but possibly not cost-optimal flow.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{Figs/minCostFlow-Ex1.pdf}
+\caption{MinCostFlow instance on the left; demand/surplus in brackets at the nodes, capacities/costs written at the edges. Feasible flow on the right (in red) of cost 34. \textcolor{blue}{\emph{(Left Value on edges is the capacity and the right value is the cost. The cost in the right image is calculated as follows $3*2+1*2+2*10+2*3 = 34$) }}}\label{fig:minCostFlow-Ex1} 
+\end{figure}
+
+\subsubsection{MinCostFlow via Cycle Cancelling}
+Note that it is easy to obtain a \emph{feasible} flow via a single maxFlow computation: create a supersource $s$ which has an edge to each node $v\in V$ with $b(v)>0$ with capacity $b(v)$, and a supersink $t$ which has an incoming edge from each $w\in V$ with $b(w)<0$ with capacity $-b(w)$.
+So let us assume that we have feasible flow and we want to decrease its cost.
+
+\textcolor{blue}{\emph{Feasible flow in original network exists iff max flow ($f$ from $s$ to $t$) in this network has value $\sum_{v:b(v)>0} b(v)$}}
+
+We proceed quite similar as for maxFlow in that we consider the \emph{residual network} $G'(V,E')$ for a given network $G(V,E)$ and a flow $f$. For each edge $e=(v,w)\in E$ with cost $c(e)$ and capacity $cap(e)$ we construct up to two edges $e_1, e_2$ in $G'$ as follows:
+\begin{itemize}
+\item if $f(e)<cap(e)$ there is an edge $e_1=(v,w)$ with cost $c'(e_1)=c(e)$ and capacity $cap'(e_1)=cap(e)-f(e)$
+	(a forward edge with the remaining capacity)
+\item if $f(e)>0$ there is an edge $e_2=(w,v)$ with cost $c'(e_1)=-c(e)$ and capacity $cap'(e_2)=f(e)$ (a backward edge with negative cost and capacity equal to the forward flow)
+\end{itemize}
+
+In Figure \ref{fig:minCostFlow-Ex1-residual}, left we see the respective residual network for the above problem instance (Figure \ref{fig:minCostFlow-Ex1}) and flow. 
+
+\begin{figure}
+\includegraphics[width=\textwidth]{Figs/minCostFlow-Ex1-residual3}
+\caption{Residual network for mcf instance and flow from Figure \ref{fig:minCostFlow-Ex1} (left). Resulting flow of cost 24 after sending one unit of flow along the negative cycle cbac (right).}\label{fig:minCostFlow-Ex1-residual}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=0.5\textwidth]{Figs/minCostFlow-Ex1-residual2}
+\caption{Final residual network without negative cycles.}\label{fig:minCostFlow-Ex1-residual2}
+\end{figure}
+While in our maxFlow algorithm we were looking for $s$-$t$-paths in this residual network, here we are looking for \emph{negative cycles}, that is a sequence of adjacent edges which ends up in the starting vertex and has negative cost in total. We send as much flow around this cycle as possible (as determined by the bottleneck edge capacity), hereby \emph{decreasing the total cost of the flow.}
+
+In the residual network in Figure \ref{fig:minCostFlow-Ex1-residual}, left there exists a cycle $cbac$ of negativ cost; sending one unit of flow along this cycle (more is not possible due to the bottleneck edge $(a,c)$) decreases the total cost resulting in the flow in Figure \ref{fig:minCostFlow-Ex1-residual}, right.
+As in Ford-Fulkerson we repeat this procedure until no negative cycles can be found in the residual network. As we will prove in the following, the resulting flow has to be optimal. \textcolor{blue}{\emph{(Algorithm aka. "`cycle canceling"')}}
+
+\textcolor{blue}{\emph{This algorithm terminates as the initial cost is bounded by $`maxFLowValue' * |E| * 'maxCostOfAnEdge'$ and decreased by at least 1 in each round of cancelling negative cycles.}}
+
+In Figure \ref{fig:minCostFlow-Ex1-residual2} we see the residual network for the updated flow. This network does not contain any negative cycle, so the flow is hopefully cost-optimal.
+
+\begin{lemma}
+Let $f$ be a feasible flow in $G$, $G_f$ the respective residual network. Then, $f$ is a minCost flow if and only if $G_f$ does not contain any negative cycle.
+\end{lemma}
+\begin{proof}
+\textcolor{blue}{\emph{We need to prove '$\Rightarrow$' and '$\Leftarrow$'.}}
+
+\textcolor{blue}{\emph{'$\Rightarrow$': Assume f is a minCost flow. To Show: there is no negative cycle in $G_f$. Assume otherwise, that is, $G_f$ has a negative cycle. Then send (at least 1 unit of) flow around that cycle, decreasing the total cost by at least 1. This is a contradiction to $f$ being a minCost flow.}}
+
+
+The '$\Rightarrow$'-direction is trivial, so let us focus on the other direction and assume $G_f$ does not contain any negative cycle but $f$ is not a minCost flow. We will derive a contradiction hence proving the lemma.
+
+'$\Leftarrow$': Let $f^*$ be a minCost flow and consider the flow difference $f'=f^*-f$  \textcolor{blue}{\emph{(for example of $f'$ see picture from 2013-11-05-1217)}}. We claim $f'$ has to contain a negative cycle  \textcolor{blue}{\emph{and this is also contained in $G_f$}}. Clearly we have $c(f')<0$ since $c(f^*)<c(f)$. Furthermore, note that for $f'$ flow conservation must hold, that is, at any $v\in V$ the inflow and the outflow of $f'$ balances out to $0$. \textcolor{blue}{\emph{It has to balance out, because a diffference flow cannot change the defficit or surplus of a node.}} Therefore, $f'$ must be decomposable into a set of one or more \emph{cycles}. Since the total cost of the cycles is negative, one of the cycles must have negative cost. Let that cycle be $C$; note that the flow described by $C$ can also be sent around in $G_f$, contradicting the fact that $G_f$ has no cycle of negative cost.
+\end{proof}
+
+So, as long as the current flow $f$ is not optimal, we will find a negative cycle in $G_f$, hence decreasing the cost of the flow by at least $1$ (for integral capacities and costs). Termination and correctness follow.
+
+\subsubsection*{Detection of Negative Cycles}
+How can we detect negative cycles in a graph $G(V,E,c)$? A naive way of doing so is to construct the following \emph{layered graph}:
+we have $n$ layers where each layer contains the node set $v_1, \dots, v_n$. We have an edge between $v_i$ and $v_j$ in the next
+layer if there is an edge $(v_i, v_j)\in E$ (of the same cost), see Figure \ref{fig:negCycle}. Now, we can compute shortest path distances for each $v_i$ in layer $1$ to the $v_i$ in the other layers in $O(mn)$ time each. If there is a negative cycle in $G$, it will be exhibited.
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.5\textwidth]{Figs/negCycle.pdf}
+\caption{Layered graph construction to detect negative cycles.}\label{fig:negCycle}
+\end{center}
+\end{figure}
+
+While this naive approach requires $O(mn^2)$ steps it is also possible to employ Bellman-Ford and exhibit a negative cycle in time $O(mn)$ or conclude that no negative cycle exists.
+In fact, when we always look for the negative cycle $C$ which minimizes $c(C)/|C|$, one can even prove that after polynomially many cycle detections the mincost flow has been found (similar to the maxFlow case where we used a specific rule to determine augmenting paths which guaranteed polynomial running time).
+
+\subsubsection{MinCostFlow via Successive Shortest Paths (sketch)}
+While the idea of cycle cancelling was to start with a \emph{feasible maxFlow} and decrease its cost by repeatedly identifying cycles of negative cost in the residual network, another strategy is to start with a zero flow and iteratively augment this flow while maintaining cost optimality. This is done by computing a  shortest augmenting path (\emph{wrt to the edge costs}) from some supply node to some demand node in the current residual network and sending as much flow as possible across that path. Then the supply and the demand of the respective nodes are reduced and the residual network is updated.
+ Cost optimality (even for a non-maximal flow) is certified by absence of negative cycles in the residual network (we will argue that this is the case). Termination and construction of a feasible maxflow is guaranteed for the same reason as for the Ford-Fulkerson algorithm -- indeed, we can view this simply as a specific strategy for picking augmenting paths in the Ford-Fulkerson algorithm which happens to guarantee cost optimality.
+ 
+How can we find the shortest path from some supply to some demand node? We construct a super source $s$ and connect this with outgoing edges of inifinite capacity and zero cost to all supply nodes, and a super sink $t$ which has incoming edges from all demand nodes (also with infinite capacity and zero cost). Then we compute a shortest path from $s$ to $t$ wrt to the edge costs e.g. using Bellman-Ford. 
+
+\begin{figure}
+\centering
+\includegraphics[width=0.4\textwidth]{Figs/SSP-noNegCyc.pdf}
+\caption{Augmenting path in black, negative Cycle $C=C_1.C_2$. $C_1$ traverses the augmenting path between $v_2$ and $v_1$ in reverse direction (negative costs!).}\label{fig:SSPnoNegCyc}
+\end{figure}
+\textcolor{blue}{\emph{"`Claim: Residual networks occuring during execution of the algorithm never have a neagtive cycle."'}}
+\textcolor{blue}{\emph{Consider first iteration, i.e. we have found shortest path (acc. to costs) in $G_f$ with $f=0$, i.e. in the original network.}}
+
+How can we argue that after sending the maximum amount of flow across the identified augmenting path, the new residual network remains free of negative cycles? To that end, let us consider the first residual network (wrt to a zero flow) which has only positive edge costs. After augmentation, the only negative edge costs appear as reverse edges along the augmenting path. If after the augmentation a negative cycle $C$ exists, $C$ can be decomposed into paths $C_1$ and $C_2$ where $C_1$ starts and ends with negative cost edges and $C_2$ only contains positive cost edges. The cost of $C_1$ must be negative, the cost of $C_2$ positive and $|cost(C_1)|>|cost(C_2)|$. Assume $C_1$ starts in $v_1$ and ends in $v_2$.  W.l.o.g. $C_1$ only consists of a continuous reverse subpath from $v_1$ to $v_2$ of the augmenting path (needs some argument $\Rightarrow$ exercise), that is, its cost is the (negative) cost of a subpath from $v_2$ to $v_1$ in the augmenting path, see the illustration in Figure \ref{fig:SSPnoNegCyc} \textcolor{blue}{\emph{($cost(C_1) = - const(v_2 \rightarrow v_1$)}}. Observe that $C_2$ also yields a path from $v_2$ to $v_1$ with $|cost(C_2)|<|cost(C_1)| \textcolor{blue}{\emph{$= const(v_2 \rightarrow v_1)$}}$ which contradicts the fact that the reverse of $C_1$ was a shortest path in the first residual network. \textcolor{blue}{\emph{Hence $G_f$ cannot have a neagitve cycle. (only in the first augmentation)}} So we can be sure that after the first augmentation the respective residual network is free of negative cycles. 
+
+\textcolor{blue}{\emph{This argument only holds for the first augmentation. Later there might be several negative-cost edges all over the $G_f$.}}How can we extend this observation to the following residual networks? Here, an old result by Johnson comes as a rescue:
+
+\begin{theorem}[Johnson]
+\textcolor{blue}{\emph{Idea: Transformation into a graph with only non-negative edges.}}Let $G(V,E,c)$ be a directed, weighted graph with possibly negative edge costs $c:E\rightarrow \mathbb{Z}$, but without negative cycles. \textcolor{blue}{\emph{(After first augmentation $G_f$ is of such structure.)}} Then there exists a potential function $\phi:V\rightarrow \mathbb{Z}$ such that the shifted edge costs $c'(v,w)=c(c,w)+\phi(v)-\phi(w)$ \textcolor{blue}{\emph{(oldCost + potentialOfV - potentialOfW)}} are always non-negative and shortest paths in $G(V,E,c)$ remain shortest paths in $G(V,E,c')$ and vice versa.
+\end{theorem}
+
+\begin{proof}
+W.l.o.g. \textcolor{blue}{\emph{("`Without loss of generality"')}} assume that $\exists s\in V$ from which all other nodes in $G$ can be reached. If $G(V,E,c)$ does not contain negative cycles, shortest path distances from $s$ are well-defined and can be computed using e.g. Bellman-Ford in $O(mn)$ time. Let us then define $\phi(v):=d_s(v)$ for all $v\in V$, that is, simply the shortest path distance from $s$. First, observe that due to $d_s$ being shortest path distances, $\forall (v,w)\in E$ we have $d_s(w)\leq d_s(v)+c(v,w)$ \textcolor{blue}{\emph{"`the shortest path distance to $w$ is less or equal than the shortest distance to $v$ plus the const of $v$ to $w$"'}} (otherwise going from $s$ to $w$ via $v$ yields a path shorter than $d_s(w)$). This is equivalent to $d(v)-d(w)+c(v,w)\geq 0$ or in other words $\phi(v)-\phi(w)+c(v,w)=:c'(v,w)$, that is, the new edge cost function $c'$ is always non-negative. Second, consider some path $\pi=s \rightarrow v_0 \rightarrow v_1 \dots t$ in $G(V,E,c')$; the cost of the path is $\sum_{(v,w)\in \pi} c'(v,w)=\sum_{(v,w)\in \pi} \phi(v)-\phi(w)+c(v,w)=\phi(s)-\phi(t)+\sum_{(v,w)\in\pi}c(v,w)$, that is, its original cost plus the potential of the source minus the potential of the target. Since the latter two terms are invariant for different $s-t$-paths, shortest paths in $G(V,E,c)$ are shortest in $G(V,E,c')$ and vice versa.
+\end{proof}
+
+
+So we can turn the second residual network (after the first augmentation) again into a network which has only non-negative edge costs and repeat the argument. In fact, most descriptions of the successive shortest path approach for MinCostFlow immediately apply the respective potential changes in the algorithm -- they might obscure the basic idea of the algorithm, though. The transformation into a graph with non-negative edge costs also allows for the application of Dijkstra's algorithm for finding the shortest paths along which to augment the flow.
+
+
+\subsection{Applications of Flow}
+There are many other interesting real-world problems -- apart from direct flow problems -- that can be modeled as a flow optimization problem. In the following we give some examples. 
+
+\subsubsection{s - t Shortest Path}
+\textcolor{blue}{\emph{Problem: Given $G(V,E,c)$ and $s,t \in V$, find shortest (wrt. $c$) path from $s$ to $t$.}}
+
+\textcolor{blue}{\emph{Solution: set $b(s)=1$, $b(t)=-1$, all capacities to 1, all edges costs remain $b(v)=0  \forall v\in V - \{s,t\}$}}
+
+\textcolor{blue}{\emph{Similarily w can also solve ont-to-all (shortest paths from $s$ to all other nodes).}}
+
+\subsubsection{transportation Problem}
+
+\textcolor{blue}{\emph{$m$ facilities $f_1, f_2 \dots f_m$; each has $s_i$ units of some good. $n$ facilities $u_1, u_2 \dots f_n$; each of which has a demand.}}
+
+\textcolor{blue}{\emph{...}}
+
+\textcolor{blue}{\emph{see picture of 2013-11-07-1045}}
+
+\textcolor{blue}{\emph{For $n=m$ and $s_i =1 \forall i$ and $d_j=1 \forall j$ this becomes the assignment problem. Wokrer $i$ can do job $j$ at cost $c_{i,j}$. How to assign jobs to workers (1:1) while minimizing the cost?}}
+
+\subsubsection{Application of the assignment Problem}
+\textcolor{blue}{\emph{Vodafone at any point in time knows the approx. location of ith cell phone users and at another point in time afurther approx. location. How to assign the locations in different time intervals to the same user and therefore trace the user or create a movement profile.}}
+
+\textcolor{blue}{\emph{Solution to assignment problem yields correspondence of location over discrete time steps. iterate this and we get trajectories along which users ware moving.}}
+
+\subsubsection{Airplane Mapping Problem}
+\textcolor{blue}{\emph{Plane flying each day fixed route with $n$ hops: $v_1,v_2,v_3, \dots v_n$. Plane can carry $p$ passengers. Let $t_{ij}$ denote the number of passengers who want to travel from $v_i$ to $v_j$ and they are willing to pay some $f_{ij}$ for the journy ($i < j$). Goal is how to maximize the profit.}}
+
+\textcolor{blue}{\emph{Picture from 2013-11-07-11:10}}
+
+\textcolor{blue}{\emph{We introduce nodes $i,j$ reprecenting passengers who want to travel from $v_i$ to $v_j$. The supply $d(i_j):=t_{i,j}$. We add an edge of capacity $\infty$ and  cost from $f_{i,j}$ $i,j$ to $v_i$ and an edge of capacity $\infty$ and cost $0$ from $i,j$ to $v_j$. $v_i$ and $v_j$ are all connceted via edges of capa. $p$ and const $0$. the demant at a node $v_j$ is $\sum_i{t_{ij}}$. Computing the minCost-Flow yields the best (in terms of profit) choice for which passenger to take on board.}}
+
+\subsubsection{(MinCost) Bipartite Matching}
+Consider a set of Jobs $J$ and a set of workers $W$ with $|J|=|W|=n$. Each worker $w\in W$, due to his qualification, is able to process a certain subset $J_w\subset J$ of tasks. Is it possible to find an assignment of jobs to workers such that every job is processed and no worker has to process more than one job?
+
+This problem can be modelled as a maxFlow problem instance by creating a network with $V=W\cup J\cup\{s,t\}$ and edges $(w,j)$ of capacity $1$ between $w\in W$ and $j\in J$ if worker $w$ can process job $j$. Additionally we have capacity $1$ edges $(s,w)$ for all $w\in W$ and $(j,t)$ for all $j\in J$. A 1:1 assignment of jobs now exists iff the max flow from $s$ to $t$ is $n$.
+
+A generalization of this problem where each job-worker pair has an associated processing time and the goal is to minimize the sum of processing times can be modelled as a minCostFlow problem.
+
+\subsubsection{Edge Connectivity Edge-Disjoint Paths}
+Given an undirected graph, its \emph{edge connectivity} $ec(G)$ is the minimal number of edges that need to be removed to make the graph disconnected. Clearly $ec(G)\leq \min deg(v)$, since removing all adjacent edges of a node makes $G$ disconnected. The edge connectivity of $G$ might be much smaller than the minimum degree of the nodes of $G$, though.
+
+We can determine the edge connectivity by creating a network where each undirected edge is replaced by two directed edges of capacity $1$ (back and forth). We then compute the maxFlow from some fixed node $s$ to each $v\in V-\{s\}$. The minimum over all the flow values is the edge connectivity.
+
+Similarly, for given $s$ and $t$ we might be interested in the number of \emph{edge disjoint} paths between $s$ and $t$. This number can be computed via a simple $s-t$ maxFlow computation when each edge has capacity $1$.
+
+\subsubsection{01-matrices with given row and column sums}
+Given two vectors $r\in \mathbb{N}^h$ and $c\in \mathbb{N}^w$, does their exist a matrix in $\{0,1\}^{h\times w}$ with the row sums given by $r$ and the column sums given by $w$?
+
+Certainly, $\sum r_i=\sum c_j$ since the total number of $1$s in the matrix remains the same irrespectively of the way we count them. We construct a network consisting of $h+w+2$ nodes, named $s,x_1, \dots, x_h, y_1,\dots,y_w,t$. There is an edge $(s,x_i)$ of capacity $r_i$ for all $i=1,\dots,h$ and an edge $(y_j,t)$ of capacity $c_j$ for each $j=1,\dots, w$. Furthermore, we have $hw$ edges of capacity $1$ between any pair $(x_i, y_j)$ of nodes. If there is a flow of value $\sum r_i$ in this network, a $01$-matrix can be constructed by checking which edges $(x_i, y_j)$ actually bear a non-zero flow. On the other hand, if such a matrix exists, a suitable flow of value $\sum r_i$ can be generated.
+\subsection{Exercises}
+\Problem{1}
+Use a flow formulation to determine the maximum number of \emph{node-disjoint} paths between two nodes $s$ and $t$ in an undirected network.
+
+\Problem{2}
+What is the intuitive meaning of the maxFlow/minCut theorem when applied to the maxFlow instance derived from the bipartite matching problem?
+
+\Problem{3}
+Describe maxFlow problem instance and a sequence of $\theta(C)$ augmentations, where $C$
+is the maximum capacity of an edge in the network.
+
+\Problem{4}
+Describe a problem instance for the maxFlow problem \emph{with real capacities} and a sequence of augmentations which never lead to termination of the Ford-Fulkerson algorithm.
+
+
+
+\end{document}
