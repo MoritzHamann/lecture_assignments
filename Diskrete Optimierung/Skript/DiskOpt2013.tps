@@ -11,14 +11,14 @@ MaxPos.x=-1
 MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
-NormalPos.right=1204
-NormalPos.bottom=556
+NormalPos.right=898
+NormalPos.bottom=336
 Class=LaTeXView
 Document=DiskOpt2013.tex
 
 [Frame0_View0,0]
-TopLine=1324
-Cursor=57986
+TopLine=1600
+Cursor=81959
 
 [SessionInfo]
 FrameCount=1

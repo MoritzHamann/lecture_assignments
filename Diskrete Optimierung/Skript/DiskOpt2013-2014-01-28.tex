@@ -6,7 +6,6 @@
 \usepackage{graphicx}
 \usepackage{a4wide}
 \usepackage[ruled,vlined]{algorithm2e}
-\usepackage{color}
 %\usepackage{hyperref}
 
 \newtheorem{definition}{Definition}
@@ -51,20 +50,17 @@ changes during the winter term 2013/4.
 The scribe notes do not necessarily reflect everything that was covered in class
 but should rather be seen as additional source to your own write-up.
 
-\textcolor{blue}{\emph{Knowledge of Bellmann-Ford- and Dijkstra-Algorithm is of need.}}
-
 
 \newpage
 
 \section{Network Flow}
 \subsection{MaxFlow}
-Given a directed graph $G(V,E)$ with distinguished nodes $s\in V$ (source) and $t$ (sink), a capacity function $c:E\rightarrow \mathbb{R}^+$ \textcolor{blue}{\emph{($c:E\rightarrow \mathbb{Z}^+_0$)}} we are interested in determining a maximum \emph{flow} from $s$ to $t$, that is, a function $f:E\rightarrow \mathbb{R}^+$ \textcolor{blue}{\emph{($f:E\rightarrow \mathbb{Z}^+_0$)}} assigning each edge a
+Given a directed graph $G(V,E)$ with distinguished nodes $s\in V$ (source) and $t$ (sink), a capacity function $c:E\rightarrow \mathbb{R}^+$ we are interested in determining a maximum \emph{flow} from $s$ to $t$, that is, a function $f:E\rightarrow \mathbb{R}^+$ assigning each edge a
 non-negative flow value such that:
 \begin{itemize}
 \item $\displaystyle \sum_{e=(v,.)} f(e)=\sum_{e=(.,v)} f(e)$ for all $v\in V-\{s,t\}$, that is, the inflow equals the outflow for any node $v$ which is different from source or sink ({\bf flow conservation constraint})
 \item $f(e)\leq c(e)$ for all $e\in E$, that is the flow on an edge never exceeds the capacity of the edge ({\bf capacity constraint})
 \end{itemize}
-
 
 Goal is to maximize the value of the flow, that is, the outflow $\sum_{e=(s,.}f(e)$ from $s$ which happens to be equivalent to the inflow $\sum_{e=(.,t)} f(e)$ into $t$ (no unit of flow can get lost or be added at any other node due to the flow conservation constraints).
 
@@ -78,8 +74,6 @@ Goal is to maximize the value of the flow, that is, the outflow $\sum_{e=(s,.}f(
 \end{figure}
 
 Consider Figure \ref{fig:flow1},left, for an example of a valid flow (in red) for given edge capacities (in black). The value of this flow is $10$, no edge capacity is violated and at all nodes except for source and sink, the inflow equals the outflow.
-
-\textcolor{blue}{\emph{Optimal flow in example is easily derivable by looking at it, but whats the corresponding algorithm?}}
 
 How could we compute such a flow? A first attempt at an algorithm could be as follows:
 \begin{verbatim}
@@ -121,9 +115,10 @@ Extending our first attempt at an algorithm in a natural way is then to search f
    FORD-FULKERSON
    1. start with the zero-flow f=0
    2. Construct the residual network G_f
-   3. find a path consisting of edges with non-zero remaining capacities from s to t in G_f;
-      send as muchflow as possible across this path; add this flow to f
-      if no such path exists, stop the algorithm and return f
+   3. find a path consisting of edges with non-zero remaining capacities 
+       from s to t in G_f;
+       send as muchflow as possible across this path; add this flow to f
+       if no such path exists, stop the algorithm and return f
    4. goto 2.
 \end{verbatim}
 
@@ -177,12 +172,12 @@ The Ford-Fulkerson algorithm terminates and computes a maximum flow.
 \end{corollary}
 
 Note that the running time of Ford-Fulkerson in this version can only be bounded by $O(C(n+m))$ where $C$ denotes the sum of capacities. $O(m+n)$ time is required for each construction of the residual network and construction of an augmenting path. Unfortunately $C$ might not be polynomial in the input size. See Figure \ref{FIG:FFbad} for an example where FF might take a very long time (for a bad sequence of augmenting paths).
+
 \begin{figure}
 \centering
 \includegraphics[width=6cm]{Figs/FF-bad.pdf}
 \caption{Example where FF might take a long time.}\label{FIG:FFbad}
 \end{figure}
-
 
 \subsubsection{Capacity Scaling}
 In the following we will describe a modification of the original FF algorithm that allows to prove a polynomial running time. The idea is first to search for augmenting paths with large bottlenecks only, and only if such paths cannot be found anymore, search for augmenting paths with smaller bottlenecks. The algorithm can be described as follows:
@@ -254,15 +249,13 @@ So far we have always assumed \emph{integral} edge capacities, our termination a
 
 
 \subsection{MinCostFlow}
-\textcolor{blue}{\emph{MinCostFlow is a generalization of MaxFlow, as we can now model more than one source or sink.}}
-
 Let us now consider an extension of the maxFlow problem where we also have to take into account \emph{costs}.
-So we are given a directed network $G(V,E)$ with capacities $cap:E\rightarrow \mathbb{N}$ and costs $c:E\rightarrow \mathbb{Z}$. Furthermore, we have a function $b:V\rightarrow \mathbb{Z}$ which determines whether a node $v$ has a supply/surplus \textcolor{blue}{\emph{"`Ueberfluss"'}} of flow ($b(v)>0$) or a demand of flow ($b(v)<0)$; there might also be nodes which only act as relays ($b(v)=0$).
+So we are given a directed network $G(V,E)$ with capacities $cap:E\rightarrow \mathbb{N}$ and costs $c:E\rightarrow \mathbb{Z}$. Furthermore, we have a function $b:V\rightarrow \mathbb{Z}$ which determines whether a node $v$ has a supply/surplus of flow ($b(v)>0$) or a demand of flow ($b(v)<0)$; there might also be nodes which only act as relays ($b(v)=0$).
 
 We assume that the surplus equals the demand, that is, $\displaystyle \sum_{v:b(v)<0} b(v)=-\sum_{v:b(v)>0} b(v)$.
 The goal of the minCostFlow problem is to determine a flow $f:E\rightarrow \mathbb{N}$ such that
 \begin{itemize}
-\item $\forall e\in E: 0\leq f(e)\leq cap(e)$ (flow on an edge does not exceed the capacity \textcolor{blue}{\emph{capacity constraint}})
+\item $\forall e\in E: 0\leq f(e)\leq cap(e)$ (flow on an edge does not exceed the capacity)
 \item $\forall v\in V$: $\displaystyle b(v)+\sum_{e=(w,v)}f(e)=\sum_{e=(v,w)}f(e)$ (incoming and outgoing flow together with the surplus/deficit of the vertex balance out)
 \item $\displaystyle\min \sum_{e\in E} f(e)c(e)$ (minimizing the total cost of the flow)
 \end{itemize}
@@ -271,26 +264,24 @@ See Figure \ref{fig:minCostFlow-Ex1} for an example of a mcf instance as well as
 
 \begin{figure}
 \includegraphics[width=\textwidth]{Figs/minCostFlow-Ex1.pdf}
-\caption{MinCostFlow instance on the left; demand/surplus in brackets at the nodes, capacities/costs written at the edges. Feasible flow on the right (in red) of cost 34. \textcolor{blue}{\emph{(Left Value on edges is the capacity and the right value is the cost. The cost in the right image is calculated as follows $3*2+1*2+2*10+2*3 = 34$) }}}\label{fig:minCostFlow-Ex1} 
+\caption{MinCostFlow instance on the left; demand/surplus in brackets at the nodes, capacities/costs written at the edges. Feasible flow on the right (in red) of cost 34.}\label{fig:minCostFlow-Ex1}
 \end{figure}
 
 \subsubsection{MinCostFlow via Cycle Cancelling}
-Note that it is easy to obtain a \emph{feasible} flow via a single maxFlow computation: create a supersource $s$ which has an edge to each node $v\in V$ with $b(v)>0$ with capacity $b(v)$, and a supersink $t$ which has an incoming edge from each $w\in V$ with $b(w)<0$ with capacity $-b(w)$.
-So let us assume that we have feasible flow and we want to decrease its cost.
+Note that it is easy to obtain a \emph{feasible} flow  via a single maxFlow computation: create a supersource $s$ which has an edge to each node $v\in V$ with $b(v)>0$ with capacity $b(v)$, and a supersink $t$ which has an incoming edge from each $v\in V$ with $b(v)<0$ with capacity $-b(v)$. A feasible flow exists iff the respective maxFlow has value $\sum_{v:b(v)>0} b(v)=\sum_{v:b(v)<0}-b(v)$.
+So let us assume that we have a feasible flow and we want to decrease its cost.
 
-\textcolor{blue}{\emph{Feasible flow in original network exists iff max flow ($f$ from $s$ to $t$) in this network has value $\sum_{v:b(v)>0} b(v)$}}
-
-We proceed quite similar as for maxFlow in that we consider the \emph{residual network} $G'(V,E')$ for a given network $G(V,E)$ and a flow $f$. For each edge $e=(v,w)\in E$ with cost $c(e)$ and capacity $cap(e)$ we construct up to two edges $e_1, e_2$ in $G'$ as follows:
+We proceed quite similar as for maxFlow in that we consider the \emph{residual network} $G'(V,E')$ for a given network $G(V,E)$ and a flow $f$. For each edge $e=(v,w)\in E$ with cost $c(e)$ and capacity $cap(e)$ we construct up to two edges $e_1, e_2$ in $E'$ as follows:
 \begin{itemize}
 \item if $f(e)<cap(e)$ there is an edge $e_1=(v,w)$ with cost $c'(e_1)=c(e)$ and capacity $cap'(e_1)=cap(e)-f(e)$
 	(a forward edge with the remaining capacity)
 \item if $f(e)>0$ there is an edge $e_2=(w,v)$ with cost $c'(e_1)=-c(e)$ and capacity $cap'(e_2)=f(e)$ (a backward edge with negative cost and capacity equal to the forward flow)
 \end{itemize}
 
-In Figure \ref{fig:minCostFlow-Ex1-residual}, left we see the respective residual network for the above problem instance (Figure \ref{fig:minCostFlow-Ex1}) and flow. 
+In Figure \ref{fig:minCostFlow-Ex1-residual}, left we see the respective residual network for the above problem instance and flow. 
 
 \begin{figure}
-\includegraphics[width=\textwidth]{Figs/minCostFlow-Ex1-residual3}
+\includegraphics[width=\textwidth]{Figs/minCostFlow-Ex1-residual}
 \caption{Residual network for mcf instance and flow from Figure \ref{fig:minCostFlow-Ex1} (left). Resulting flow of cost 24 after sending one unit of flow along the negative cycle cbac (right).}\label{fig:minCostFlow-Ex1-residual}
 \end{figure}
 
@@ -298,27 +289,23 @@ In Figure \ref{fig:minCostFlow-Ex1-residual}, left we see the respective residua
 \includegraphics[width=0.5\textwidth]{Figs/minCostFlow-Ex1-residual2}
 \caption{Final residual network without negative cycles.}\label{fig:minCostFlow-Ex1-residual2}
 \end{figure}
-While in our maxFlow algorithm we were looking for $s$-$t$-paths in this residual network, here we are looking for \emph{negative cycles}, that is a sequence of adjacent edges which ends up in the starting vertex and has negative cost in total. We send as much flow around this cycle as possible (as determined by the bottleneck edge capacity), hereby \emph{decreasing the total cost of the flow.}
+
+While in our maxFlow algorithm we were looking for $s$-$t$-paths in this residual network, here we are looking for \emph{negative cycles}, that is a sequence of adjacent edges which ends up in the starting vertex and has negative cost in total. We send as much flow around this cycle as possible (as determined by the bottleneck edge capacity), hereby decreasing the total cost of the flow.
 
 In the residual network in Figure \ref{fig:minCostFlow-Ex1-residual}, left there exists a cycle $cbac$ of negativ cost; sending one unit of flow along this cycle (more is not possible due to the bottleneck edge $(a,c)$) decreases the total cost resulting in the flow in Figure \ref{fig:minCostFlow-Ex1-residual}, right.
-As in Ford-Fulkerson we repeat this procedure until no negative cycles can be found in the residual network. As we will prove in the following, the resulting flow has to be optimal. \textcolor{blue}{\emph{(Algorithm aka. "`cycle canceling"')}}
 
-\textcolor{blue}{\emph{This algorithm terminates as the initial cost is bounded by $`maxFLowValue' * |E| * 'maxCostOfAnEdge'$ and decreased by at least 1 in each round of cancelling negative cycles.}}
+
+As in Ford-Fulkerson we repeat this procedure until no negative cycles can be found in the residual network. As we will prove in the following, the resulting flow has to be optimal.
 
 In Figure \ref{fig:minCostFlow-Ex1-residual2} we see the residual network for the updated flow. This network does not contain any negative cycle, so the flow is hopefully cost-optimal.
 
 \begin{lemma}
-Let $f$ be a feasible flow in $G$, $G_f$ the respective residual network. Then, $f$ is a minCost flow if and only if $G_f$ does not contain any negative cycle.
+Let $f$ be a flow in $G$, $G_f$ the respective residual network. Then, $f$ is a minCost flow if and only if $G_f$ does not contain any negative cycle.
 \end{lemma}
 \begin{proof}
-\textcolor{blue}{\emph{We need to prove '$\Rightarrow$' and '$\Leftarrow$'.}}
-
-\textcolor{blue}{\emph{'$\Rightarrow$': Assume f is a minCost flow. To Show: there is no negative cycle in $G_f$. Assume otherwise, that is, $G_f$ has a negative cycle. Then send (at least 1 unit of) flow around that cycle, decreasing the total cost by at least 1. This is a contradiction to $f$ being a minCost flow.}}
-
-
 The '$\Rightarrow$'-direction is trivial, so let us focus on the other direction and assume $G_f$ does not contain any negative cycle but $f$ is not a minCost flow. We will derive a contradiction hence proving the lemma.
 
-'$\Leftarrow$': Let $f^*$ be a minCost flow and consider the flow difference $f'=f^*-f$  \textcolor{blue}{\emph{(for example of $f'$ see picture from 2013-11-05-1217)}}. We claim $f'$ has to contain a negative cycle  \textcolor{blue}{\emph{and this is also contained in $G_f$}}. Clearly we have $c(f')<0$ since $c(f^*)<c(f)$. Furthermore, note that for $f'$ flow conservation must hold, that is, at any $v\in V$ the inflow and the outflow of $f'$ balances out to $0$. \textcolor{blue}{\emph{It has to balance out, because a diffference flow cannot change the defficit or surplus of a node.}} Therefore, $f'$ must be decomposable into a set of one or more \emph{cycles}. Since the total cost of the cycles is negative, one of the cycles must have negative cost. Let that cycle be $C$; note that the flow described by $C$ can also be sent around in $G_f$, contradicting the fact that $G_f$ has no cycle of negative cost.
+Let $f^*$ be a minCost flow and consider the flow difference $f'=f^*-f$. We claim $f'$ has to contain a negative cycle. Clearly we have $c(f')<0$ since $c(f^*)<c(f)$. Furthermore, note that for $f'$ flow conservation must hold, that is, at any $v\in V$ the inflow and the outflow of $f'$ balances out to $0$. Therefore, $f'$ must be decomposable into a set of one or more \emph{cycles}. Since the total cost of the cycles is negative, one of the cycles must have negative cost. Let that cycle be $C$; note that the flow described by $C$ can also be sent around in $G_f$, contradicting the fact that $G_f$ has no cycle of negative cost.
 \end{proof}
 
 So, as long as the current flow $f$ is not optimal, we will find a negative cycle in $G_f$, hence decreasing the cost of the flow by at least $1$ (for integral capacities and costs). Termination and correctness follow.
@@ -335,7 +322,10 @@ layer if there is an edge $(v_i, v_j)\in E$ (of the same cost), see Figure \ref{
 \end{figure}
 
 While this naive approach requires $O(mn^2)$ steps it is also possible to employ Bellman-Ford and exhibit a negative cycle in time $O(mn)$ or conclude that no negative cycle exists.
+
 In fact, when we always look for the negative cycle $C$ which minimizes $c(C)/|C|$, one can even prove that after polynomially many cycle detections the mincost flow has been found (similar to the maxFlow case where we used a specific rule to determine augmenting paths which guaranteed polynomial running time).
+
+
 
 \subsubsection{MinCostFlow via Successive Shortest Paths (sketch)}
 While the idea of cycle cancelling was to start with a \emph{feasible maxFlow} and decrease its cost by repeatedly identifying cycles of negative cost in the residual network, another strategy is to start with a zero flow and iteratively augment this flow while maintaining cost optimality. This is done by computing a  shortest augmenting path (\emph{wrt to the edge costs}) from some supply node to some demand node in the current residual network and sending as much flow as possible across that path. Then the supply and the demand of the respective nodes are reduced and the residual network is updated.
@@ -348,58 +338,22 @@ How can we find the shortest path from some supply to some demand node? We const
 \includegraphics[width=0.4\textwidth]{Figs/SSP-noNegCyc.pdf}
 \caption{Augmenting path in black, negative Cycle $C=C_1.C_2$. $C_1$ traverses the augmenting path between $v_2$ and $v_1$ in reverse direction (negative costs!).}\label{fig:SSPnoNegCyc}
 \end{figure}
-\textcolor{blue}{\emph{"`Claim: Residual networks occuring during execution of the algorithm never have a neagtive cycle."'}}
-\textcolor{blue}{\emph{Consider first iteration, i.e. we have found shortest path (acc. to costs) in $G_f$ with $f=0$, i.e. in the original network.}}
+How can we argue that after sending the maximum amount of flow across the identified augmenting path, the new residual network remains free of negative cycles? To that end, let us consider the first residual network (wrt to a zero flow) which has only positive edge costs. After augmentation, the only negative edge costs appear as reverse edges along the augmenting path. If after the augmentation a negative cycle $C$ exists, $C$ can be decomposed into paths $C_1$ and $C_2$ where $C_1$ starts and ends with negative cost edges and $C_2$ only contains positive cost edges. The cost of $C_1$ must be negative, the cost of $C_2$ positive and $|cost(C_1)|>|cost(C_2)|$. Assume $C_1$ starts in $v_1$ and ends in $v_2$.  W.l.o.g. $C_1$ only consists of a continuous reverse subpath from $v_1$ to $v_2$ of the augmenting path (needs some argument $\Rightarrow$ exercise), that is, its cost is the (negative) cost of a subpath from $v_2$ to $v_1$ in the augmenting path, see the illustration in Figure \ref{fig:SSPnoNegCyc}. Observe that $C_2$ also yields a path from $v_2$ to $v_1$ with $|cost(C_2)|<|cost(C_1)|$ which contradicts the fact that the reverse of $C_1$ was a shortest path in the first residual network. So we can be sure that after the first augmentation the respective residual network is free of negative cycles. 
 
-How can we argue that after sending the maximum amount of flow across the identified augmenting path, the new residual network remains free of negative cycles? To that end, let us consider the first residual network (wrt to a zero flow) which has only positive edge costs. After augmentation, the only negative edge costs appear as reverse edges along the augmenting path. If after the augmentation a negative cycle $C$ exists, $C$ can be decomposed into paths $C_1$ and $C_2$ where $C_1$ starts and ends with negative cost edges and $C_2$ only contains positive cost edges. The cost of $C_1$ must be negative, the cost of $C_2$ positive and $|cost(C_1)|>|cost(C_2)|$. Assume $C_1$ starts in $v_1$ and ends in $v_2$.  W.l.o.g. $C_1$ only consists of a continuous reverse subpath from $v_1$ to $v_2$ of the augmenting path (needs some argument $\Rightarrow$ exercise), that is, its cost is the (negative) cost of a subpath from $v_2$ to $v_1$ in the augmenting path, see the illustration in Figure \ref{fig:SSPnoNegCyc} \textcolor{blue}{\emph{($cost(C_1) = - const(v_2 \rightarrow v_1$)}}. Observe that $C_2$ also yields a path from $v_2$ to $v_1$ with $|cost(C_2)|<|cost(C_1)| \textcolor{blue}{\emph{$= const(v_2 \rightarrow v_1)$}}$ which contradicts the fact that the reverse of $C_1$ was a shortest path in the first residual network. \textcolor{blue}{\emph{Hence $G_f$ cannot have a neagitve cycle. (only in the first augmentation)}} So we can be sure that after the first augmentation the respective residual network is free of negative cycles. 
-
-\textcolor{blue}{\emph{This argument only holds for the first augmentation. Later there might be several negative-cost edges all over the $G_f$.}}How can we extend this observation to the following residual networks? Here, an old result by Johnson comes as a rescue:
+How can we extend this observation to the following residual networks? Here, an old result by Johnson comes as a rescue:
 
 \begin{theorem}[Johnson]
-\textcolor{blue}{\emph{Idea: Transformation into a graph with only non-negative edges.}}Let $G(V,E,c)$ be a directed, weighted graph with possibly negative edge costs $c:E\rightarrow \mathbb{Z}$, but without negative cycles. \textcolor{blue}{\emph{(After first augmentation $G_f$ is of such structure.)}} Then there exists a potential function $\phi:V\rightarrow \mathbb{Z}$ such that the shifted edge costs $c'(v,w)=c(c,w)+\phi(v)-\phi(w)$ \textcolor{blue}{\emph{(oldCost + potentialOfV - potentialOfW)}} are always non-negative and shortest paths in $G(V,E,c)$ remain shortest paths in $G(V,E,c')$ and vice versa.
+Let $G(V,E,c)$ be a directed, weighted graph with possibly negative edge costs $c:E\rightarrow \mathbb{Z}$, but without negative cycles. Then there exists a potential function $\phi:V\rightarrow \mathbb{Z}$ such that the shifted edge costs $c'(v,w)=c(c,w)+\phi(v)-\phi(w)$ is always non-negative and shortest paths in $G(V,E,c)$ remain shortest paths in $G(V,E,c')$ and vice versa.
 \end{theorem}
-
 \begin{proof}
-W.l.o.g. \textcolor{blue}{\emph{("`Without loss of generality"')}} assume that $\exists s\in V$ from which all other nodes in $G$ can be reached. If $G(V,E,c)$ does not contain negative cycles, shortest path distances from $s$ are well-defined and can be computed using e.g. Bellman-Ford in $O(mn)$ time. Let us then define $\phi(v):=d_s(v)$ for all $v\in V$, that is, simply the shortest path distance from $s$. First, observe that due to $d_s$ being shortest path distances, $\forall (v,w)\in E$ we have $d_s(w)\leq d_s(v)+c(v,w)$ \textcolor{blue}{\emph{"`the shortest path distance to $w$ is less or equal than the shortest distance to $v$ plus the const of $v$ to $w$"'}} (otherwise going from $s$ to $w$ via $v$ yields a path shorter than $d_s(w)$). This is equivalent to $d(v)-d(w)+c(v,w)\geq 0$ or in other words $\phi(v)-\phi(w)+c(v,w)=:c'(v,w)$, that is, the new edge cost function $c'$ is always non-negative. Second, consider some path $\pi=s \rightarrow v_0 \rightarrow v_1 \dots t$ in $G(V,E,c')$; the cost of the path is $\sum_{(v,w)\in \pi} c'(v,w)=\sum_{(v,w)\in \pi} \phi(v)-\phi(w)+c(v,w)=\phi(s)-\phi(t)+\sum_{(v,w)\in\pi}c(v,w)$, that is, its original cost plus the potential of the source minus the potential of the target. Since the latter two terms are invariant for different $s-t$-paths, shortest paths in $G(V,E,c)$ are shortest in $G(V,E,c')$ and vice versa.
+W.l.o.g. assume that $\exists s\in V$ from which all other nodes in $G$ can be reached. If $G(V,E,c)$ does not contain negative cycles, shortest path distances from $s$ are well-defined and can be computed using e.g. Bellman-Ford in $O(mn)$ time. Let us then define $\phi(v):=d_s(v)$ for all $v\in V$, that is, simply the shortest path distance from $s$. First, observe that due to $d_s$ being shortest path distances, $\forall (v,w)\in E$ we have $d_s(w)\leq d_s(v)+c(v,w)$ (otherwise going from $s$ to $w$ via $v$ yields a path shorter than $d_s(w)$). This is equivalent to $d_s(v)-d_s(w)+c(v,w)\geq 0$ or in other words $\phi(v)-\phi(w)+c(v,w)\geq 0$, that is, the new edge cost function $c'$ is always non-negative. Second, consider some path $\pi=sv_0v_1\dots t$ in $G(V,E,c')$; the cost of the path is $\sum_{(v,w)\in \pi} c'(v,w)=\sum_{(v,w)\in \pi} \phi(v)-\phi(w)+c(v,w)=\phi(s)-\phi(t)+\sum_{(v,w)\in\pi}c(v,w)$, that is, its original cost plus the potential of the source minus the potential of the target. Since the latter two terms are invariant for different $s-t$-paths, shortest paths in $G(V,E,c)$ are shortest in $G(V,E,c')$ and vice versa.
 \end{proof}
 
 
 So we can turn the second residual network (after the first augmentation) again into a network which has only non-negative edge costs and repeat the argument. In fact, most descriptions of the successive shortest path approach for MinCostFlow immediately apply the respective potential changes in the algorithm -- they might obscure the basic idea of the algorithm, though. The transformation into a graph with non-negative edge costs also allows for the application of Dijkstra's algorithm for finding the shortest paths along which to augment the flow.
 
-
 \subsection{Applications of Flow}
 There are many other interesting real-world problems -- apart from direct flow problems -- that can be modeled as a flow optimization problem. In the following we give some examples. 
-
-\subsubsection{s - t Shortest Path}
-\textcolor{blue}{\emph{Problem: Given $G(V,E,c)$ and $s,t \in V$, find shortest (wrt. $c$) path from $s$ to $t$.}}
-
-\textcolor{blue}{\emph{Solution: set $b(s)=1$, $b(t)=-1$, all capacities to 1, all edges costs remain $b(v)=0  \forall v\in V - \{s,t\}$}}
-
-\textcolor{blue}{\emph{Similarily w can also solve ont-to-all (shortest paths from $s$ to all other nodes).}}
-
-\subsubsection{transportation Problem}
-
-\textcolor{blue}{\emph{$m$ facilities $f_1, f_2 \dots f_m$; each has $s_i$ units of some good. $n$ facilities $u_1, u_2 \dots f_n$; each of which has a demand.}}
-
-\textcolor{blue}{\emph{...}}
-
-\textcolor{blue}{\emph{see picture of 2013-11-07-1045}}
-
-\textcolor{blue}{\emph{For $n=m$ and $s_i =1 \forall i$ and $d_j=1 \forall j$ this becomes the assignment problem. Wokrer $i$ can do job $j$ at cost $c_{i,j}$. How to assign jobs to workers (1:1) while minimizing the cost?}}
-
-\subsubsection{Application of the assignment Problem}
-\textcolor{blue}{\emph{Vodafone at any point in time knows the approx. location of ith cell phone users and at another point in time afurther approx. location. How to assign the locations in different time intervals to the same user and therefore trace the user or create a movement profile.}}
-
-\textcolor{blue}{\emph{Solution to assignment problem yields correspondence of location over discrete time steps. iterate this and we get trajectories along which users ware moving.}}
-
-\subsubsection{Airplane Mapping Problem}
-\textcolor{blue}{\emph{Plane flying each day fixed route with $n$ hops: $v_1,v_2,v_3, \dots v_n$. Plane can carry $p$ passengers. Let $t_{ij}$ denote the number of passengers who want to travel from $v_i$ to $v_j$ and they are willing to pay some $f_{ij}$ for the journy ($i < j$). Goal is how to maximize the profit.}}
-
-\textcolor{blue}{\emph{Picture from 2013-11-07-11:10}}
-
-\textcolor{blue}{\emph{We introduce nodes $i,j$ reprecenting passengers who want to travel from $v_i$ to $v_j$. The supply $d(i_j):=t_{i,j}$. We add an edge of capacity $\infty$ and  cost from $f_{i,j}$ $i,j$ to $v_i$ and an edge of capacity $\infty$ and cost $0$ from $i,j$ to $v_j$. $v_i$ and $v_j$ are all connceted via edges of capa. $p$ and const $0$. the demant at a node $v_j$ is $\sum_i{t_{ij}}$. Computing the minCost-Flow yields the best (in terms of profit) choice for which passenger to take on board.}}
-
-\textcolor{blue}{\emph{Pictures from 2013-11-14 in addition to ex 2.}}
 
 \subsubsection{(MinCost) Bipartite Matching}
 Consider a set of Jobs $J$ and a set of workers $W$ with $|J|=|W|=n$. Each worker $w\in W$, due to his qualification, is able to process a certain subset $J_w\subset J$ of tasks. Is it possible to find an assignment of jobs to workers such that every job is processed and no worker has to process more than one job?
@@ -457,9 +411,9 @@ units of meat, tofu, bread and cheese that we are to buy in the supermarket and 
 which reflects the cost of our shopping spree and which is to be \emph{minimized} under
 the following constraints:
 \begin{itemize}
-\item $1 x_m + 2 x_t + 4 x_b +1 x_c \geq 11$ which expresses the need for at least 11 units of carbohydrates per day \textcolor{blue}{\emph{(carb. constraint)}}
-\item $3 x_m + 2 x_t + 1 x_b + 4 x_c \geq 7$ (at least 7 units of proteins per day)\textcolor{blue}{\emph{(protein constraint)}}
-\item $5 x_m + 0 x_t + 0 x_b + 2 x_c \geq 5$ (at least 5 units of fat per day)\textcolor{blue}{\emph{(fat constraint)}}
+\item $1 x_m + 2 x_t + 4 x_b +1 x_c \geq 11$ which expresses the need for at least 11 units of carbohydrates per day 
+\item $3 x_m + 2 x_t + 1 x_b + 4 x_c \geq 7$ (at least 7 units of proteins per day)
+\item $5 x_m + 0 x_t + 0 x_b + 2 x_c \geq 5$ (at least 5 units of fat per day)
 \end{itemize}
 Furthermore we can only purchase non-negative amounts of food, so in summary we can 
 specify our optimization problem as the following \emph{linear program}:
@@ -467,7 +421,7 @@ specify our optimization problem as the following \emph{linear program}:
 \[
 \begin{matrix}
 	\min	& 7 x_m	&+& 3 x_t&+& 2 x_b&+&4 x_c&&\\  
-	\mbox{s.t. \textcolor{blue}{\emph{(subject to)}}}	& 1 x_m &+& 2 x_t&+& 4 x_b&+&1 x_c&\geq&11\\
+	\mbox{s.t.}	& 1 x_m &+& 2 x_t&+& 4 x_b&+&1 x_c&\geq&11\\
 			& 3 x_m &+& 2 x_t&+& 1 x_b&+&4 x_c&\geq& 7\\
 	           	& 5 x_m &+& 0 x_t&+& 0 x_b&+&2 x_c&\geq& 5\\
 			& x_i\geq 0\\
@@ -479,8 +433,6 @@ hence the name linear program.
 
 In the remainder of this section we will have a closer look at such linear programs
 and devise algorithms for finding optimal solutions to them if they exist.
-
-\textcolor{blue}{\emph{``If the solution is restriced to integral, then it cannot be solved in polynomial time. For now we stick to the fact, that the solution can also be non-integral."}}
 
 
 \subsection{Linear Programs -- Standard Form}
@@ -503,7 +455,7 @@ following form:
 
 Here we have a \emph{maximization} problem in $n$ variables $x_1, \dots x_n$, 
 $n$ coefficients $c$ for these variables in the objective function, and $m$ constraints 
-given as a matrix $A\in\mathbb{R}^{m \times n}$ and a vector $b\in\mathbb{R}^m$.
+given as a matrix $A\in\mathbb{R^{m\times n}}$ and a vector $b\in\mathbb{R}^m$.
 The $j$-th constraint is then 
 \[
 	\sum_{i=1}^n a_{ji}\leq b_j
@@ -518,7 +470,7 @@ Figure \ref{fig:GeomIntuition} shows a simple linear program with two variables
 and its visualization in the Euclidean plane. 
 
 Here we have two  variables $x$ and $y$ which are to obey a set of $4$ constraints. 
-Each constraint defines a \emph{halfplane} \textcolor{blue}{\emph{(indicated by /////// )}}in which all \emph{feasible solutions}
+Each constraint defines a \emph{halfplane} in which all \emph{feasible solutions}
 (all allowed assignments of values to $x$ and $y$) lie. The intersection of the
 $4$ halfplanes defines a polyhedron (an intersection of halfplanes/spaces),
 the so-called \emph{feasible region} of the LP (hatched area in the figure). 
@@ -565,7 +517,7 @@ In dimensions higher than $2$, the halfplanes become \emph{halfspaces}, the feas
 \end{figure}
 
 Note that it is well possible that the feasible region -- the intersection
-of the halfspaces given by the constraints -- is empty or unbound. In that case, no solution
+of the halfspaces given by the constraints -- is empty. In that case, no solution
 exists which satisfies all the constraints, we call the linear program \emph{infeasible}.
 
 \begin{lemma}
@@ -579,16 +531,12 @@ linearity of the objective function.
 There might be more than one feasible point with maximal objective function value. Think
 of respective examples in $2$ and $3$ dimensions.
 
-\subsubsection{Solve Max-Flow with Linear Programming}
-
-\textcolor{blue}{\emph{1. Give each edge a variable $x_1, x_2, x_3, \dots\, x_m$ 2. objective function: max edges leaving $s$ 3. As constraints let edges be less or equal capacities of edges and formaulate conservation constraint as a equation.}}
-
 
 \subsection{The (Primal) Simplex Algorithm}
 Let us now turn to the problem of actually \emph{finding} an optimal vertex of the polyhedron for a given objective function. We will first explain the algorithm in $2$ dimensions and then extend it to higher dimensions.
 
 Without loss of generality let us assume that the objective is to find the \emph{lowest corner} of the feasible region (otherwise rotate the whole problem instance). The high-level strategy of the Simplex algorithm is quite simple:
-starting with some corner of the feasible region, jump to a neighboring \emph{lower} corner of the feasible region until all neighboring corners are not below the current corner, see Figure \ref{fig:simplexPrimal}. In two dimensions, there is only one vertex (the highest one) where there is an actual choice which corner to visit next. The other corners -- except the ones with minimum $y$-coordinate -- have exactly one neighboring corner which is lower. \textcolor{blue}{\emph{Picture form 2013-11-19-12:17}}
+starting with some corner of the feasible region, jump to a neighboring \emph{lower} corner of the feasible region until all neighboring corners are not below the current corner, see Figure \ref{fig:simplexPrimal}. In two dimensions, there is only one vertex (the highest one) where there is an actual choice which corner to visit next. The other corners -- except the ones with minimum $y$-coordinate -- have exactly one neighboring corner which is lower.
 
 In Figure \ref{fig:simplexPrimal} we also see an example where more than two bounding lines intersect in a vertex (leftmost corner of the feasible region). This is called a \emph{primal degeneracy} and will lead to some complications later on for the Simplex algorithm.
 
@@ -668,7 +616,7 @@ We can plug in a point $r(\lambda)$ on the ray in every constraint $l$:
 \[
 \Leftrightarrow	a_l^{T}x'-\lambda a_l^{T}(A_B^{-1})_{\cdot i})\leq b_l
 \]
-If $a_l^{T}(A_B^{-1})_{\cdot i})>=0$ this constraint will never block our movement, otherwise
+If $a_l^{T}(A_B^{-1})_{\cdot i})\geq0$ this constraint will never block our movement, otherwise
 we obtain the following bound on $\lambda$:
 \[
 	\lambda \leq \frac{b_l - a_l^{T}x'}{-a_l^{T}(A_B^{-1})_{\cdot i})}
@@ -678,16 +626,15 @@ which determines the smallest upper bound on $\lambda$ is the first constraint h
 $\overrightarrow{r}$. This constraint enters the basis in exchange for constraint $i$.
 
 \subparagraph*{Pivoting Strategies}
-In particular for higher dimensional problems, there are typically \emph{several} constraints for whom moving away from increases the objective function value. There are many strategies to decide which constraint should leave the basis \textcolor{blue}{\emph{(``which ray to follow'')}}: \emph{the rule of steepest ascent} for example chooses to follow the ray which improves the objective function value at the highest rate; \textcolor{blue}{\emph{pick the ray where we can go down furthest;}} \emph{randomly choosing an improving ray} is another strategy (not as bad as it sounds).
+In particular for higher dimensional problems, there are typically \emph{several} constraints for whom moving away from increases the objective function value. There are many strategies to decide which constraint should leave the basis: \emph{the rule of steepest ascent} for example chooses to follow the ray which improves the objective function value at the highest rate; \emph{randomly choosing an improving ray} is another strategy (not as bad as it sounds).
 
-Unfortunately, no strategy is known which guarantees a polynomial number of steps to reach the optimum/lowest vertex. Even worse, for many deterministic pivot rules, there are examples where an exponential number of steps are necessary to reach the optimum (the Klee-Minty cube is a well-known example -- google it!). \textcolor{blue}{\emph{In practive they perform very well though.}}
-
+Unfortunately, no strategy is known which guarantees a polynomial number of steps to reach the optimum/lowest vertex. Even worse, for many deterministic pivot rules, there are examples where an exponential number of steps are necessary to reach the optimum (the Klee-Minty cube is a well-known example -- google it!).
 
 \subparagraph*{Basis Cycling and Bland's Rule}
 
 To make things even worse, for many deterministic pivoting strategies there are examples where the Simplex algorithm does \emph{not} terminate at all! This can happen when $d'>d$ constraints intersect in a corner. Here, a naive pivoting strategy might lead to a cycling of the bases never leaving that corner. Bland's rule (google that!) guarantees that after a finite number of steps, the corner is left for a better corner. As applying Bland's rule all the time in practice often leads to worse running times of the Simplex algorithm (more steps), in real-world applicaitons people use rules like the one of steepest ascent and only if cycling is suspected (when the Simplex algorithm stays at the same corner for several steps), Bland's rule is employed until the vertex has been left.
 
-\textcolor{blue}{\emph{In higher dimension it can happen, that by always exchanging the constraints the algorithm stays at that one corner and dous not make any progress. (only with $d'>d$ constraints)}}
+Alternatively, one might remove degeneracies by slightly perturbing constraints such that no $d+1$ constraints intersect in a single point.
 
 \subsection{Duality}
 One very powerful concept in the context of linear programming is \emph{duality}. Let us first look at it in an abstract way and later try to provide some intuition.
@@ -718,8 +665,8 @@ or more concretely the following linear program (a slight modification of the LP
 
 We could use the Simplex algorithm to solve this LP, but is it possible to give any upper bounds on the objective function value of the optimum solution beforehand?
 Consider the two constraints $0.5x+y\leq 7$ and $0.5x-y\leq 0$. We could multiply the first constraint
-by $1.5$ and the second constraint by $0.5$ without invalidating them and obtain $0.75x+1.5y\leq 10.5$ and $0.25x-0.5y\leq 0$. Adding these two constraints we get $x+y\leq 10.5$, that is, an upper bound of $10.5$ for the objective function \textcolor{blue}{\emph{(``which is better than 11 '')}}. In this case, this is not the best bound possible, though, since combining
-the constraint $0.5x+y\leq 7$ with a multiplier of $1.0$ and the constraint $x\leq 6$ with a multiplier of $0.5$ yields an upper bound \textcolor{blue}{\emph{(by adding them up)}} of $10$ which happens to be the objective function value of the optimum solution.
+by $1.5$ and the second constraint by $0.5$ without invalidating them and obtain $0.75x+1.5y\leq 10.5$ and $0.25x-0.5y\leq 0$. Adding these two constraints we get $x+y\leq 10.5$, that is, an upper bound of $10.5$ for the objective function. In this case, this is not the best bound possible, though, since combining
+the constraint $0.5x+y\leq 7$ with a multiplier of $1.0$ and the constraint $x\leq 6$ with a multiplier of $0.5$ yields an upper bound of $10$ which happens to be the objective function value of the optimum solution.
 
 A natural strategy to obtain upper bounds on the objective function value is to combine constraints by weighting and adding such that in the sum the coefficients of the variables match the coefficents of the objective function. Note that one better only uses \emph{positive} factors for weighting since multiplication with a negative number turns the $\leq$ into a $\geq$ in the inequality, which renders the obtained 'upper bounds' invalid. More formally we can define the following \emph{dual problem} which formalizes this search for the best upper bound:
 
@@ -735,13 +682,7 @@ A natural strategy to obtain upper bounds on the objective function value is to 
 \]
 Essentially we have a (positive!) multiplier $y_i$ for each (primal) constraint, $i=1,\dots m$. The multipliers should always be chosen such that the summed coefficients match the coefficients of the objective function; amongst all such multipliers we are looking for the combination which yields the best, that is, the \emph{lowest} upper bound. The discussion so far should has made clear that any feasible solution to this \emph{dual linear program} indeed is an upper bound for the primal linear program. This is also called \emph{weak duality}.
 
-\textcolor{blue}{\emph{We try to find non-negative multipliers for the constraints such that adding the multiplied constraints yield the same coefficiant on the left hand side as the objective function and the right hand side is as small as possible.}}
-
 In fact, it turns out that the best upper bound that can be achieved using the dual LP always matches \emph{exactly} the objective function value of the optimum solution in the primal LP. This is called \emph{strong duality}.
-
-\textcolor{blue}{\emph{The primal LP problem is a maximization problem and the dual LP problem is a minimization problem. The optimal objective function value of the duality problem is at least as large as the optimal objective function value of the primal function.}}
-
-\textcolor{blue}{\emph{\textbf{In Short:} Primal: $\max c^Tx$ with $Ax \leq b"$; Dual: $\min b^Ty$ with $A^Ty = c, y \geq 0$}}
 
 \paragraph*{Economic Interpretation of the dual}
 Recall our diet-LP from the introduction
@@ -773,18 +714,15 @@ The same holds for true for tofu ($2 y_c + 2 y_p + 0 y_f \leq 3$), bread ($4y_c 
 \]
 
 
-\subsection{The Dual Simplex Algorithm}
 
-\textcolor{blue}{\emph{It also finds the lowest point in a feasible region but in a different way.}}
+\subsection{The Dual Simplex Algorithm}
 
 The basic strategy of the primal Simplex algorithm was to start with a corner of the \emph{feasible} region and then keep improving the objective function value \emph{while never leaving the feasible region}. A -- at first sight -- completely different strategy works as follows:
 \begin{itemize}
-\item start with a corner (later called \emph{V-shape} \textcolor{blue}{\emph{(Figure \ref{fig:Vshapes})}} which is optimal for a subset of constraints (but might violate other constraints)
-\item as long as there is a constraint which violates the current corner, use this constraint to derive a 'better' \textcolor{blue}{\emph{(which in our case means higher)}} V-shape
-\item the optimum is reached once the current V-shape does not violate any other constraint (and hence is feasible solution to the primal LP)
+\item start with a corner (later called \emph{V-shape}) which is optimal for a subset of constraints (but might violate other constraints)
+\item as long as there is a constraint which violates the current corner, use this constraint to derive a 'better' V-shape
+\item the optimum is reached once the current V-shape does not violate any other constraint (and hence is also a feasible solution to the primal LP)
 \end{itemize}
-
-\textcolor{blue}{\emph{Example: See Figure \ref{fig:PrimalDualSimplex}}}
 
 How can we characterize a corner or \emph{V-shape} that is optimal for a subset of constraints? A \emph{corner} is defined by the intersection of $n$ linearly independent constraints. Sticking to our assumption that we aim at finding the lowest feasible point, a \emph{V-shape} is a corner which is optimal for the set of its defining constraints, see Figure \ref{fig:Vshapes} for an illlustration for $n=2$.
 
@@ -795,40 +733,31 @@ How can we characterize a corner or \emph{V-shape} that is optimal for a subset 
 \end{center}
 \end{figure}
 
-More formally, a corner is a V-shape iff the objective function vector lies in the cone of the normal vectors of the bounding hyperplanes of the constraints or equivalently if there exists $y\in \mathbb{R}^m$, $y\geq 0$ with $A^Ty=c$ \textcolor{blue}{\emph{(``This is exactly what we wrote down as the dual LP'')}}. The latter sounds rather familiar and indeed this invariant of the dual Simplex algorithm is simply the set of constraints of the dual linear program. Before we will argue that the dual Simplex algorithm is really simply the interpretation of a (primal) Simplex algorithm running on the dual linear program, let us make  the description of the dual Simplex algorithm a bit more concrete.
+More formally, a corner is a V-shape iff the objective function vector lies in the cone of the normal vectors of the bounding hyperplanes of the constraints or equivalently if there exists $y\in \mathbb{R}^m$, $y\geq 0$ with $A^Ty=c$. The latter sounds rather familiar and indeed this invariant of the dual Simplex algorithm is simply the set of constraints of the dual linear program. Before we will argue that the dual Simplex algorithm is really simply the interpretation of a (primal) Simplex algorithm running on the dual linear program, let us make  the description of the dual Simplex algorithm a bit more concrete.
+
+
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=0.5\textwidth]{Figs/PrimalDualSimplex.pdf}
-\caption{Geometric Intuition of Primal (upper half \textcolor{blue}{\emph{dashed}}) and Dual Simplex (lower half \textcolor{blue}{\emph{solid}}).}\label{fig:PrimalDualSimplex}
+\caption{Geometric Intuition of Primal (upper half) and Dual Simplex (lower half).}\label{fig:PrimalDualSimplex}
 \end{center}
 \end{figure}
 
 Consider a (primal) LP in standard form and $n$ of its constraints intersecting in a point which bound the objective function value of the LP, that is, an initial V-shape (think about how to find such an initial V-Shape).
-A V-shape in the dual Simplex algorithm is a subset $B$ of $n$ constraints such that their unique intersection point $x_B$ is at the same time the optimum solution for the modified LP whose constraints are those in $B$, and the objective function is the same as that in the original LP. 
-Clearly, if $x_B$ is feasible for constraints outside $B$, then $x_B$ is optimal for the whole LP.
-Hence, we need to find the next V-shape only if $x_0$ violates some constraint $i \notin B$, i.e., if $a_i x_0 > b_i$.
+A V-shape in the dual Simplex algorithm is a subset $B$ of $n$ constraints such that their unique intersection point $x_0$ is at the same time the optimum solution for a reduced LP whose only constraints are those in $B$, and the objective function is the same as that in the original LP. 
+Clearly, if $x_0$ is feasible for constraints not in $B$, then $x_0$ is optimal for the whole LP.
+Hence, we need to find the next V-shape only if $x_0$ violates some constraint $i \notin B$, i.e., if $a_{i.}x_0 > b_i$.
+We can easily identify a violating constraint $i$ by plugging in $x_0$ into the respective constraints. If a violating constraint $i$ is found, we construct the next V-shape by determining the lowest feasible point for the constraints $B\cup \{i\}$. Naively this can be done by considering all ${n\choose n-1} =n$ subsets of $B\cup\{i\}$, computing their intersection point and checking for feasibility for the other constraint. Alternatively, one can consider all the intersection points of the upward rays with constraint $i$ and taking the lowest of those.
+Dual Simplex continues until the V-Shape found is feasible for all other constraints (otherwise -- assuming non-degeneracy -- there is always a constraint which yields a higher V-shape). Clearly, the existence of a V-shape at some height implies that no lower feasible point exists. A V-shape whose vertex does not violate any of the other constraints is hence optimal.
+ 
 
-We can easily identify a violating constraint $i$ by plugging in $x_B$ into the respective constraints. If a violating constraint $i$ is found, we use $i$ to construct the next V-shape by determining the lowest feasible point for the constraints $B\cup \{i\}$. Naively this can be done by considering all ${n\choose n-1} =n$ subsets of $B\cup\{i\}$ potential corners and use the lowest feasible one as the next \emph{V-Shap}e. Alternatively, one can consider all the intersection points of the upward rays with constraint $i$ and taking the lowest of those.
-Dual Simplex continues until the V-Shape found is feasible for all other constraints (otherwise -- assuming non-degeneracy -- there is always a constraint which yields a higher V-shape). Clearly, the existence of a V-shape at some height implies that no lower feasible point exists. \emph{A V-shape whose vertex does not violate any of the other constraints is hence optimal}.
-
-In general, note that the constraints $A^Ty=c$, $y\geq 0$ correspond to the invariant of the dual Simplex that we always have a V-shape as current solution \textcolor{blue}{\emph{(jump from V-shape to V-shape)}}, $b^Ty$ expresses the height of the current v-shape, since $y=(A_B^T)^{-1}c$ and therefore $b^Ty=b^T(A_B^T)^{-1}c=(A_B^{-1}b)^Tc = x'^T c$, where $A_B$ is the submatrix corresponding to the constraints that define the current v-shape and $x'$ the intersection point of those constraints. We have seen that max the height of the v-shape yields the same solution as aiming for the highest feasible point, and hence our dual program directly formalizes the invariants and the goal of the dual Simplex algorithm.
+In general, note that the constraints $A^Ty=c$, $y\geq 0$ correspond to the invariant of the dual Simplex that we always have a V-shape as current solution, $b^Ty$ expresses the height of the current v-shape, since $y=(A_B^T)^{-1}c$ and therefore $b^Ty=b^T(A_B^T)^{-1}c=(A_B^{-1}b)^Tc = x'^T c$, where $A_B$ is the submatrix corresponding to the constraints that define the current v-shape and $x'$ the intersection point of those constraints. We have seen that maximizing the height of a v-shape yields the same solution as aiming for the lowest feasible point, and hence our dual program directly formalizes the invariants and the goal of the dual Simplex algorithm.
 
 See Figure \ref{fig:PrimalDualSimplex} for an intuitive view on primal and dual Simplex for $n=2$.
 
-\textcolor{blue}{\emph{``A dual simplex is basically a primal simplex on a dual LP'' }}
- 
-\textcolor{blue}{\emph{It is clear that the highest V-shape is the lowest point in the feasible region.}}
-
 \paragraph{Pivoting Strategies and Degeneracies}
-Termination of the dual Simplex can be argued similarly as for the primal Simplex. Since one only jumps to 'higher' V-shapes, no V-shape can be visited twice. As there are at most $m \choose n$ V-shapes, termination follows. Typically, though, there are many constraints violating the current V-shape, the choice of which constraint to consider to obtain the next V-shape strongly influences the performance of the dual Simplex algorithm in practice. Analogously to the primal Simplex, there are pivoting strategies which tend to improve the practical running times but might also run into trouble if degeneracies occur. In particular, if some constraints are \emph{orthogonal} to the objective function direction, naive pivoting rules might lead to cycling of the dual Simplex. An analogue of Bland's rule helps in that case, though.
-
- 
-\textcolor{blue}{\emph{Pivoting is a problem because there might be many violating constraints, hence there must be a strategy which one to choose.}}
-
-\textcolor{blue}{\emph{The simplex algorithms are not known to run in polynomial time, they are very good in practice, though. Poylnomital-time Methods to solve LPs exist, e.g. Interior Point Method (in theory more practical), Ellipsoid Method.}}
-
-\textcolor{blue}{\emph{Exam: given an LP one is to visualize and explain a primal and dual simplex algorithm.}}
+Termination of the dual Simplex can be argued similarly as for the primal Simplex. Since one only jumps to 'higher' V-shapes, no V-shape can be visited twice. As there are at most $m \choose n$ V-shapes, termination follows. Typically, though, there are many constraints violating the current V-shape, the choice of which constraint to consider to obtain the next V-shape strongly influences the performance of the dual Simplex algorithm in practice. Analogously to the primal Simplex, there are pivoting strategies which tend to improve the practical running times but might also run into trouble if degeneracies occur. In particular, if some constraints are \emph{orthogonal} to the objective function direction, naive pivoting rules might lead to cycling of the dual Simplex. Perturbation of the objective function helps, though.
 
 \subsubsection{Interpretation of the dual Simplex algorithm as primal Simplex algorithm on the dual LP}
 Let uns now convince that the dual Simplex is indeed a primal Simplex algorithm running on the dual LP but viewed in primal ($n$-dimensional) space. To that end, let us again consider a (primal) linear program (P) with $n$ variables and $m$ constraints in standard form ($m\geq n$): 	
@@ -868,10 +797,8 @@ In this section we will discuss approximation algorithms for NP-hard problems wh
  
 \subsection{Running Example: The Set Cover Problem}
 Consider the following problem. Given a universe $U$ of $n$ elements, a collection of subsets of $U$,
-$\mathcal{S}=\{S_1, \dots, S_k\}$, and a cost function $c: \mathcal{S} \rightarrow \mathbb{R}^+$, find a minimum cost
-subcollection of $\mathcal{S}' \subseteq \mathcal{S}$ that covers all elements of $U$.
-
-\textcolor{blue}{\emph{For a general set cover it si very unlikely that a polytime Aproximation-Algorithm existst that produces a solution $\mathcal{S}'$ with $c(\mathcal{S}') < log(n) * c(\mathcal{S}_{opt})$}}
+$\mathcal{S}=\{S_1, \dots, S_k\}$, and a cost function $c: \mathcal{S} \rightarrow \mathbb{Q}^+$, find a minimum cost
+subcollection of $\mathcal{S}$ that covers all elements of $U$.
 
 In the following we will see several algorithms for this problem which both rely (at least in the analysis) on the
 integer linear programming (ILP) formulation of the problem and its dual. How could we formulate the set cover problem 
@@ -913,44 +840,16 @@ feasible solutions $x, y$ of the two LPs.
 \subsection{Greedy Algorithm -- Dual Fitting Analysis}
 The following greedy algorithm computes a cover (not necessarily optimal):
 \begin{enumerate}
-\item $C\leftarrow \emptyset$
+\item $C\leftarrow \emptyset$ \emph{($C\subseteq U$ \dots already covered elements)}
 \item while $C\neq U$ do
 	\begin{itemize}
-	\item find the most cost-effective set in the current iteration, say $S$
-	\item let $\alpha=\frac{\mathrm{cost}(S)}{|S-C|}$, i.e. the cost-effectiveness of $C$
+	\item for each $S_i$ let $\alpha_i=\frac{\mathrm{cost}(S_i)}{|S_i-C|}$, be the cost-effectiveness of the set $S_i$
+	\item let $S$ be the most cost-effective set (i.e., with minimal $a_i$ value)
 	\item pick $S$ ($x_S=1$) and for each $u\in S-C$, set $\mathrm{price}(u)=\alpha$ ($y_u=\frac{\alpha}{H_n}$)
 	\item $C\leftarrow C \cup S$
 	\end{itemize}
 \item output the picked sets
 \end{enumerate}
-
-\textcolor{blue}{\emph{
-Now we want to prove that the Greedy produces a solution which is at most $\mathcal{O}(log(n))$ more costly than the optimum solution (matching the inapproximability result which states that no poly-time algorithm can approximate set cover better that logn for every instance). The Gap between the optimum integral solution to the primal problem and the solution by the Greedy algorithm is a factor of $log(n)$. Plan: see Picture from 2013-12-10 12:13
-}}
-
-\textcolor{blue}{\emph{
-\begin{lemma}
-The Greedy algorithm produces as solution a cover $I \subseteq \mathcal{S}$ which has cost $cost(I) \leq cost(I_{Opt}) * H_n$ where $I_{Opt} \subseteq \mathcal{S}$ is a optimum solution and $cost(X \subseteq \mathcal{S}) = \sum_{s_i \in X}{c_i}$.
-\end{lemma}
-}}
-
-\textcolor{blue}{\emph{``The catch is that the dual solution is not necessarly feasible.''}}
-
-\begin{proof}
-\textcolor{blue}{\emph{The greedy algorithm computes a primal feasible integral solution of cost $\sum{X_s \cdot C_s}$.}}
-
-\textcolor{blue}{\emph{At the same time it constructs a dual solution $y$ of exactly the same objective function value (because when primal objective function value is inceased by $c_j$, also the dual objective function value is inceased by $c_j$). This dual solution might not be feasible, though!.}}
-
-\textcolor{blue}{\emph{The Dual constraints have the form $\forall s_i \in \mathcal{S}: \sum_{u_j \in S_i}{y_{u_j}} \leq c_j$. Consider one of these constraints, we now want to show that $\sum_{u_j \in S_i}{y_{u_j}} \leq H_n*c_i$. If so, we can determine a dual feasible solution $y' =\frac{y}{H_n}$ and $\sum{y_{u}'} = \frac{\sum{y_u}}{H_n} = \frac{\sum{x_s \cdot c_s}}{H_n}$.}}
-
-\textcolor{blue}{\emph{We know that optimum objection function value is lower bounded by any dual feasible solution $\sum{x_{s}^{Opt} \cdot c_s} \geq \sum{y_{u}'} = \frac{\sum{y_u}}{H_n} = \frac{\sum{x_s \cdot c_s}}{H_n} \Rightarrow \sum{x_s \cdot c_s} \leq H_n * \sum{x_{s}^{Opt}} \cdot c_s$.}}
-
-\textcolor{blue}{\emph{Now prove that for a fixed set $S \subseteq \mathcal{S}$ we have $\sum_{u \in S}{y_u} \leq H_n  \cdot c_s$. Sort the elements $u$ according to when they are covered during greedy, let that order be $u_1, u_2, \dots , u_l$ ($S = \{u_1, u_2, \dots , u_l\}$). Consider the teration of greedy when element $u_i$ was covered. Can we bound $y_{u_i}$?}}
-
-\textcolor{blue}{\emph{In that iteation some set $S'$ was chosen for which $\frac{c_{s'}}{|s'-c|} = \alpha_{s'}$ was minimal and we set $y_{u_i} = \alpha_{s'}$.$\Rightarrow \alpha_{s'} \leq \alpha_{s}$ at that time. $\alpha_{s}= \frac{c_s}{|s-c|} \leq \frac{c_s}{l - (i+1)} \Rightarrow y_{u_i} \leq \frac{c-s}{l - (i+1)} \Rightarrow \sum_{u_i \in S}{y_{u_i}} \leq \sum_{u_i \in S}{\frac{c_s}{l - (i+1)}} = \sum_{i=1}^l{\frac{c_s}{l - (i+1)}} = c_s \cdot \sum_{i=1}^l{\frac{1}{l - (i+1)}} = \sum_{i=1}^l{\frac{1}{i}} = c_s \cdot H_l \leq c_s \cdot H_n$}}
-\end{proof}
-
-\textcolor{blue}{\emph{That analysis: 1. find primal solution, 2. derive dual feasible solution, 3. bound the gap between them. Is called dual fitting.}}
 
 \begin{lemma}
 The greedy algorithm achieves an approximation ratio of $H_n$.
@@ -986,10 +885,6 @@ So for all algorithms that follow and make use of an LP solution, we assume that
 In practice though, the Simplex methods -- in spite of the superpolynomial worst-case running-time -- perform very well
 and are often superior to the above guaranteed-polynomial-time methods.
 
-\textcolor{blue}{\emph{The greedy algorithm is not LP-based, but could be analyzed via LP-ideas.}}
-
-\textcolor{blue}{\emph{What about deterministic rounding?}}
-
 \subsection{(Randomized) Rounding}
 In the greedy algorithm, the LP relaxation was only used for the analysis, but given an optimal solution to the LP relaxation, how could we turn that into a feasible integral solution to the set cover problem, possibly with an approximation guarantee ?
 
@@ -999,7 +894,7 @@ The simplest strategy is to solve the  LP relaxation \ref{SCLP} of the  set cove
 For the general set cover problem this strategy does not perform that well, but for special cases of set cover like for example \emph{vertex cover}, it yields reasonable approximation guarantees. In general, when the LP relaxation of an optimization problem exhibits \emph{bounded fractionality}, that is, in the optimum solution, the variables do not have arbitrary fractional values, one can often get a constant approximation.
 
 \begin{definition}
-Given a graph $G(V,E)$, the \emph{set cover} problem is to determine a subset $C\subseteq V$ of the nodes
+Given a graph $G(V,E)$, the \emph{vertex cover} problem is to determine a subset $C\subseteq V$ of the nodes
 such that $\forall e\in E: e\cap C\neq \emptyset$ and $|C|$ minimal.
 \end{definition}
 
@@ -1038,10 +933,6 @@ $f=\max_{u\in U} |\{S_i: u\in S_i\}|$. We consider the following simple algorith
 \item Pick all sets $S$ for which $x_S\geq 1/f$
 \end{enumerate}
 
-\textcolor{blue}{\emph{\emph{Observation 1:} Objective function value (compared to the LP-solution) increases by at most a factor of $f$}}
-
-\textcolor{blue}{\emph{\emph{Observation 2:} Each constant for a $u\in U \sum_{S_i{x_i \geq 1}}$. The left hand-side consists of at most $f$ terms. Assume all $x_i < 1/f$ (which would yield an infeasible solution), then the sum on the left is $ < f \cdot 1/f = 1$. $\Rightarrow$ at least one $x_i \geq 1/f$ which is then rounded up to 1 $\Rightarrow$ rounded-up solution is feasible.}}
-
 \begin{lemma}
 The simple $1/f$ LP-rounding algorithm achieves an approximation factor of $f$.
 \end{lemma}
@@ -1061,18 +952,13 @@ A more sophisticated way to turn the LP solution into a feasible integral soluti
 as probabilities and flip coins accordingly.
 
 Let $x^*=p$ be the optimal solution to the LP relaxation of the set cover problem, $\mathrm{OPT}_{LP}$ its objective function value.
-For each set $S$ we pick it with probability $x^*_S=p_S$ into $\mathcal{C}$. What is the expected cost of $\mathcal{C}$ ? 
-\textcolor{blue}{\emph{ Let $x^*$ be the rounded values.}}
-
+For each set $S$ we pick it with probability $x^*_S=p_S$ into $\mathcal{C}$. What is the expected cost of $\mathcal{C}$ ?
 \[
 	{\bf E}[\mathrm{cost}(\mathcal{C})]=\sum_{S\in \mathcal{S}} p_S\cdot c_S=\mathrm{OPT}_{LP}
 \]
 
 The collection $\mathcal{C}$ not necessarily covers $U$, but let us look at the probability by which an element $u\in U$ is covered.
 Assume $u$ appears in $l$ sets $S_1, \dots, S_l$. As $u$ is fractionally covered, we have $p_1+p_2+\dots +p_l\geq 1$.
-
-\textcolor{blue}{\emph{$u$ is not covered if and only if $S_1$ was not picked, $S_2$ was not picket $\cdots S_l$ was not picked. A set $S_i$ was not picked with probability $(1-x^*)$. $u$ was not covered/one of the sets wwere picked with the propability $\Pi_{i=1}^l(1-x_i^*)$}}
-
 As the probability for $u$ being covered is minimized if $p_i=1/l$, we get the following bound:
 \[
 	{\bf \mathrm{Pr}}(a \mathrm{~ covered~by~ }\mathcal{C}) \geq 1 - (1-\frac{1}{l})^l \geq 1- \frac{1}{e}
@@ -1081,16 +967,13 @@ As the probability for $u$ being covered is minimized if $p_i=1/l$, we get the f
 The last inequality follows from $(1+\frac{1}{n})^n < e < (1+\frac{1}{n})^{n+1}$ since
 $e<(\frac{n+1}{n})^{n+1} \Leftrightarrow (\frac{n}{n+1})^{n+1} < 1/e \Leftrightarrow (\frac{n+1}{n+1}-\frac{1}{n+1})^{n+1}<1/e$.
 This means, each element from $u$ is covered with a constant probability.
-
-\textcolor{blue}{\emph{Look at the following experiment: We flip a fair coin until getting heads. With probability $\frac{1}{2}$ we succeed i the first flip. With the probability $\frac{1}{2} \cdot \frac{1}{2}$ we succeed in the second flip $\cdots \Rightarrow$ expected number of coinflips until heads appears is $\sum_{i = 1}^\infty{ i \cdot Pr(we succeed in step i)} = \sum_{i = 1}^\infty{ i \cdot (\frac{1}{2})^i} \rightarrow 2$. also see Coupon-Collector-Problem}}
-
 To obtain a valid set cover, independently pick $c \log n$ such subcollections and compute their union, say $\mathcal{C}'$, where $c$
 is a constant such that
 \[
 	(\frac{1}{e})^{c\log n }\leq \frac{1}{4n}
 \]
 at this point we have ${\bf \mathrm{Pr}}(\mathrm{a~not~covered~by~}\mathcal{C}') \leq \frac{1}{e}^{c\log n} \leq \frac{1}{4n}$
-\textcolor{blue}{\emph{(after $c\cdot \log n$ iterations)}}and summing over all $u\in U$ we get:
+and summing over all $u\in U$ we get:
 \[
 	{\bf \mathrm{Pr}}(\mathcal{C}'\mathrm{~not~a~valid~set~cover}) \leq n\cdot \frac{1}{4n}=\frac{1}{4}
 \]
@@ -1115,47 +998,33 @@ repetitions needed until we succeed is at most $2$.
 
 
 \subsection{The Primal-Dual Scheme}
-The last paradigm for designing approximation algorithms based on linear programming is the \emph{Primal-Dual Scheme}. The high-level idea of the primal dual scheme is to start with a pair of solutions $(x_0, y_0)$ where $x_0$ is a primal infeasible solution and $y_0$ a dual infeasible solution, and then start increasing dual variables and hence the objective function of the dual solution while maintaining dual feasibility. During that process, dual constraints become tight which is regarded as a guidance for which primal variable to increase.
+The last paradigm for designing approximation algorithms based on linear programming is the \emph{Primal-Dual Scheme}. The high-level idea of the primal dual scheme is to start with a pair of solutions $(x_0, y_0)$ where $x_0$ is a primal infeasible solution and $y_0$ a dual \emph{feasible} solution, and then start increasing dual variables and hence the objective function of the dual solution while maintaining dual feasibility. During that process, dual constraints become tight which is regarded as a guidance for which primal variable to increase.
 
 Again let us consider the LP relaxiation of the set cover ILP and its dual:
 
 \begin{minipage}{0.5\textwidth}
 \begin{eqnarray}
 \mbox{min} & \displaystyle \sum_{S\in \mathcal{S}} x_S \cdot c_S \nonumber \\
- \forall u\in U: & \displaystyle \sum_{u\in S} x_S  & \geq 1 \nonumber\\
- \forall S \in \mathcal{S}: & x_S  & \geq 0. \nonumber
+ u\in U: & \displaystyle \sum_{u\in S} x_S  & \geq 1 \nonumber\\
+ S \in \mathcal{S}: & x_S  & \geq 0. \nonumber
 \end{eqnarray}
 \end{minipage}
 \begin{minipage}{0.5\textwidth}
 \begin{eqnarray}
 \mbox{max} & \displaystyle \sum_{u\in U} y_u \nonumber \\
-\forall S\in \mathcal{S}: & \displaystyle \sum_{u\in S} y_u  & \leq c_S \nonumber\\
-\forall u\in U: & y_u  & \geq 0\nonumber
+ S\in \mathcal{S}: & \displaystyle \sum_{u\in S} y_u  & \leq c_S \nonumber\\
+ u\in U: & y_u  & \geq 0\nonumber
 \end{eqnarray}
 \end{minipage}
 \\[.5cm]
-
-\textcolor{blue}{\emph{\emph{Complementary Slackness Condition:} Let ($x^*, y^*$) be optimal solutions to primal ($x^*$) and dual ($y^*$) LP. Then we have:
-\begin{itemize}
-	\item if $x_i^* > 0 \Rightarrow$ Corresponding constraint in the dual is tight for $y^*$.
-	\item if $y_j^* > 0 \Rightarrow$ Corresponding contraint in the primal is tight for $x^*$.
-\end{itemize}
-``Look up how the dual is derived''
-}}
-\ \\
 
 The algorithm works as follows:
 \begin{enumerate}
 \item Start with a primal solution $x=0$ and a dual (feasible) solution $y=0$
 \item Pick some uncovered element $u\in U$ and increase its dual variable $y_u$ until dual
-		constraints becomes tight; add the respective sets ($x_S=1$) to our cover $C$. \textcolor{blue}{\emph{stop increasing $y_u$ and pick all sets $S \in \mathcal{S}$ whose corresponding constraint in the dual become tight (means the left hand side is equal the right hand side).}}
+		constraints becomes tight; add the respective sets ($x_S=1$) to our cover $C$
 \item if there are still uncovered elements, go to 2., otherwise ouput the cover $C$
 \end{enumerate}
-
-\textcolor{blue}{\emph{Example: (picture from 2014-01-16)
-Red = setcover from Greedy. Blue = optimal. If the variable in set 5 is increased then the constraint corresponding to set 5 becomes tight. Which means that set 5 and 1 is picked. doing it again with another variable, then we would pick 4 sets. which would not necessarily be better than the greedy algorithm.\\Clearly the algorithm produces a feasible cover (otherwise some $y_u$ would be increased); dual solution remains feasible all the time since we stop increasing once dual constraint gets tight.\\ $\Rightarrow$ the algorithm terminates with feasible solution $\widetilde{x}, \widetilde{y}$ (which both are integral) and we need to analyze the ration $\frac{c^T \widetilde{x}}{1^T \widetilde{y}}$.}}
-
-\ \\
 
 First observe that\begin{eqnarray}\label{SCILP}
 \mbox{min} & \displaystyle \sum_{S\in \mathcal{S}} x_S \cdot c_S\\
@@ -1171,12 +1040,162 @@ $c^T\widetilde{x}\leq f 1^T\widetilde{y}$.
 \begin{proof}
 We have
 \[
-	c^T\widetilde{x} = \sum_{S\in C} c_S = \sum_{S\in C} \sum_{u\in S} y_u \leq f \cdot \sum_{u\in U} y_u = f \cdot 1^T \widetilde{y}
+	c^T\widetilde{x} = \sum_{S\in C} c_S = \sum_{S\in C} \sum_{u\in S} y_u \leq f \cdot \sum_{u\in U} y_u
 \]
-since we have picked set $S$ when the respective dual constraint became tight \textcolor{blue}{\emph{(which means $\sum_{u \in S}{y_u} = c_S$)}}. In the resulting double sum we count each $y_u$ at most as often as it appears in some set (hence at most $f$ times).
+since we have picked set $S$ when the respective dual constraint became tight. In the resulting double sum we count each $y_u$ at most as often as it appears in some set (hence at most $f$ times).
 \end{proof}
 
 As an example consider the worst-case instance for the greedy set cover algorithm and try to follow the primal dual algorithm.
 
 
+
+\subsection{Further Example: Uncapacitated Facility Location}
+
+The uncapacitated facility location problem can be stated as follows, we are given:
+\begin{itemize}
+\item a set of locations $V$ with associated distance measure $c_{ij}$ between the locations which satisfies the triangle inequality
+\item a subset $F\subset V$ of potential facility locations, each potential location $i\in F$ associated with an opening cost $f_i\geq 0$
+\item demand locations/clients $D=V-F$; connecting a location $j\in D$ with a facility opened at $i\in F$ incurs connection cost $c_{ij}$ 
+\end{itemize}
+
+The goal is to determine a subset $F'\subseteq F$ of locations where to open facilities and assign each demand location $j\in D$ to its nearest open facility, such that the total cost (comprising opening and connection costs)
+\[
+	\sum_{i\in F'} f_i + \sum_{j\in D} \min_{i\in F'} c_{ij}
+\] 
+is minimized.
+
+This problem at first sights seems rather difficult since optimizing only for one objective -- e.g. opening only few facilities -- has a negative effect on the other objective -- the connection costs will become larger. And vice versa, aiming for low connection costs typically requires opening many facilities -- which increases the opening costs.
+
+We start with an integer linear programming formulation introducing binary variables $y_i$ to decide which facilities to open and variables $x_{ij}$ to decide to which facility a demand location is connected to, more precisely $x_{ij}=1$ if client $j\in D$ is connected to the (openend) facility $i\in F$.
+
+
+\begin{eqnarray}\label{UFL}
+\mbox{min} & \displaystyle \sum y_i f_i + \sum x_{ij}c_{ij}\\
+ \forall j\in D: & \sum_{i\in F} x_{ij}  & = 1 \nonumber\\
+ \forall i\in F, \forall j\in D: & y_i &\geq x_{ij} \nonumber\\
+ & y_i, x_{ij}&\in \{0,1\} \nonumber
+\end{eqnarray}
+
+Here, the first constraint enforces that every client is connected to some facility, the second constraint makes sure that a facility is openend if some client is connected to it. The LP relaxation naturally arises by replacing the integrality constraints on $y_i, x_{ij}$ by respective $\geq 0$ constraints.
+
+The dual of the LP relaxation looks as follows:
+\begin{eqnarray}\label{UFLD}
+\mbox{max} & \displaystyle \sum v_j \\
+ \forall i\in F: & \sum_{j\in D} w_{ij}  & \leq f_i \nonumber\\
+ \forall i\in F, \forall j\in D: & v_j - w_{ij} &\leq c_{ij} \nonumber\\
+ \forall i\in F, \forall j\in D: & w_{ij}&\geq 0 \nonumber
+\end{eqnarray}
+
+Let us first start with a small Lemma exhibiting some property of primal and dual optimal solutions.
+
+\begin{lemma}
+Let $(x^*, y^*)$ be an optimal solution to the primal LP, $(v^*, w^*)$ an optimal solution to the dual LP. Then $x_{ij}>0$ implies $c_{ij}\leq v_j^*$.
+\end{lemma}
+\begin{proof}
+Due to complementary slackness we know: $x_{ij}>0$ implies $c_{ij}=v_j-w_{ij}$ and together with $w_{ij}\geq 0$ yields the lemma.
+\end{proof}
+
+\begin{definition}
+For a LP-solution $x^*$ we say that $i\in F$ \emph{neighbors} $j\in D$ if $x^*_{ij}>0$ (and equally $j\in D$ \emph{neighbors} $i\in F$).
+\end{definition}
+
+Based on that definition we define the following neighborhoods of a client $j\in D$:
+\[
+	N(j):=\{i\in F: i\mbox{ neighbors } j\}
+\]
+and
+\[
+	N^2(j):=\{k\in D: k\mbox{ neighbors some } i\in N(j)\}
+\]
+
+\subsubsection{Deterministic Rounding}
+Let us start with a simple rounding scheme which turns a fractional LP solution into a not too expensive integral solution.
+\begin{enumerate}
+\item compute optimal solutions $(x^*, y^*)$ and $(v^*,w^*)$ to primal and dual LP
+\item $S\leftarrow D$
+\item $F'\leftarrow\emptyset$
+\item while $S\neq \emptyset$
+	\begin{enumerate}
+	\item choose $j\in S$ with $v_j^*$ minimal
+	\item pick $i\in N(j)$ with $f_i$ minimal and open $i$
+	\item assign $j$ and all unassigned clients in $N^2(j)$ to $i$
+	\item $S\leftarrow S-\{j\}-N^2(j)$
+	\end{enumerate}
+\end{enumerate}
+
+Let us now prove that this algorithms yields a solution which is at most a factor of $4$ away from the optimum. This result is due to Shmoys/Tardos/Aardal'97 and Chudak'98.
+
+\begin{theorem}
+The above algorithm produces a solution of cost at most $4$ times the optimum solution.
+\end{theorem}
+\begin{proof}
+Consider an iteration where $j\in S\subset D$ and $i\in N(j)\subset F$ were picked as described. Then we have:
+\[
+	f_i=f_i\cdot \sum_{k\in N(j)}x^*_{kj}= \sum_{k\in N(j)}f_i x^*_{kj} \leq \sum_{k\in N(j)}f_k x^*_{kj}\leq \sum_{k\in N(j)} f_k y^*_k
+\]
+Here the first equality holds since $\sum_{k\in N(j)}x^*_{kj}=1$, the first inequality holds since we have picked the cheapest $i\in N(j)$, and the second inequality holds by definition. To bound the total opening cost we would like to have that
+\[
+	\sum_{i\in F'} f_i \leq \sum_{i\in F}f_iy_i^*
+\]
+The facility opening costs are always charged to a neighborhood (consisting of facilities) of a single client. Since then all the neighbors (clients) of this neighborhood are removed from $S$, none of the facilities in $N(j)$ can be charged again. Hence, the total opening costs are clearly bounded by the objective function value of the LP optimum.
+
+It remains to bound the connection costs. According to our previous Lemma, we know that the cost of connecting $j$ to $i$ is $c_{ij}\leq v^*_j$. The connection costs for the elements $k\in N^2(j)$ which have a common neighbor $l$ with $i$ are
+\[
+	c_{ik}\leq c_{lk}+ c_{lj} + c_{ij} \leq v^*_j+v^*_j+v^*_k\leq 3 v^*_k
+\]
+where the latter inequality follows from the fact that we chose $j\in S$ with $v^*_j$ minimal.
+
+So the total cost can be bounded by:
+\[
+	\sum_{i\in F} f_iy^*_i + 3\sum_{j\in D}v^*_j \leq OPT_{primal}+ 3 OPT_{dual}=4 OPT_{primal}\leq 4 OPT_{int}
+\]
+\end{proof}
+
+\subsubsection{(Slightly) Randomized Rounding}
+Let us now try to improve the approximation factor by devising a \emph{randomized} rounding procedure. To that end, we define
+\[
+	C^*_j:=\sum_{i\in F}c_{ij}x^*_{ij}
+\]
+
+and rephrase the selection rules for $j\in S$ and $i\in N(j)$ as follows:
+\begin{enumerate}
+\item compute optimal solutions $(x^*, y^*)$ and $(v^*,w^*)$ to primal and dual LP
+\item $S\leftarrow D$
+\item $F'\leftarrow\emptyset$
+\item while $S\neq \emptyset$
+	\begin{enumerate}
+	\item choose $j\in S$ with $(v_j^*+C_j^*)$ minimal
+	\item choose $i\in N(j)$ randomly according to the probability distribution given by $x^*_{ij}$ and open $i$
+	\item assign $j$ and all unassigned clients in $N^2(j)$ to $i$
+	\item $S\leftarrow S-\{j\}-N^2(j)$
+	\end{enumerate}
+\end{enumerate}
+
+We can now prove the following stronger statement about the approximation quality of this modified algorithm:
+
+\begin{theorem}
+The above randomized rounding algorithm yields a solution with expected objective function value at most $3$ times the optimum.
+\end{theorem}
+\begin{proof}
+Again, we consider an iteration where some $j\in S$ was picked. Let $F$ be a random variable denoting the facility opening cost in this round. Clearly the expected value of $F$ is
+\[
+E(F)=\sum_{i\in N(j)}f_i x^*_{ij}\leq \sum_{i\in N(j)} f_i y^*_i
+\]
+Now let $A_k$ be a random variable denoting the assignment cost of client $k$ to facility $i$. The expected assignment cost of $j$ to $i$ is
+\[
+	E(A_j)=\sum_{i\in N(j)} c_{ij} x^*_{ij}=C_j^*
+\] 
+The expected assignment cost for a $k\in N^2(j)$, $k\neq j$ where $k\in D$ neighbors $l\in F$ which neighbors $j\in D$ is
+\[
+	E(A_k)\leq c_{lk} + c_{lj} + \sum_{i\in N(j)}c_{ij}x^*_{ij}\leq v^*_k + v^*_j+ C^*_j \leq v^*_k + v^*_k + C^*_k=2v^*_k +C^*_k
+\]
+where the last inequality follows from the choice of $j\in S$.
+
+So the total cost can be bounded as follows:
+\[
+	\sum_{i\in F} f_i y^*_i + \sum_{j\in D} (2v_j^* + C^*_j) = \sum_{i\in F}f_i y^*_i + \sum_{j\in D}C^*_j +  2\sum_{j\in D} v^*_j=OPT_{LP}+2 OPT_{DLP}\leq 3 OPT_{int}
+\]
+\end{proof}
+
 \end{document}
+

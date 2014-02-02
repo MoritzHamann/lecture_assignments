@@ -1,37 +1,41 @@
-\contentsline {section}{\numberline {1}Network Flow}{3}
-\contentsline {subsection}{\numberline {1.1}MaxFlow}{3}
-\contentsline {subsubsection}{\numberline {1.1.1}Capacity Scaling}{6}
-\contentsline {subsubsection}{\numberline {1.1.2}Shortest Augmenting Path (Edmonds-Karp Algorithm)}{6}
-\contentsline {subsubsection}{\numberline {1.1.3}Non-integral Capacities}{7}
-\contentsline {subsection}{\numberline {1.2}MinCostFlow}{7}
-\contentsline {subsubsection}{\numberline {1.2.1}MinCostFlow via Cycle Cancelling}{8}
-\contentsline {subsubsection}{\numberline {1.2.2}MinCostFlow via Successive Shortest Paths (sketch)}{11}
-\contentsline {subsection}{\numberline {1.3}Applications of Flow}{12}
-\contentsline {subsubsection}{\numberline {1.3.1}s - t Shortest Path}{12}
-\contentsline {subsubsection}{\numberline {1.3.2}transportation Problem}{12}
-\contentsline {subsubsection}{\numberline {1.3.3}Application of the assignment Problem}{13}
-\contentsline {subsubsection}{\numberline {1.3.4}Airplane Mapping Problem}{13}
-\contentsline {subsubsection}{\numberline {1.3.5}(MinCost) Bipartite Matching}{13}
-\contentsline {subsubsection}{\numberline {1.3.6}Edge Connectivity Edge-Disjoint Paths}{13}
-\contentsline {subsubsection}{\numberline {1.3.7}01-matrices with given row and column sums}{13}
-\contentsline {subsection}{\numberline {1.4}Exercises}{14}
-\contentsline {section}{\numberline {2}Linear Programming Basics}{15}
-\contentsline {subsection}{\numberline {2.1}Real-World Motivation -- A Cheap but Healthy Diet}{15}
-\contentsline {subsection}{\numberline {2.2}Linear Programs -- Standard Form}{15}
-\contentsline {subsubsection}{\numberline {2.2.1}Geometric Interpretation}{16}
-\contentsline {subsubsection}{\numberline {2.2.2}Solve Max-Flow with Linear Programming}{16}
-\contentsline {subsection}{\numberline {2.3}The (Primal) Simplex Algorithm}{17}
-\contentsline {subsubsection}{\numberline {2.3.1}Simplex Algorithm in Higher Dimensions}{17}
-\contentsline {subsubsection}{\numberline {2.3.2}Making things more concrete}{18}
-\contentsline {subsection}{\numberline {2.4}Duality}{20}
-\contentsline {subsection}{\numberline {2.5}The Dual Simplex Algorithm}{21}
-\contentsline {paragraph}{Pivoting Strategies and Degeneracies}{24}
-\contentsline {subsubsection}{\numberline {2.5.1}Interpretation of the dual Simplex algorithm as primal Simplex algorithm on the dual LP}{24}
-\contentsline {section}{\numberline {3}LP-based Approximations of NP-hard Problems}{26}
-\contentsline {subsection}{\numberline {3.1}Running Example: The Set Cover Problem}{26}
-\contentsline {subsection}{\numberline {3.2}Greedy Algorithm -- Dual Fitting Analysis}{27}
-\contentsline {subsection}{\numberline {3.3}(Randomized) Rounding}{27}
-\contentsline {subsubsection}{\numberline {3.3.1}Simple LP rounding}{27}
-\contentsline {subsubsection}{\numberline {3.3.2}Frequency-based LP rounding}{28}
-\contentsline {subsubsection}{\numberline {3.3.3}Randomized LP rounding for the Set Cover problem}{29}
-\contentsline {subsection}{\numberline {3.4}The Primal-Dual Scheme}{30}
+\contentsline {section}{\numberline {1}Network Flow}{4}
+\contentsline {subsection}{\numberline {1.1}MaxFlow}{4}
+\contentsline {subsubsection}{\numberline {1.1.1}Capacity Scaling}{7}
+\contentsline {subsubsection}{\numberline {1.1.2}Shortest Augmenting Path (Edmonds-Karp Algorithm)}{7}
+\contentsline {subsubsection}{\numberline {1.1.3}Non-integral Capacities}{8}
+\contentsline {subsection}{\numberline {1.2}MinCostFlow}{8}
+\contentsline {subsubsection}{\numberline {1.2.1}MinCostFlow via Cycle Cancelling}{9}
+\contentsline {subsubsection}{\numberline {1.2.2}MinCostFlow via Successive Shortest Paths (sketch)}{12}
+\contentsline {subsection}{\numberline {1.3}Applications of Flow}{13}
+\contentsline {subsubsection}{\numberline {1.3.1}s - t Shortest Path}{13}
+\contentsline {subsubsection}{\numberline {1.3.2}transportation Problem}{13}
+\contentsline {subsubsection}{\numberline {1.3.3}Application of the assignment Problem}{14}
+\contentsline {subsubsection}{\numberline {1.3.4}Airplane Mapping Problem}{14}
+\contentsline {subsubsection}{\numberline {1.3.5}(MinCost) Bipartite Matching}{14}
+\contentsline {subsubsection}{\numberline {1.3.6}Edge Connectivity Edge-Disjoint Paths}{14}
+\contentsline {subsubsection}{\numberline {1.3.7}01-matrices with given row and column sums}{14}
+\contentsline {subsection}{\numberline {1.4}Exercises}{15}
+\contentsline {section}{\numberline {2}Linear Programming Basics}{16}
+\contentsline {subsection}{\numberline {2.1}Real-World Motivation -- A Cheap but Healthy Diet}{16}
+\contentsline {subsection}{\numberline {2.2}Linear Programs -- Standard Form}{16}
+\contentsline {subsubsection}{\numberline {2.2.1}Geometric Interpretation}{17}
+\contentsline {subsubsection}{\numberline {2.2.2}Solve Max-Flow with Linear Programming}{17}
+\contentsline {subsection}{\numberline {2.3}The (Primal) Simplex Algorithm}{18}
+\contentsline {subsubsection}{\numberline {2.3.1}Simplex Algorithm in Higher Dimensions}{18}
+\contentsline {subsubsection}{\numberline {2.3.2}Making things more concrete}{19}
+\contentsline {subsection}{\numberline {2.4}Duality}{21}
+\contentsline {subsection}{\numberline {2.5}The Dual Simplex Algorithm}{23}
+\contentsline {paragraph}{Pivoting Strategies and Degeneracies}{25}
+\contentsline {subsubsection}{\numberline {2.5.1}Interpretation of the dual Simplex algorithm as primal Simplex algorithm on the dual LP}{25}
+\contentsline {section}{\numberline {3}LP-based Approximations of NP-hard Problems}{27}
+\contentsline {subsection}{\numberline {3.1}Running Example: The Set Cover Problem}{27}
+\contentsline {subsection}{\numberline {3.2}Greedy Algorithm -- Dual Fitting Analysis}{28}
+\contentsline {subsection}{\numberline {3.3}(Randomized) Rounding}{29}
+\contentsline {subsubsection}{\numberline {3.3.1}Simple LP rounding (Deterministic Rounding)}{29}
+\contentsline {subsubsection}{\numberline {3.3.2}Frequency-based LP rounding}{30}
+\contentsline {subsubsection}{\numberline {3.3.3}Randomized LP rounding for the Set Cover problem}{31}
+\contentsline {subsection}{\numberline {3.4}The Primal-Dual Scheme}{32}
+\contentsline {subsection}{\numberline {3.5}Further Example: Uncapacitated Facility Location}{33}
+\contentsline {subsubsection}{\numberline {3.5.1}Deterministic Rounding}{34}
+\contentsline {subsubsection}{\numberline {3.5.2}(Slightly) Randomized Rounding}{35}
+\contentsline {subsubsection}{\numberline {3.5.3}Primal-Dual Algorithm}{36}

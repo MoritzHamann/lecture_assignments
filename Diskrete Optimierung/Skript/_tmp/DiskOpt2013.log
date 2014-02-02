@@ -1,21 +1,18 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2013.11.27)  3 DEC 2013 09:18
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2014.1.7)  28 JAN 2014 13:02
 entering extended mode
 **DiskOpt2013.tex
-("C:\Users\Boitu\Documents\(m) Diskrete Optimierung\Skript\DiskOpt2013.tex"
+("D:\Documents\Uni\Theoretische Informatik, KI\(m) Diskrete Optimierung\Skript\DiskOpt2013.tex"
 LaTeX2e <2011/06/27>
-Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
-abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
-croatian, czech, danish, dutch, esperanto, estonian, farsi, finnish, french, ga
-lician, german, german-x-2012-05-30, greek, gujarati, hindi, hungarian, iceland
-ic, indonesian, interlingua, irish, italian, kannada, kurmanji, latin, latvian,
- lithuanian, malayalam, marathi, mongolian, mongolianlmc, monogreek, ngerman, n
-german-x-2012-05-30, nynorsk, oriya, panjabi, pinyin, polish, portuguese, roman
-ian, russian, sanskrit, serbian, slovak, slovenian, spanish, swedish, swissgerm
-an, tamil, telugu, turkish, turkmen, ukenglish, ukrainian, uppersorbian, usengl
-ishmax, welsh, loaded.
-("C:\Program Files\MiKTeX\tex\latex\base\article.cls"
+Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, arabic, armenian, assamese, basque, bengali
+, bokmal, bulgarian, catalan, coptic, croatian, czech, danish, dutch, esperanto, estonian, farsi, finnish, french, galic
+ian, german, german-x-2013-05-26, greek, gujarati, hindi, hungarian, icelandic, indonesian, interlingua, irish, italian,
+ kannada, kurmanji, latin, latvian, lithuanian, malayalam, marathi, mongolian, mongolianlmc, monogreek, ngerman, ngerman
+-x-2013-05-26, nynorsk, oriya, panjabi, pinyin, polish, portuguese, romanian, russian, sanskrit, serbian, slovak, sloven
+ian, spanish, swedish, swissgerman, tamil, telugu, turkish, turkmen, ukenglish, ukrainian, uppersorbian, usenglishmax, w
+elsh, loaded.
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\article.cls"
 Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
-("C:\Program Files\MiKTeX\tex\latex\base\size10.clo"
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\size10.clo"
 File: size10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
 )
 \c@part=\count79
@@ -29,11 +26,9 @@ File: size10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
 \abovecaptionskip=\skip41
 \belowcaptionskip=\skip42
 \bibindent=\dimen102
-)
-("C:\Program Files\MiKTeX\tex\latex\amsfonts\amssymb.sty"
+) ("C:\Program Files\MiKTeX 2.9\tex\latex\amsfonts\amssymb.sty"
 Package: amssymb 2013/01/14 v3.01 AMS font symbols
-
-("C:\Program Files\MiKTeX\tex\latex\amsfonts\amsfonts.sty"
+("C:\Program Files\MiKTeX 2.9\tex\latex\amsfonts\amsfonts.sty"
 Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 \@emptytoks=\toks14
 \symAMSa=\mathgroup4
@@ -41,24 +36,22 @@ Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
 ))
-("C:\Program Files\MiKTeX\tex\latex\amsmath\amsmath.sty"
+("C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amsmath.sty"
 Package: amsmath 2013/01/14 v2.14 AMS math features
 \@mathmargin=\skip43
 
 For additional information on amsmath, use the `?' option.
-("C:\Program Files\MiKTeX\tex\latex\amsmath\amstext.sty"
+("C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amstext.sty"
 Package: amstext 2000/06/29 v2.01
-
-("C:\Program Files\MiKTeX\tex\latex\amsmath\amsgen.sty"
+ ("C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amsgen.sty"
 File: amsgen.sty 1999/11/30 v2.0
 \@emptytoks=\toks15
 \ex@=\dimen103
-))
-("C:\Program Files\MiKTeX\tex\latex\amsmath\amsbsy.sty"
+)) ("C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amsbsy.sty"
 Package: amsbsy 1999/11/29 v1.2d
 \pmbraise@=\dimen104
 )
-("C:\Program Files\MiKTeX\tex\latex\amsmath\amsopn.sty"
+("C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amsopn.sty"
 Package: amsopn 1999/12/14 v2.01 operator names
 )
 \inf@bad=\count87
@@ -98,8 +91,7 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 567.
 \mathdisplay@stack=\toks19
 LaTeX Info: Redefining \[ on input line 2665.
 LaTeX Info: Redefining \] on input line 2666.
-)
-("C:\Program Files\MiKTeX\tex\latex\amscls\amsthm.sty"
+) ("C:\Program Files\MiKTeX 2.9\tex\latex\amscls\amsthm.sty"
 Package: amsthm 2004/08/06 v2.20
 \thm@style=\toks20
 \thm@bodyfont=\toks21
@@ -110,32 +102,29 @@ Package: amsthm 2004/08/06 v2.20
 \thm@postskip=\skip47
 \thm@headsep=\skip48
 \dth@everypar=\toks25
-)
-("C:\Program Files\MiKTeX\tex\latex\graphics\graphicx.sty"
+) ("C:\Program Files\MiKTeX 2.9\tex\latex\graphics\graphicx.sty"
 Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
 
-("C:\Program Files\MiKTeX\tex\latex\graphics\keyval.sty"
+("C:\Program Files\MiKTeX 2.9\tex\latex\graphics\keyval.sty"
 Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
 \KV@toks@=\toks26
 )
-("C:\Program Files\MiKTeX\tex\latex\graphics\graphics.sty"
+("C:\Program Files\MiKTeX 2.9\tex\latex\graphics\graphics.sty"
 Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
-
-("C:\Program Files\MiKTeX\tex\latex\graphics\trig.sty"
+ ("C:\Program Files\MiKTeX 2.9\tex\latex\graphics\trig.sty"
 Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
-)
-("C:\Program Files\MiKTeX\tex\latex\00miktex\graphics.cfg"
+) ("C:\Program Files\MiKTeX 2.9\tex\latex\00miktex\graphics.cfg"
 File: graphics.cfg 2007/01/18 v1.5 graphics configuration of teTeX/TeXLive
 )
 Package graphics Info: Driver file: pdftex.def on input line 91.
 
-("C:\Program Files\MiKTeX\tex\latex\pdftex-def\pdftex.def"
+("C:\Program Files\MiKTeX 2.9\tex\latex\pdftex-def\pdftex.def"
 File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
 
-("C:\Program Files\MiKTeX\tex\generic\oberdiek\infwarerr.sty"
+("C:\Program Files\MiKTeX 2.9\tex\generic\oberdiek\infwarerr.sty"
 Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
 )
-("C:\Program Files\MiKTeX\tex\generic\oberdiek\ltxcmds.sty"
+("C:\Program Files\MiKTeX 2.9\tex\generic\oberdiek\ltxcmds.sty"
 Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
 )
 \Gread@gobject=\count99
@@ -143,23 +132,22 @@ Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
 \Gin@req@height=\dimen112
 \Gin@req@width=\dimen113
 )
-("C:\Program Files\MiKTeX\tex\latex\a4wide\a4wide.sty"
+(C:\Users\Boy2\AppData\Roaming\MiKTeX\2.9\tex\latex\a4wide\a4wide.sty
 Package: a4wide 1994/08/30
 
-("C:\Program Files\MiKTeX\tex\latex\ntgclass\a4.sty"
+(C:\Users\Boy2\AppData\Roaming\MiKTeX\2.9\tex\latex\ntgclass\a4.sty
 Package: a4 2004/04/15 v1.2g A4 based page layout
 ))
-("C:\Program Files\MiKTeX\tex\latex\algorithm2e\algorithm2e.sty"
+(C:\Users\Boy2\AppData\Roaming\MiKTeX\2.9\tex\latex\algorithm2e\algorithm2e.sty
 Package: algorithm2e 2013/01/06 v5.00 algorithms environments
 \c@AlgoLine=\count100
 
-("C:\Program Files\MiKTeX\tex\latex\base\ifthen.sty"
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\ifthen.sty"
 Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
-)
-("C:\Program Files\MiKTeX\tex\latex\tools\xspace.sty"
+) ("C:\Program Files\MiKTeX 2.9\tex\latex\tools\xspace.sty"
 Package: xspace 2009/10/20 v1.13 Space after command names (DPC,MH)
 )
-("C:\Program Files\MiKTeX\tex\latex\ltxmisc\relsize.sty"
+("C:\Program Files\MiKTeX 2.9\tex\latex\ltxmisc\relsize.sty"
 Package: relsize 2003/07/04 ver 3.1
 )
 ********************************************************
@@ -202,10 +190,9 @@ subscribe by emailing sympa@lirmm.fr with 'subscribe <list> <firstname name>'
 \c@algocf=\count103
 \algocf@algoframe=\box34
 \algocf@algobox=\box35
-) ("C:\Program Files\MiKTeX\tex\latex\graphics\color.sty"
+) ("C:\Program Files\MiKTeX 2.9\tex\latex\graphics\color.sty"
 Package: color 2005/11/14 v1.0j Standard LaTeX Color (DPC)
-
-("C:\Program Files\MiKTeX\tex\latex\00miktex\color.cfg"
+ ("C:\Program Files\MiKTeX 2.9\tex\latex\00miktex\color.cfg"
 File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
 )
 Package color Info: Driver file: pdftex.def on input line 130.
@@ -215,9 +202,7 @@ Package color Info: Driver file: pdftex.def on input line 130.
 \c@lemma=\count106
 \c@corollary=\count107
 \c@theorem=\count108
-
-("C:\Users\Boitu\Documents\(m) Diskrete Optimierung\Skript\_tmp\DiskOpt2013.aux
-"
+ ("D:\Documents\Uni\Theoretische Informatik, KI\(m) Diskrete Optimierung\Skript\_tmp\DiskOpt2013.aux"
 
 LaTeX Warning: Label `SCILP' multiply defined.
 
@@ -234,7 +219,7 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 36.
 LaTeX Font Info:    ... okay on input line 36.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 36.
 LaTeX Font Info:    ... okay on input line 36.
- ("C:\Program Files\MiKTeX\tex\context\base\supp-pdf.mkii"
+ (C:\Users\Boy2\AppData\Roaming\MiKTeX\2.9\tex\context\base\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count109
 \scratchdimen=\dimen120
@@ -249,156 +234,140 @@ LaTeX Font Info:    ... okay on input line 36.
 \everyMPtoPDFconversion=\toks28
 )
 LaTeX Font Info:    Try loading font information for U+msa on input line 39.
- ("C:\Program Files\MiKTeX\tex\latex\amsfonts\umsa.fd"
+ ("C:\Program Files\MiKTeX 2.9\tex\latex\amsfonts\umsa.fd"
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
 LaTeX Font Info:    Try loading font information for U+msb on input line 39.
-
-("C:\Program Files\MiKTeX\tex\latex\amsfonts\umsb.fd"
+ ("C:\Program Files\MiKTeX 2.9\tex\latex\amsfonts\umsb.fd"
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 
 LaTeX Warning: No \author given.
 
-("C:\Users\Boitu\Documents\(m) Diskrete Optimierung\Skript\_tmp\DiskOpt2013.toc
-")
-\tf@toc=\write3
- [1
+("D:\Documents\Uni\Theoretische Informatik, KI\(m) Diskrete Optimierung\Skript\_tmp\DiskOpt2013.toc" [1
 
-{C:/Users/Boitu/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
-[2]
+{C:/Users/Boy2/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}])
+\tf@toc=\write3
+ [2] [3]
 LaTeX Font Info:    Try loading font information for OMS+cmr on input line 64.
- ("C:\Program Files\MiKTeX\tex\latex\base\omscmr.fd"
+ ("C:\Program Files\MiKTeX 2.9\tex\latex\base\omscmr.fd"
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 64.
 
-<Figs/flow1.pdf, id=14, 352.31625pt x 218.8175pt>
+<Figs/flow1.pdf, id=17, 352.31625pt x 218.8175pt>
 File: Figs/flow1.pdf Graphic file (type pdf)
  <use Figs/flow1.pdf>
 Package pdftex.def Info: Figs/flow1.pdf used on input line 73.
 (pdftex.def)             Requested size: 170.71652pt x 106.02953pt.
 
-<Figs/flow1b.pdf, id=15, 352.31625pt x 218.8175pt>
+<Figs/flow1b.pdf, id=18, 352.31625pt x 218.8175pt>
 File: Figs/flow1b.pdf Graphic file (type pdf)
  <use Figs/flow1b.pdf>
 Package pdftex.def Info: Figs/flow1b.pdf used on input line 75.
 (pdftex.def)             Requested size: 170.71652pt x 106.02953pt.
 
 Overfull \hbox (21.65987pt too wide) in paragraph at lines 90--90
-[]   \OT1/cmtt/m/n/10 2. find a path consisting of edges with non-zero remainin
-g capacities from s to t;[] 
+[]   \OT1/cmtt/m/n/10 2. find a path consisting of edges with non-zero remaining capacities from s to t;[] 
  []
 
-[3 <C:/Users/Boitu/Documents/(m) Diskrete Optimierung/Skript/Figs/flow1.pdf> <C
-:/Users/Boitu/Documents/(m) Diskrete Optimierung/Skript/Figs/flow1b.pdf>]
+[4 <D:/Documents/Uni/Theoretische Informatik, KI/(m) Diskrete Optimierung/Skript/Figs/flow1.pdf> <D:/Documents/Uni/Theor
+etische Informatik, KI/(m) Diskrete Optimierung/Skript/Figs/flow1b.pdf>]
 File: Figs/flow1.pdf Graphic file (type pdf)
-
-<use Figs/flow1.pdf>
+ <use Figs/flow1.pdf>
 Package pdftex.def Info: Figs/flow1.pdf used on input line 106.
 (pdftex.def)             Requested size: 170.71652pt x 106.02953pt.
- <Figs/flowRN1.pdf, id=36, 352.31625pt x 218.8175pt>
-File: Figs/flowRN1.pdf Graphic file (type pdf)
 
-<use Figs/flowRN1.pdf>
+<Figs/flowRN1.pdf, id=39, 352.31625pt x 218.8175pt>
+File: Figs/flowRN1.pdf Graphic file (type pdf)
+ <use Figs/flowRN1.pdf>
 Package pdftex.def Info: Figs/flowRN1.pdf used on input line 108.
 (pdftex.def)             Requested size: 170.71652pt x 106.02953pt.
- <Figs/flowRN2.pdf, id=37, 352.31625pt x 218.8175pt>
-File: Figs/flowRN2.pdf Graphic file (type pdf)
 
-<use Figs/flowRN2.pdf>
+<Figs/flowRN2.pdf, id=40, 352.31625pt x 218.8175pt>
+File: Figs/flowRN2.pdf Graphic file (type pdf)
+ <use Figs/flowRN2.pdf>
 Package pdftex.def Info: Figs/flowRN2.pdf used on input line 111.
 (pdftex.def)             Requested size: 170.71652pt x 106.02953pt.
- <Figs/flowRN3.pdf, id=38, 352.31625pt x 218.8175pt>
-File: Figs/flowRN3.pdf Graphic file (type pdf)
 
-<use Figs/flowRN3.pdf>
+<Figs/flowRN3.pdf, id=41, 352.31625pt x 218.8175pt>
+File: Figs/flowRN3.pdf Graphic file (type pdf)
+ <use Figs/flowRN3.pdf>
 Package pdftex.def Info: Figs/flowRN3.pdf used on input line 113.
 (pdftex.def)             Requested size: 170.71652pt x 106.02953pt.
 
 Overfull \hbox (58.40955pt too wide) in paragraph at lines 128--128
-[]   \OT1/cmtt/m/n/10 3. find a path consisting of edges with non-zero remainin
-g capacities from s to t in G_f;[] 
+[]   \OT1/cmtt/m/n/10 3. find a path consisting of edges with non-zero remaining capacities from s to t in G_f;[] 
  []
 
-[4 <C:/Users/Boitu/Documents/(m) Diskrete Optimierung/Skript/Figs/flowRN1.pdf> 
-<C:/Users/Boitu/Documents/(m) Diskrete Optimierung/Skript/Figs/flowRN2.pdf> <C:
-/Users/Boitu/Documents/(m) Diskrete Optimierung/Skript/Figs/flowRN3.pdf>]
+[5 <D:/Documents/Uni/Theoretische Informatik, KI/(m) Diskrete Optimierung/Skript/Figs/flowRN1.pdf> <D:/Documents/Uni/The
+oretische Informatik, KI/(m) Diskrete Optimierung/Skript/Figs/flowRN2.pdf> <D:/Documents/Uni/Theoretische Informatik, KI
+/(m) Diskrete Optimierung/Skript/Figs/flowRN3.pdf>]
 LaTeX Font Info:    Font shape `OMS/cmr/m/it' in size <10> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 164.
-
-<Figs/FF-bad.pdf, id=57, 182.88225pt x 92.076pt>
+ <Figs/FF-bad.pdf, id=60, 182.88225pt x 92.076pt>
 File: Figs/FF-bad.pdf Graphic file (type pdf)
- <use Figs/FF-bad.pdf>
+
+<use Figs/FF-bad.pdf>
 Package pdftex.def Info: Figs/FF-bad.pdf used on input line 182.
 (pdftex.def)             Requested size: 170.71652pt x 85.95293pt.
- [5]
+ [6]
 Overfull \hbox (15.22115pt too wide) in paragraph at lines 220--221
-[]\OT1/cmr/bx/n/10 Theorem 1. []\OT1/cmr/m/it/10 Ford-Fulkerson with ca-pac-ity
- scal-ing ter-mi-nates af-ter $\OML/cmm/m/it/10 O\OT1/cmr/m/n/10 (2\OML/cmm/m/i
-t/10 m\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 m \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 n\
-OT1/cmr/m/n/10 ) [] \OML/cmm/m/it/10 C\OT1/cmr/m/n/10 ) = \OML/cmm/m/it/10 O\OT
-1/cmr/m/n/10 (\OML/cmm/m/it/10 m[] [] C\OT1/cmr/m/n/10 )$
+[]\OT1/cmr/bx/n/10 Theorem 1. []\OT1/cmr/m/it/10 Ford-Fulkerson with ca-pac-ity scal-ing ter-mi-nates af-ter $\OML/cmm/m
+/it/10 O\OT1/cmr/m/n/10 (2\OML/cmm/m/it/10 m\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 m \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 n\OT1
+/cmr/m/n/10 ) [] \OML/cmm/m/it/10 C\OT1/cmr/m/n/10 ) = \OML/cmm/m/it/10 O\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 m[] [] C\OT1/
+cmr/m/n/10 )$
  []
 
-[6 <C:/Users/Boitu/Documents/(m) Diskrete Optimierung/Skript/Figs/FF-bad.pdf>]
-<Figs/minCostFlow-Ex1.pdf, id=78, 582.1709pt x 236.40923pt>
+[7 <D:/Documents/Uni/Theoretische Informatik, KI/(m) Diskrete Optimierung/Skript/Figs/FF-bad.pdf>]
+<Figs/minCostFlow-Ex1.pdf, id=82, 582.1709pt x 236.40923pt>
 File: Figs/minCostFlow-Ex1.pdf Graphic file (type pdf)
-
-<use Figs/minCostFlow-Ex1.pdf>
+ <use Figs/minCostFlow-Ex1.pdf>
 Package pdftex.def Info: Figs/minCostFlow-Ex1.pdf used on input line 273.
 (pdftex.def)             Requested size: 424.58624pt x 172.41856pt.
- [7]
-<Figs/minCostFlow-Ex1-residual3.pdf, id=83, 580.05397pt x 219.68875pt>
+ [8]
+<Figs/minCostFlow-Ex1-residual3.pdf, id=86, 580.05397pt x 219.68875pt>
 File: Figs/minCostFlow-Ex1-residual3.pdf Graphic file (type pdf)
-
-<use Figs/minCostFlow-Ex1-residual3.pdf>
-Package pdftex.def Info: Figs/minCostFlow-Ex1-residual3.pdf used on input line 
-293.
+ <use Figs/minCostFlow-Ex1-residual3.pdf>
+Package pdftex.def Info: Figs/minCostFlow-Ex1-residual3.pdf used on input line 293.
 (pdftex.def)             Requested size: 424.58624pt x 160.81058pt.
 
-<Figs/minCostFlow-Ex1-residual2.pdf, id=84, 277.36717pt x 211.22212pt>
+<Figs/minCostFlow-Ex1-residual2.pdf, id=87, 277.36717pt x 211.22212pt>
 File: Figs/minCostFlow-Ex1-residual2.pdf Graphic file (type pdf)
-
-<use Figs/minCostFlow-Ex1-residual2.pdf>
-Package pdftex.def Info: Figs/minCostFlow-Ex1-residual2.pdf used on input line 
-298.
+ <use Figs/minCostFlow-Ex1-residual2.pdf>
+Package pdftex.def Info: Figs/minCostFlow-Ex1-residual2.pdf used on input line 298.
 (pdftex.def)             Requested size: 212.29312pt x 161.66818pt.
 
 Overfull \hbox (37.96732pt too wide) in paragraph at lines 306--307
-[][]\OT1/cmr/m/it/10 This al-go-rithm ter-mi-nates as the ini-tial cost is boun
-ded by $\OT1/cmr/m/n/10 `\OML/cmm/m/it/10 maxFLowValue[] \OMS/cmsy/m/n/10  j\O
-ML/cmm/m/it/10 E\OMS/cmsy/m/n/10 j [] \OML/cmm/m/it/10 maxCostOfAnEdge[]$
+[][]\OT1/cmr/m/it/10 This al-go-rithm ter-mi-nates as the ini-tial cost is bounded by $\OT1/cmr/m/n/10 `\OML/cmm/m/it/10
+ maxFLowValue[] \OMS/cmsy/m/n/10  j\OML/cmm/m/it/10 E\OMS/cmsy/m/n/10 j [] \OML/cmm/m/it/10 maxCostOfAnEdge[]$
  []
 
-[8 <C:/Users/Boitu/Documents/(m) Diskrete Optimierung/Skript/Figs/minCostFlow-E
-x1.pdf>] [9 <C:/Users/Boitu/Documents/(m) Diskrete Optimierung/Skript/Figs/minC
-ostFlow-Ex1-residual3.pdf> <C:/Users/Boitu/Documents/(m) Diskrete Optimierung/S
-kript/Figs/minCostFlow-Ex1-residual2.pdf>]
-<Figs/negCycle.pdf, id=108, 564.1075pt x 348.30125pt>
+[9 <D:/Documents/Uni/Theoretische Informatik, KI/(m) Diskrete Optimierung/Skript/Figs/minCostFlow-Ex1.pdf>] [10 <D:/Docu
+ments/Uni/Theoretische Informatik, KI/(m) Diskrete Optimierung/Skript/Figs/minCostFlow-Ex1-residual3.pdf> <D:/Documents/
+Uni/Theoretische Informatik, KI/(m) Diskrete Optimierung/Skript/Figs/minCostFlow-Ex1-residual2.pdf>]
+<Figs/negCycle.pdf, id=111, 564.1075pt x 348.30125pt>
 File: Figs/negCycle.pdf Graphic file (type pdf)
  <use Figs/negCycle.pdf>
 Package pdftex.def Info: Figs/negCycle.pdf used on input line 332.
 (pdftex.def)             Requested size: 212.29312pt x 131.08034pt.
-
-[10 <C:/Users/Boitu/Documents/(m) Diskrete Optimierung/Skript/Figs/negCycle.pdf
->] <Figs/SSP-noNegCyc.pdf, id=117, 229.23442pt x 239.9906pt>
+ [11 <D:/Documents/Uni/Theoretische Informatik, KI/(m) Diskrete Optimierung/Skript/Figs/negCycle.pdf>] <Figs/SSP-noNegCy
+c.pdf, id=120, 229.23442pt x 239.9906pt>
 File: Figs/SSP-noNegCyc.pdf Graphic file (type pdf)
 
 <use Figs/SSP-noNegCyc.pdf>
 Package pdftex.def Info: Figs/SSP-noNegCyc.pdf used on input line 348.
 (pdftex.def)             Requested size: 169.8319pt x 177.80997pt.
- [11 <C:/Users/Boitu/Documents/(m) Diskrete Optimierung/Skript/Figs/SSP-noNegCy
-c.pdf>] [12] [13] [14] [15]
+ [12 <D:/Documents/Uni/Theoretische Informatik, KI/(m) Diskrete Optimierung/Skript/Figs/SSP-noNegCyc.pdf>] [13] [14] [15
+] [16]
 Overfull \hbox (4.66606pt too wide) detected at line 557
  [] 
  []
 
-<Figs/GeomIntuition.pdf, id=145, 428.60126pt x 372.39125pt>
+<Figs/GeomIntuition.pdf, id=148, 428.60126pt x 372.39125pt>
 File: Figs/GeomIntuition.pdf Graphic file (type pdf)
-
-<use Figs/GeomIntuition.pdf>
+ <use Figs/GeomIntuition.pdf>
 Package pdftex.def Info: Figs/GeomIntuition.pdf used on input line 561.
 (pdftex.def)             Requested size: 256.0748pt x 222.49321pt.
 
@@ -406,10 +375,9 @@ Overfull \hbox (6.6495pt too wide) in paragraph at lines 548--564
 []$[]$   $[]$ 
  []
 
-[16] <Figs/simplexPrimal.pdf, id=149, 599.23875pt x 533.995pt>
+[17] <Figs/simplexPrimal.pdf, id=152, 599.23875pt x 533.995pt>
 File: Figs/simplexPrimal.pdf Graphic file (type pdf)
-
-<use Figs/simplexPrimal.pdf>
+ <use Figs/simplexPrimal.pdf>
 Package pdftex.def Info: Figs/simplexPrimal.pdf used on input line 597.
 (pdftex.def)             Requested size: 284.52756pt x 253.55247pt.
 
@@ -418,68 +386,81 @@ Package amsmath Warning: Foreign command \atopwithdelims;
 (amsmath)                \frac or \genfrac should be used instead
 (amsmath)                 on input line 607.
 
-[17 <C:/Users/Boitu/Documents/(m) Diskrete Optimierung/Skript/Figs/GeomIntuitio
-n.pdf>] [18 <C:/Users/Boitu/Documents/(m) Diskrete Optimierung/Skript/Figs/simp
-lexPrimal.pdf>] [19] [20] [21]
-<Figs/Vshape.pdf, id=178, 567.11874pt x 310.15875pt>
+[18 <D:/Documents/Uni/Theoretische Informatik, KI/(m) Diskrete Optimierung/Skript/Figs/GeomIntuition.pdf>] [19 <D:/Docum
+ents/Uni/Theoretische Informatik, KI/(m) Diskrete Optimierung/Skript/Figs/simplexPrimal.pdf>] [20] [21] [22]
+<Figs/Vshape.pdf, id=181, 567.11874pt x 310.15875pt>
 File: Figs/Vshape.pdf Graphic file (type pdf)
  <use Figs/Vshape.pdf>
-Package pdftex.def Info: Figs/Vshape.pdf used on input line 793.
+Package pdftex.def Info: Figs/Vshape.pdf used on input line 794.
 (pdftex.def)             Requested size: 339.67029pt x 185.77013pt.
 
-<Figs/PrimalDualSimplex.pdf, id=179, 241.90375pt x 333.245pt>
+<Figs/PrimalDualSimplex.pdf, id=182, 241.90375pt x 333.245pt>
 File: Figs/PrimalDualSimplex.pdf Graphic file (type pdf)
-
-<use Figs/PrimalDualSimplex.pdf>
-Package pdftex.def Info: Figs/PrimalDualSimplex.pdf used on input line 802.
+ <use Figs/PrimalDualSimplex.pdf>
+Package pdftex.def Info: Figs/PrimalDualSimplex.pdf used on input line 803.
 (pdftex.def)             Requested size: 212.29312pt x 292.46832pt.
- [22 <C:/Users/Boitu/Documents/(m) Diskrete Optimierung/Skript/Figs/Vshape.pdf>
-] [23 <C:/Users/Boitu/Documents/(m) Diskrete Optimierung/Skript/Figs/PrimalDual
-Simplex.pdf>] [24] [25] [26] [27] [28] [29]
-Overfull \hbox (17.22221pt too wide) in paragraph at lines 1078--1093
+ [23 <D:/Documents/Uni/Theoretische Informatik, KI/(m) Diskrete Optimierung/Skript/Figs/Vshape.pdf>] [24 <D:/Documents/U
+ni/Theoretische Informatik, KI/(m) Diskrete Optimierung/Skript/Figs/PrimalDualSimplex.pdf>] [25] [26] [27] [28] [29] [30
+] [31]
+Overfull \hbox (17.22221pt too wide) in paragraph at lines 1123--1138
 []$[]$ $[]$ 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1078--1093
+Underfull \hbox (badness 10000) in paragraph at lines 1123--1138
 
  []
 
-[30]
-("C:\Users\Boitu\Documents\(m) Diskrete Optimierung\Skript\_tmp\DiskOpt2013.aux
-")
+
+Underfull \hbox (badness 10000) in paragraph at lines 1145--1147
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1159--1160
+
+ []
+
+[32] [33]
+Overfull \hbox (57.54532pt too wide) detected at line 1249
+\OML/cmm/m/it/10 N[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 j\OT1/cmr/m/n/10 ) := \OMS/cmsy/m/n/10 f\OML/cmm/m/it/10 k \OMS/cm
+sy/m/n/10 2 \OML/cmm/m/it/10 D \OT1/cmr/m/n/10 : \OML/cmm/m/it/10 k[]i \OMS/cmsy/m/n/10 2 \OML/cmm/m/it/10 N\OT1/cmr/m/n
+/10 (\OML/cmm/m/it/10 j\OT1/cmr/m/n/10 )\OMS/cmsy/m/n/10 g \OT1/cmr/m/n/10 = \OMS/cmsy/m/n/10 f\OML/cmm/m/it/10 k \OMS/c
+msy/m/n/10 2 \OML/cmm/m/it/10 D \OT1/cmr/m/n/10 : \OMS/cmsy/m/n/10 9\OML/cmm/m/it/10 i \OMS/cmsy/m/n/10 2 \OML/cmm/m/it/
+10 F \OT1/cmr/m/n/10 : \OML/cmm/m/it/10 i \OMS/cmsy/m/n/10 2 \OML/cmm/m/it/10 N\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 j\OT1/c
+mr/m/n/10 )[]\OML/cmm/m/it/10 i \OMS/cmsy/m/n/10 2 \OML/cmm/m/it/10 N\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 k\OT1/cmr/m/n/10 
+)\OMS/cmsy/m/n/10 g \OT1/cmr/m/n/10 = []
+ []
+
+[34] [35] [36] [37] ("D:\Documents\Uni\Theoretische Informatik, KI\(m) Diskrete Optimierung\Skript\_tmp\DiskOpt2013.aux"
+)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 3723 strings out of 493921
- 49395 string characters out of 3148885
- 132188 words of memory out of 3000000
- 6962 multiletter control sequences out of 15000+200000
+ 3727 strings out of 493921
+ 50092 string characters out of 3147286
+ 132217 words of memory out of 3000000
+ 6966 multiletter control sequences out of 15000+200000
  13693 words of font info for 52 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
  27i,14n,26p,1585b,280s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Progra
-m Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files/MiKT
-eX/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><C:/Program Files/MiKTeX/fonts/t
-ype1/public/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/
-amsfonts/cmextra/cmex7.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts
-/cm/cmmi10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.p
-fb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi5.pfb><C:/Progra
-m Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Program Files/MiKTe
-X/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/fonts/type1
-/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfo
-nts/cm/cmr17.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.p
-fb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Progr
-am Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy5.pfb><C:/Program Files/MiKT
-eX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files/MiKTeX/fonts/type
-1/public/amsfonts/cm/cmti10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/ams
-fonts/cm/cmtt10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/symbol
-s/msbm10.pfb>
-Output written on DiskOpt2013.pdf (30 pages, 429452 bytes).
+<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public
+/amsfonts/cm/cmbx12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><C:/Program Files/MiKTe
+X 2.9/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cmextra/cmex7.p
+fb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/publi
+c/amsfonts/cm/cmmi12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi5.pfb><C:/Program Files/MiKTeX 
+2.9/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/P
+rogram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfont
+s/cm/cmr17.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Program Files/MiKTeX 2.9/fonts/t
+ype1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy5.pfb><C:/Program Fil
+es/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti1
+0.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/pu
+blic/amsfonts/symbols/msbm10.pfb>
+Output written on DiskOpt2013.pdf (37 pages, 460648 bytes).
 PDF statistics:
- 289 PDF objects out of 1000 (max. 8388607)
+ 314 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  76 words of extra memory for PDF output out of 10000 (max. 10000000)
 

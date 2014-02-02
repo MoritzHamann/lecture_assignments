@@ -668,7 +668,7 @@ We can plug in a point $r(\lambda)$ on the ray in every constraint $l$:
 \[
 \Leftrightarrow	a_l^{T}x'-\lambda a_l^{T}(A_B^{-1})_{\cdot i})\leq b_l
 \]
-If $a_l^{T}(A_B^{-1})_{\cdot i})>=0$ this constraint will never block our movement, otherwise
+If $a_l^{T}(A_B^{-1})_{\cdot i})\geq0$ this constraint will never block our movement, otherwise
 we obtain the following bound on $\lambda$:
 \[
 	\lambda \leq \frac{b_l - a_l^{T}x'}{-a_l^{T}(A_B^{-1})_{\cdot i})}
@@ -687,6 +687,7 @@ Unfortunately, no strategy is known which guarantees a polynomial number of step
 
 To make things even worse, for many deterministic pivoting strategies there are examples where the Simplex algorithm does \emph{not} terminate at all! This can happen when $d'>d$ constraints intersect in a corner. Here, a naive pivoting strategy might lead to a cycling of the bases never leaving that corner. Bland's rule (google that!) guarantees that after a finite number of steps, the corner is left for a better corner. As applying Bland's rule all the time in practice often leads to worse running times of the Simplex algorithm (more steps), in real-world applicaitons people use rules like the one of steepest ascent and only if cycling is suspected (when the Simplex algorithm stays at the same corner for several steps), Bland's rule is employed until the vertex has been left.
 
+Alternatively, one might remove degeneracies by slightly perturbing constraints such that no $d+1$ constraints intersect in a single point.
 \textcolor{blue}{\emph{In higher dimension it can happen, that by always exchanging the constraints the algorithm stays at that one corner and dous not make any progress. (only with $d'>d$ constraints)}}
 
 \subsection{Duality}
@@ -871,7 +872,7 @@ Consider the following problem. Given a universe $U$ of $n$ elements, a collecti
 $\mathcal{S}=\{S_1, \dots, S_k\}$, and a cost function $c: \mathcal{S} \rightarrow \mathbb{R}^+$, find a minimum cost
 subcollection of $\mathcal{S}' \subseteq \mathcal{S}$ that covers all elements of $U$.
 
-\textcolor{blue}{\emph{For a general set cover it si very unlikely that a polytime Aproximation-Algorithm existst that produces a solution $\mathcal{S}'$ with $c(\mathcal{S}') < log(n) * c(\mathcal{S}_{opt})$}}
+\textcolor{blue}{\emph{For a general set cover it is very unlikely that a polytime Approximation-Algorithm existst that produces a solution $\mathcal{S}'$ with $c(\mathcal{S}') < log(n) * c(\mathcal{S}_{opt})$}}
 
 In the following we will see several algorithms for this problem which both rely (at least in the analysis) on the
 integer linear programming (ILP) formulation of the problem and its dual. How could we formulate the set cover problem 
@@ -913,16 +914,44 @@ feasible solutions $x, y$ of the two LPs.
 \subsection{Greedy Algorithm -- Dual Fitting Analysis}
 The following greedy algorithm computes a cover (not necessarily optimal):
 \begin{enumerate}
-\item $C\leftarrow \emptyset$
+\item $C\leftarrow \emptyset$ \emph{($C\subseteq U$ \dots already covered elements)}
 \item while $C\neq U$ do
 	\begin{itemize}
-	\item find the most cost-effective set in the current iteration, say $S$
-	\item let $\alpha=\frac{\mathrm{cost}(S)}{|S-C|}$, i.e. the cost-effectiveness of $C$
+	\item for each $S_i$ let $\alpha_i=\frac{\mathrm{cost}(S_i)}{|S_i-C|}$, be the cost-effectiveness of the set $S_i$
+	\item let $S$ be the most cost-effective set (i.e., with minimal $a_i$ value)
 	\item pick $S$ ($x_S=1$) and for each $u\in S-C$, set $\mathrm{price}(u)=\alpha$ ($y_u=\frac{\alpha}{H_n}$)
 	\item $C\leftarrow C \cup S$
 	\end{itemize}
 \item output the picked sets
 \end{enumerate}
+
+\textcolor{blue}{\emph{
+Now we want to prove that the Greedy produces a solution which is at most $\mathcal{O}(log(n))$ more costly than the optimum solution (matching the inapproximability result which states that no poly-time algorithm can approximate set cover better that logn for every instance). The Gap between the optimum integral solution to the primal problem and the solution by the Greedy algorithm is a factor of $log(n)$. Plan: see Picture from 2013-12-10 12:13
+}}
+
+\textcolor{blue}{\emph{
+\begin{lemma}
+The Greedy algorithm produces as solution a cover $I \subseteq \mathcal{S}$ which has cost $cost(I) \leq cost(I_{Opt}) * H_n$ where $I_{Opt} \subseteq \mathcal{S}$ is a optimum solution and $cost(X \subseteq \mathcal{S}) = \sum_{s_i \in X}{c_i}$.
+\end{lemma}
+}}
+
+\textcolor{blue}{\emph{``The catch is that the dual solution is not necessarly feasible.''}}
+
+\begin{proof}
+\textcolor{blue}{\emph{The greedy algorithm computes a primal feasible integral solution of cost $\sum{X_s \cdot C_s}$.}}
+
+\textcolor{blue}{\emph{At the same time it constructs a dual solution $y$ of exactly the same objective function value (because when primal objective function value is inceased by $c_j$, also the dual objective function value is inceased by $c_j$). This dual solution might not be feasible, though!.}}
+
+\textcolor{blue}{\emph{The Dual constraints have the form $\forall s_i \in \mathcal{S}: \sum_{u_j \in S_i}{y_{u_j}} \leq c_j$. Consider one of these constraints, we now want to show that $\sum_{u_j \in S_i}{y_{u_j}} \leq H_n*c_i$. If so, we can determine a dual feasible solution $y' =\frac{y}{H_n}$ and $\sum{y_{u}'} = \frac{\sum{y_u}}{H_n} = \frac{\sum{x_s \cdot c_s}}{H_n}$.}}
+
+\textcolor{blue}{\emph{We know that optimum objection function value is lower bounded by any dual feasible solution $\sum{x_{s}^{Opt} \cdot c_s} \geq \sum{y_{u}'} = \frac{\sum{y_u}}{H_n} = \frac{\sum{x_s \cdot c_s}}{H_n} \Rightarrow \sum{x_s \cdot c_s} \leq H_n * \sum{x_{s}^{Opt}} \cdot c_s$.}}
+
+\textcolor{blue}{\emph{Now prove that for a fixed set $S \subseteq \mathcal{S}$ we have $\sum_{u \in S}{y_u} \leq H_n  \cdot c_s$. Sort the elements $u$ according to when they are covered during greedy, let that order be $u_1, u_2, \dots , u_l$ ($S = \{u_1, u_2, \dots , u_l\}$). Consider the teration of greedy when element $u_i$ was covered. Can we bound $y_{u_i}$?}}
+
+\textcolor{blue}{\emph{In that iteation some set $S'$ was chosen for which $\frac{c_{s'}}{|s'-c|} = \alpha_{s'}$ was minimal and we set $y_{u_i} = \alpha_{s'}$.$\Rightarrow \alpha_{s'} \leq \alpha_{s}$ at that time. $\alpha_{s}= \frac{c_s}{|s-c|} \leq \frac{c_s}{l - (i+1)} \Rightarrow y_{u_i} \leq \frac{c-s}{l - (i+1)} \Rightarrow \sum_{u_i \in S}{y_{u_i}} \leq \sum_{u_i \in S}{\frac{c_s}{l - (i+1)}} = \sum_{i=1}^l{\frac{c_s}{l - (i+1)}} = c_s \cdot \sum_{i=1}^l{\frac{1}{l - (i+1)}} = \sum_{i=1}^l{\frac{1}{i}} = c_s \cdot H_l \leq c_s \cdot H_n$}}
+\end{proof}
+
+\textcolor{blue}{\emph{That analysis: 1. find primal solution, 2. derive dual feasible solution, 3. bound the gap between them. Is called dual fitting.}}
 
 \begin{lemma}
 The greedy algorithm achieves an approximation ratio of $H_n$.
@@ -952,22 +981,26 @@ In the greedy algorithm, the (I)LP formulation was only used to proof a bound on
 the algorithm. In the following we will see an approach which actually computes the solution to this LP to obtain
 a set cover solution.
 
-\noindent {\bf Remark:} In the lecture have seen an algorithm for solving LPs in subexponential, but not polynomial time. There are
+\noindent {\bf Remark:} In the lecture we have seen an algorithm for solving LPs in subexponential, but not polynomial time. There are
 algorithms, though, which can solve linear programming problems in polynomial time (Ellipsoid and interior point methods).
 So for all algorithms that follow and make use of an LP solution, we assume that it can be computed in polynomial time.
 In practice though, the Simplex methods -- in spite of the superpolynomial worst-case running-time -- perform very well
 and are often superior to the above guaranteed-polynomial-time methods.
 
+\textcolor{blue}{\emph{The greedy algorithm is not LP-based, but could be analyzed via LP-ideas.}}
+
+\textcolor{blue}{\emph{What about deterministic rounding?}}
+
 \subsection{(Randomized) Rounding}
 In the greedy algorithm, the LP relaxation was only used for the analysis, but given an optimal solution to the LP relaxation, how could we turn that into a feasible integral solution to the set cover problem, possibly with an approximation guarantee ?
 
-\subsubsection{Simple LP rounding}
+\subsubsection{Simple LP rounding (Deterministic Rounding)}
 The simplest strategy is to solve the  LP relaxation \ref{SCLP} of the  set cover instance to optimality and then select all sets $S$ for which $x_S>0$. This clearly ensures feasiblity, it is unclear, though, how much the objective function value might deteriorate. 
 %exercise: design instances where this performs pretty badly
 For the general set cover problem this strategy does not perform that well, but for special cases of set cover like for example \emph{vertex cover}, it yields reasonable approximation guarantees. In general, when the LP relaxation of an optimization problem exhibits \emph{bounded fractionality}, that is, in the optimum solution, the variables do not have arbitrary fractional values, one can often get a constant approximation.
 
 \begin{definition}
-Given a graph $G(V,E)$, the \emph{set cover} problem is to determine a subset $C\subseteq V$ of the nodes
+Given a graph $G(V,E)$, the \emph{vertex cover} problem is to determine a subset $C\subseteq V$ of the nodes
 such that $\forall e\in E: e\cap C\neq \emptyset$ and $|C|$ minimal.
 \end{definition}
 
@@ -988,7 +1021,7 @@ is not half-integral. By showing that $x$ can be expressed as the convex combina
 
 Consider all $v\in V$ for which $x_v\notin \{0,\frac{1}{2}, 1\}$, and let
 \[
-	V_+=\{v|\frac{1}{2}<x_v<1\},\quad V_+=\{v|0<x_v<\frac{1}{2}\}
+	V_+=\{v|\frac{1}{2}<x_v<1\},\quad V_-=\{v|0<x_v<\frac{1}{2}\}
 \]
 For some $\epsilon>0$ define solutions $y$ and $z$ as follows:
 \[
@@ -1005,6 +1038,10 @@ $f=\max_{u\in U} |\{S_i: u\in S_i\}|$. We consider the following simple algorith
 \item Find an optimal solution to the LP relaxation of the set cover problem
 \item Pick all sets $S$ for which $x_S\geq 1/f$
 \end{enumerate}
+
+\textcolor{blue}{\emph{\emph{Observation 1:} Objective function value (compared to the LP-solution) increases by at most a factor of $f$}}
+
+\textcolor{blue}{\emph{\emph{Observation 2:} Each constant for a $u\in U \sum_{S_i{x_i \geq 1}}$. The left hand-side consists of at most $f$ terms. Assume all $x_i < 1/f$ (which would yield an infeasible solution), then the sum on the left is $ < f \cdot 1/f = 1$. $\Rightarrow$ at least one $x_i \geq 1/f$ which is then rounded up to 1 $\Rightarrow$ rounded-up solution is feasible.}}
 
 \begin{lemma}
 The simple $1/f$ LP-rounding algorithm achieves an approximation factor of $f$.
@@ -1025,13 +1062,18 @@ A more sophisticated way to turn the LP solution into a feasible integral soluti
 as probabilities and flip coins accordingly.
 
 Let $x^*=p$ be the optimal solution to the LP relaxation of the set cover problem, $\mathrm{OPT}_{LP}$ its objective function value.
-For each set $S$ we pick it with probability $x^*_S=p_S$ into $\mathcal{C}$. What is the expected cost of $\mathcal{C}$ ?
+For each set $S$ we pick it with probability $x^*_S=p_S$ into $\mathcal{C}$. What is the expected cost of $\mathcal{C}$ ? 
+\textcolor{blue}{\emph{ Let $x^*$ be the rounded values.}}
+
 \[
 	{\bf E}[\mathrm{cost}(\mathcal{C})]=\sum_{S\in \mathcal{S}} p_S\cdot c_S=\mathrm{OPT}_{LP}
 \]
 
 The collection $\mathcal{C}$ not necessarily covers $U$, but let us look at the probability by which an element $u\in U$ is covered.
 Assume $u$ appears in $l$ sets $S_1, \dots, S_l$. As $u$ is fractionally covered, we have $p_1+p_2+\dots +p_l\geq 1$.
+
+\textcolor{blue}{\emph{$u$ is not covered if and only if $S_1$ was not picked, $S_2$ was not picket $\cdots S_l$ was not picked. A set $S_i$ was not picked with probability $(1-x^*)$. $u$ was not covered/one of the sets were picked with the propability $\Pi_{i=1}^l(1-x_i^*)$}}
+
 As the probability for $u$ being covered is minimized if $p_i=1/l$, we get the following bound:
 \[
 	{\bf \mathrm{Pr}}(a \mathrm{~ covered~by~ }\mathcal{C}) \geq 1 - (1-\frac{1}{l})^l \geq 1- \frac{1}{e}
@@ -1040,13 +1082,16 @@ As the probability for $u$ being covered is minimized if $p_i=1/l$, we get the f
 The last inequality follows from $(1+\frac{1}{n})^n < e < (1+\frac{1}{n})^{n+1}$ since
 $e<(\frac{n+1}{n})^{n+1} \Leftrightarrow (\frac{n}{n+1})^{n+1} < 1/e \Leftrightarrow (\frac{n+1}{n+1}-\frac{1}{n+1})^{n+1}<1/e$.
 This means, each element from $u$ is covered with a constant probability.
+
+\textcolor{blue}{\emph{Look at the following experiment: We flip a fair coin until getting heads. With probability $\frac{1}{2}$ we succeed in the first flip. With the probability $\frac{1}{2} \cdot \frac{1}{2}$ we succeed in the second flip $\cdots \Rightarrow$ expected number of coinflips until heads appears is $\sum_{i = 1}^\infty{ i \cdot Pr(we~succeed~in~step~i)} = \sum_{i = 1}^\infty{ i \cdot (\frac{1}{2})^i} \rightarrow 2$. also see Coupon-Collector-Problem}}
+
 To obtain a valid set cover, independently pick $c \log n$ such subcollections and compute their union, say $\mathcal{C}'$, where $c$
 is a constant such that
 \[
 	(\frac{1}{e})^{c\log n }\leq \frac{1}{4n}
 \]
 at this point we have ${\bf \mathrm{Pr}}(\mathrm{a~not~covered~by~}\mathcal{C}') \leq \frac{1}{e}^{c\log n} \leq \frac{1}{4n}$
-and summing over all $u\in U$ we get:
+\textcolor{blue}{\emph{(after $c\cdot \log n$ iterations)}}and summing over all $u\in U$ we get:
 \[
 	{\bf \mathrm{Pr}}(\mathcal{C}'\mathrm{~not~a~valid~set~cover}) \leq n\cdot \frac{1}{4n}=\frac{1}{4}
 \]
@@ -1071,33 +1116,47 @@ repetitions needed until we succeed is at most $2$.
 
 
 \subsection{The Primal-Dual Scheme}
-The last paradigm for designing approximation algorithms based on linear programming is the \emph{Primal-Dual Scheme}. The high-level idea of the primal dual scheme is to start with a pair of solutions $(x_0, y_0)$ where $x_0$ is a primal infeasible solution and $y_0$ a dual infeasible solution, and then start increasing dual variables and hence the objective function of the dual solution while maintaining dual feasibility. During that process, dual constraints become tight which is regarded as a guidance for which primal variable to increase.
+The last paradigm for designing approximation algorithms based on linear programming is the \emph{Primal-Dual Scheme}. The high-level idea of the primal dual scheme is to start with a pair of solutions $(x_0, y_0)$ where $x_0$ is a primal infeasible solution and $y_0$ a dual \emph{feasible} solution, and then start increasing dual variables and hence the objective function of the dual solution while maintaining dual feasibility. During that process, dual constraints become tight which is regarded as a guidance for which primal variable to increase.
 
 Again let us consider the LP relaxiation of the set cover ILP and its dual:
 
 \begin{minipage}{0.5\textwidth}
 \begin{eqnarray}
 \mbox{min} & \displaystyle \sum_{S\in \mathcal{S}} x_S \cdot c_S \nonumber \\
- u\in U: & \displaystyle \sum_{u\in S} x_S  & \geq 1 \nonumber\\
- S \in \mathcal{S}: & x_S  & \geq 0. \nonumber
+ \forall u\in U: & \displaystyle \sum_{u\in S} x_S  & \geq 1 \nonumber\\
+ \forall S \in \mathcal{S}: & x_S  & \geq 0. \nonumber
 \end{eqnarray}
 \end{minipage}
 \begin{minipage}{0.5\textwidth}
 \begin{eqnarray}
 \mbox{max} & \displaystyle \sum_{u\in U} y_u \nonumber \\
- S\in \mathcal{S}: & \displaystyle \sum_{u\in S} y_u  & \leq c_S \nonumber\\
- u\in U: & y_u  & \geq 0\nonumber
+\forall S\in \mathcal{S}: & \displaystyle \sum_{u\in S} y_u  & \leq c_S \nonumber\\
+\forall u\in U: & y_u  & \geq 0\nonumber
 \end{eqnarray}
 \end{minipage}
 \\[.5cm]
+
+\textcolor{blue}{\emph{\emph{Complementary Slackness Condition:} Let ($x^*, y^*$) be optimal solutions to primal ($x^*$) and dual ($y^*$) LP. Then we have:
+\begin{itemize}
+	\item if $x_i^* > 0 \Rightarrow$ Corresponding constraint in the dual is tight for $y^*$.
+	\item if $y_j^* > 0 \Rightarrow$ Corresponding contraint in the primal is tight for $x^*$.
+\end{itemize}
+``Look up how the dual is derived''
+}}
+\ \\
 
 The algorithm works as follows:
 \begin{enumerate}
 \item Start with a primal solution $x=0$ and a dual (feasible) solution $y=0$
 \item Pick some uncovered element $u\in U$ and increase its dual variable $y_u$ until dual
-		constraints becomes tight; add the respective sets ($x_S=1$) to our cover $C$
+		constraints becomes tight; add the respective sets ($x_S=1$) to our cover $C$. \textcolor{blue}{\emph{stop increasing $y_u$ and pick all sets $S \in \mathcal{S}$ whose corresponding constraint in the dual become tight (means the left hand side is equal the right hand side).}}
 \item if there are still uncovered elements, go to 2., otherwise ouput the cover $C$
 \end{enumerate}
+
+\textcolor{blue}{\emph{Example: (picture from 2014-01-16)
+Red = setcover from Greedy. Blue = optimal. If the variable in set 5 is increased then the constraint corresponding to set 5 becomes tight. Which means that set 5 and 1 is picked. doing it again with another variable, then we would pick 4 sets. which would not necessarily be better than the greedy algorithm.\\Clearly the algorithm produces a feasible cover (otherwise some $y_u$ would be increased); dual solution remains feasible all the time since we stop increasing once dual constraint gets tight.\\ $\Rightarrow$ the algorithm terminates with feasible solution $\widetilde{x}, \widetilde{y}$ (which both are integral) and we need to analyze the ration $\frac{c^T \widetilde{x}}{1^T \widetilde{y}}$.}}
+
+\ \\
 
 First observe that\begin{eqnarray}\label{SCILP}
 \mbox{min} & \displaystyle \sum_{S\in \mathcal{S}} x_S \cdot c_S\\
@@ -1113,12 +1172,245 @@ $c^T\widetilde{x}\leq f 1^T\widetilde{y}$.
 \begin{proof}
 We have
 \[
-	c^T\widetilde{x} = \sum_{S\in C} c_S = \sum_{S\in C} \sum_{u\in S} y_u \leq f \cdot \sum_{u\in U} y_u
+	c^T\widetilde{x} = \sum_{S\in C} c_S = \sum_{S\in C} \sum_{u\in S} y_u \leq f \cdot \sum_{u\in U} y_u = f \cdot 1^T \widetilde{y}
 \]
-since we have picked set $S$ when the respective dual constraint became tight. In the resulting double sum we count each $y_u$ at most as often as it appears in some set (hence at most $f$ times).
+since we have picked set $S$ when the respective dual constraint became tight \textcolor{blue}{\emph{(which means $\sum_{u \in S}{y_u} = c_S$)}}. In the resulting double sum we count each $y_u$ at most as often as it appears in some set (hence at most $f$ times).
 \end{proof}
 
 As an example consider the worst-case instance for the greedy set cover algorithm and try to follow the primal dual algorithm.
+
+\subsection{Further Example: Uncapacitated Facility Location}
+
+\textcolor{blue}{\emph{siehe Aufschrieb...}}
+
+The uncapacitated facility location problem can be stated as follows, we are given:
+\begin{itemize}
+\item a set of locations $V$ with associated distance measure $c_{ij}$ between the locations which satisfies the triangle inequality
+\item a subset $F\subset V$ of potential facility locations, each potential location $i\in F$ associated with an opening cost $f_i\geq 0$
+\item demand locations/clients $D=V-F$; connecting a location $j\in D$ with a facility opened at $i\in F$ incurs connection cost $c_{ij}$ 
+\end{itemize}
+
+The goal is to determine a subset $F'\subseteq F$ of locations where to open facilities and assign each demand location $j\in D$ to its nearest open facility, such that the total cost (comprising opening and connection costs)
+\[
+	\sum_{i\in F'} f_i + \sum_{j\in D} \min_{i\in F'} c_{ij}
+\] 
+is minimized.
+
+This problem at first sights seems rather difficult since optimizing only for one objective -- e.g. opening only few facilities -- has a negative effect on the other objective -- the connection costs will become larger. And vice versa, aiming for low connection costs typically requires opening many facilities -- which increases the opening costs.
+
+We start with an integer linear programming formulation introducing binary variables $y_i$ to decide which facilities to open (=1) and variables $x_{ij}$ to decide to which facility a demand location is connected to, more precisely $x_{ij}=1$ if client $j\in D$ is connected to the (openend) facility $i\in F$.
+
+
+\begin{eqnarray}\label{UFL}
+\mbox{min} & \displaystyle \sum_{i\in F}{y_i f_i} + \sum_{j\in D}{\sum_{i\in F}{x_{ij}c_{ij}}}\\
+ \forall j\in D: & \sum_{i\in F} x_{ij}  & = 1 \nonumber\\
+ \forall i\in F, \forall j\in D: & y_i &\geq x_{ij} \nonumber\\
+ & y_i, x_{ij}&\in \{0,1\} \nonumber
+\end{eqnarray}
+
+Here, the first constraint enforces that every client is connected to some facility, the second constraint makes sure that a facility is openend if some client is connected to it. The LP relaxation naturally arises by replacing the integrality constraints on $y_i, x_{ij}$ by respective $\geq 0$ constraints.
+
+The primal of the LP relaxation looks as follows:
+\begin{eqnarray}\label{UFLP}
+\mbox{min} & \displaystyle \sum_{i\in F}{y_i f_i} + \sum_{j\in D}{\sum_{i\in F}{x_{ij}c_{ij}}}\\
+ \forall j\in D: & \sum_{i\in F} x_{ij}  & = 1 \nonumber\\
+ \forall i\in F, \forall j\in D: & y_i &\geq x_{ij} \nonumber\\
+ & y_i, x_{ij}&\geq 0 \nonumber
+\end{eqnarray}
+
+The dual of the LP relaxation looks as follows:
+\begin{eqnarray}\label{UFLD}
+\mbox{max} & \displaystyle \sum v_j \\
+ \forall i\in F: & \sum_{j\in D} w_{ij}  & \leq f_i \nonumber\\
+ \forall i\in F, \forall j\in D: & v_j - w_{ij} &\leq c_{ij} \nonumber\\
+ \forall i\in F, \forall j\in D: & w_{ij}&\geq 0 \nonumber
+\end{eqnarray}
+
+Let us first start with a small Lemma exhibiting some property of primal and dual optimal solutions.
+
+\begin{lemma}
+Let $(x^*, y^*)$ be an optimal solution to the primal LP, $(v^*, w^*)$ an optimal solution to the dual LP. Then $x_{ij}>0$ implies $c_{ij}\leq v_j^*$.
+\end{lemma}
+\begin{proof}
+Due to complementary slackness we know: $x^*_{ij}>0$ implies $c_{ij}=v^*_j-w_{ij}$ and together with $w_{ij}\geq 0$ yields the lemma.
+\end{proof}
+
+\begin{definition}
+For a LP-solution $x^*$ we say that $i\in F$ \emph{neighbors} $j\in D$ if $x^*_{ij}>0$ (and equally $j\in D$ \emph{neighbors} $i\in F$).
+\end{definition}
+
+Based on that definition we define the following neighborhoods of a client $j\in D$:
+\[
+	N(j):=\{i\in F: i\mbox{ neighbors } j\} 
+\]
+and
+\[
+	N^2(j):=\{k\in D: k\mbox{ neighbors some } i\in N(j)\} = \{k\in D: \exists i \in F: i \in N(j) \mbox{ and } i \in N(k)\} = \mbox{ 2-hop-neighbor }
+\]
+
+\subsubsection{Deterministic Rounding}
+\textcolor{blue}{\emph{This yields a 4-Approximation.}}
+Let us start with a simple rounding scheme which turns a fractional LP solution into a not too expensive integral solution.
+\begin{enumerate}
+\item compute optimal solutions $(x^*, y^*)$ and $(v^*,w^*)$ to primal and dual LP
+\item $S\leftarrow D$
+\item $F'\leftarrow\emptyset$
+\item while $S\neq \emptyset$
+	\begin{enumerate}
+	\item choose $j\in S$ with $v_j^*$ minimal
+	\item pick $i\in N(j)$ with $f_i$ minimal and open $i$, i.e. $F' \leftarrow F' \cup \{i\}$ 
+	\item assign $j$ and all unassigned clients $k \in N^2(j)$ to $i$  \textcolor{blue}{\emph{(also in the two-hop-neighborhood, this is fulfills the triangle inequality.)}}
+	\item $S\leftarrow S-\{j\}-N^2(j)$
+	\end{enumerate}
+\end{enumerate}
+
+Let us now prove that this algorithms yields a solution which is at most a factor of $4$ away from the optimum. This result is due to Shmoys/Tardos/Aardal'97 and Chudak'98.
+
+\begin{theorem}
+The above algorithm produces a solution of cost at most $4$ times the optimum solution.
+\end{theorem}
+\begin{proof}
+Consider an iteration where $j\in S\subset D$ and $i\in N(j)\subset F$ were picked as described. Then we have:
+\[
+	f_i=f_i\cdot \sum_{k\in N(j)}x^*_{kj}= \sum_{k\in N(j)}f_i x^*_{kj} \leq \sum_{k\in N(j)}f_k x^*_{kj}\leq \sum_{k\in N(j)} f_k y^*_k
+\]
+Here the first equality holds since $\sum_{k\in N(j)}x^*_{kj}=1$, the first inequality holds since we have picked the cheapest $i\in N(j)$, and the second inequality holds by definition. To bound the total opening cost we would like to have that
+\[
+	\sum_{i\in F'} f_i \leq \sum_{i\in F}f_iy_i^* \leq OPT_{Prinal}
+\]
+The facility opening costs are always charged to a neighborhood (consisting of facilities) of a single client. Since then all the neighbors (clients) of this neighborhood are removed from $S$, none of the facilities in $N(j)$ can be charged again. Hence, the total opening costs are clearly bounded by the objective function value of the LP optimum.
+
+It remains to bound the connection costs. According to our previous Lemma, we know that the cost of connecting $j$ to $i$ is $c_{ij}\leq v^*_j$. The connection costs for the elements $k\in N^2(j)$ which have a common neighbor $l$ with $i$ are
+\[
+	c_{ik}\leq c_{lk}+ c_{lj} + c_{ij} \leq v^*_j+v^*_j+v^*_k\leq 3 v^*_k
+\]
+where the latter inequality follows from the fact that we chose $j\in S$ with $v^*_j$ minimal.
+
+So the total cost can be bounded by:
+\[
+	\sum_{i\in F} f_iy^*_i + 3\sum_{j\in D}v^*_j \leq OPT_{primal}+ 3 OPT_{dual}=4 OPT_{primal}\leq 4 OPT_{int}
+\]
+\end{proof}
+
+\subsubsection{(Slightly) Randomized Rounding}
+Let us now try to improve the approximation factor by devising a \emph{randomized} rounding procedure. To that end, we define
+\[
+	C^*_j:=\sum_{i\in F}c_{ij}x^*_{ij}
+\]
+
+and rephrase the selection rules for $j\in S$ and $i\in N(j)$ as follows:
+\begin{enumerate}
+\item compute optimal solutions $(x^*, y^*)$ and $(v^*,w^*)$ to primal and dual LP
+\item $S\leftarrow D$ \textcolor{blue}{\emph{(S = the clients that have not been served yet.)}}
+\item $F'\leftarrow\emptyset$
+\item while $S\neq \emptyset$
+	\begin{enumerate}
+	\item choose $j\in S$ with $(v_j^*+C_j^*)$ minimal
+	\item choose $i\in N(j)$ randomly according to the probability distribution given by $x^*_{ij}$ and open $i$
+	\item assign $j$ and all unassigned clients in $N^2(j)$ to $i$
+	\item $S\leftarrow S-\{j\}-N^2(j)$
+	\end{enumerate}
+\end{enumerate}
+
+We can now prove the following stronger statement about the approximation quality of this modified algorithm:
+
+\begin{theorem}
+The above randomized rounding algorithm yields a solution with expected objective function value at most $3$ times the optimum.
+\end{theorem}
+\begin{proof}
+Again, we consider an iteration where some $j\in S$ was picked. Let $F$ be a random variable denoting the facility opening cost in this round. Clearly the expected value of $F$ is
+\[
+E(F)=\sum_{i\in N(j)}f_i x^*_{ij}\leq \sum_{i\in N(j)} f_i y^*_i
+\]
+
+\textcolor{blue}{\emph{($\sum_{i\in N(j)}$ = Sum over neighborhood)}}
+
+Now let $A_k$ be a random variable denoting the assignment cost of client $k$ to facility $i$. The expected assignment cost of $j$ to $i$ is
+\[
+	E(A_j)=\sum_{i\in N(j)} c_{ij} x^*_{ij}=C_j^*
+\] 
+The expected assignment cost for a $k\in N^2(j)$, $k\neq j$ where $k\in D$ neighbors $l\in F$ which neighbors $j\in D$ is \textcolor{blue}{\emph{(using triangle inequality. See Picture from 2014-01-28. Lemma 14)}}
+\[
+	E(A_k)\leq c_{lk} + c_{lj} + \sum_{i\in N(j)}c_{ij}x^*_{ij}\leq v^*_k + v^*_j+ C^*_j \leq v^*_k + v^*_k + C^*_k=2v^*_k +C^*_k
+\]
+where the last inequality follows from the choice of $j\in S$.
+
+So the total cost can be bounded as follows:
+\[
+	\sum_{i\in F} f_i y^*_i + \sum_{j\in D} (2v_j^* + C^*_j) = \sum_{i\in F}f_i y^*_i + \sum_{j\in D}C^*_j +  2\sum_{j\in D} v^*_j=OPT_{LP}+2 OPT_{DLP}\leq 3 OPT_{int}
+\]
+
+\end{proof}
+
+\textcolor{blue}{\emph{This is not the 'natural' randomized rounding algorithm.}}
+
+A variant of the 'natural' randomized Rounding algorithm where one randomly chooses facilities to Open according to the probability $y_i^*$ and then connect each client to its closest open facility can be proven to be a 1.736 Approximation.
+
+It can be shown that no poly-time algorihtm can approximate both than 1.627, unless P = NP
+
+\subsubsection{Primal-Dual Algorithm}
+
+\begin{definition}
+For a LP-solution $x^*$ we say that $i \in F$ neighbors $j \in D$ if $v_j^* \geq c_{ij}$ (and equaly $j \in D$ neighbors $i \in F$).
+\end{definition}
+
+Neighborhoods $N(j)$, $N^2(j)$ are defined as before.
+
+\begin{enumerate}
+\item $v \leftarrow 0$, $w \leftarrow 0$
+\item $A \leftarrow 0$
+\item $l \leftarrow 0$
+\item $S \leftarrow D$
+\item while $S \neq 0$
+\begin{enumerate}
+	\item $l \leftarrow l + 1$
+	\item increase $v_j$ for all $j \in S$ and all $w_{ij}$ for all $i\in N(j)$, $j \in S$ uniformly until $\exists i_l \in F: \sum_{j\in D}{w_{ij} = f_i}$
+	\item $A \leftarrow A \cup \{i_l\}$
+	\item $S \leftarrow S - N(i_l)$
+\end{enumerate}
+\end{enumerate}
+
+Algorithm obviously produces feasible solution in primal and dual.
+
+For the facility opening costs we observe:
+\[
+	\sum_{i\in A}{f_i} = \sum_{i\in A}{\sum_{j \in D}{w_{ij}}} = \sum_{i\in A}{\sum_{j \in D}{\max(v_j - c_{ij}, 0)}} = \sum_{j\in D}{\sum_{c \in N(j) \cap A}{(v_j-c_{ij})}}
+\]
+
+\textcolor{blue}{\emph{Sum up over all client and their neighborhood. Problem there could be more than one open facility in the neigborhood, which makes it dificult.}}
+
+If we had $|N(j) \cap A| = 1 \forall j \in D$ with $i(j)$ being the unique open facility in the neighborhood of $j$, we could continue 
+\[
+	= \sum_{j \in D}{(v_j - c_{i(j)j}) \leq \sum_{j \in D}{v_j} \leq OPT}
+\]
+
+Unfortunately that's not true for $A$, but we can prune $A$ to $A'$ with this property without incuring too high additonal connection costs: \textcolor{blue}{\emph{see second Picture from 2014-01-28}}
+
+\begin{enumerate}
+	\item $A' \leftarrow A$
+	\item for $k = 1$ to $l$
+		\begin{enumerate}
+			\item if $i_k \in A$ open $i_k$, $A' \leftarrow A' - N^2(i_k)$ and assign unassigned $j \in N(i_k) \cup N^3(i_k)$ to $i_k$ 
+		\end{enumerate}
+\end{enumerate}
+
+$A'$ denote the resulting set of facilities to open.
+
+\begin{lemma}
+	$\forall j \in D: |A' \cap N(j)| \leq 1$
+\end{lemma}
+
+\begin{proof}
+Assume otherwise, i.e. $i_a$, $i_b \in A' \cap N(j)$, $ a < b$. Then $i_b$ should have been removed from $A'$ when $i_a$ was considered. 
+\end{proof}
+
+Now there are some $j \in D$ wiht $N(j) \cap A' = 0$. We claim that their connection cost is not too big, i.e. $c_{i(j)j} \leq 3 v_j$.
+As for such $j$ all facilities $i \in N(j) \cap A$ have ... indices than $i(j)$, hence $v_j \geq v_k \forall k \in N(i(j))$. Assume $j$ neighbors $i$ neighbors $k$ neighbors $i(j)$
+
+\textcolor{blue}{\emph{see third picture from 2014-01-28}}
+
+\textcolor{blue}{\emph{see fourth picture from 2014-01-28 ff}}
+
 
 
 \end{document}
