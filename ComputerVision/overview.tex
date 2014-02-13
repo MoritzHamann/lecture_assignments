@@ -1,0 +1,1573 @@
+% Created 2014-02-12 Mi 21:27
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage[normalem]{ulem}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{amstext}
+\usepackage{hyperref}
+\tolerance=1000
+\usepackage[top=2cm, bottom=2cm, left=1cm, right=1cm]{geometry}
+\usepackage{amsmath}
+\author{Moe}
+\date{\today}
+\title{overview}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 23.4.1 (Org mode 8.0.6)}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Introduction:}
+\label{sec-1}
+\begin{itemize}
+\item Sampling: discretisation of image domain
+\item Quantisation: 
+\begin{itemize}
+\item discretation of co-domain   (value range)
+\item Humans only see  40 different greyscales
+\end{itemize}
+\item Dimensions of image domain:
+\begin{itemize}
+\item 1 = Signal
+\item 2 = Image
+\item 3 = e.g CT scan (voxels)
+\end{itemize}
+\item Dimension of co-domain: eg. 1 for grayscale, 3 for RGB, frequency bands
+\begin{itemize}
+\item special case: co-domain from $\mathbb{R}^{n\times n} \rightarrow$  MRI scans
+\end{itemize}
+\item Imagesequences $\Rightarrow$ image domain +1 dimension
+\end{itemize}
+
+\section{Features and Descriptors}
+\label{sec-2}
+Features are "interessting" parts of the image
+
+\subsection{Linear Diffusion}
+\label{sec-2-1}
+Physical phenomen where concentration differences are equalized is called diffusion
+
+\begin{itemize}
+\item Fick's Law:
+$$ j = -D \cdot \nabla u $$
+flux j, diffusion tensor D, u concentration
+\item preservation of mass: $\partial u_t = -\text{div}(j)$
+\item General diffusion equation:
+$$ \partial u_t = \text{div}(D \nabla u) $$
+with $\nabla u = (u_x, u_y)^T$
+\item in linear case: $D = I \Rightarrow \partial u_t = \text{div}(\nabla u) = \Delta u$
+\end{itemize}
+\emph{Implementation Details:}
+\begin{itemize}
+\item \emph{original (greyscale) image = initial conditions}
+\item \emph{reflecting boundary conditions $\rightarrow$ closed system, $\partial$$_{\text{n}}$ u = 0}
+\end{itemize}
+
+\subsubsection{Gaussian Convolution}
+\label{sec-2-1-1}
+\begin{itemize}
+\item Convolution with Gaussian Kernel
+$$ (K_\sigma * f)(x) = \int_{\mathbb{R}}^2 K_\sigma(x-y)f(y)dy $$
+standard deviation $\sigma$, original image f
+\item Convolution is multiplication in frequency domain
+\item Gaussian Kernel is gaussian in frequency domain $\rightarrow$ \textbf{low-pass} filter
+\item with linear diffusion $\partial_t u = \Delta u$ exists \textbf{unique analytic solution}:
+      $$ u(x,t) = \begin{cases}f(x) & t=0 \\ (K_{\sqrt{2t}}*f)(x) & t>0 \end{cases} $$
+\item satifies \textbf{maximum-minimum principle} $\rightarrow u(x,t)$ has only values between
+maximum and minimum of original image
+\end{itemize}
+\subsubsection{Numerical Aspects}
+\label{sec-2-1-2}
+\begin{itemize}
+\item \textbf{FFT} because convolution is multiplication in frequency domain $\rightarrow$ 
+comp. costs independent of $\sigma$: O(N log(N))
+\item \textbf{Solution in spatial domain} sampling gaussian and truncate at multiple of $\sigma$,
+costs O(N$\sigma$)
+\item \textbf{Discretisations of diffusion equation} $\rightarrow$ less efficient for large times
+\end{itemize}
+\emph{TODO: How to get discrete Derivatives and boundary conditions}
+\subsubsection{Scale-Space Concept}
+\label{sec-2-1-3}
+Featuers T exists at different scales, the best scale is often not known
+$\rightarrow$ we consider hierarchy of Features T with gradually increased scales\\
+    \textbf{Scale-Space:}
+$$ \{T_tf | t \ge 0\} $$
+with T as Transformation at scale t, image f \\
+    \textbf{Requirements:}
+\begin{itemize}
+\item architectural properties: e.g. semi group $T_{t+s}f = T_t(T_s(f))\; \forall s,t \ge 0$
+\item simplification properties: eg. causality, maximum-minium priciple
+\item invariances: e.g translation and rotation invariance
+\end{itemize}
+\textbf{Gaussian Scale-Space:}
+$$ T_tf := K_{\sqrt{2t}}*f $$
+\subsection{Image Pyramids}
+\label{sec-2-2}
+\subsubsection{Gaussian Pyramid}
+\label{sec-2-2-1}
+\textbf{Goal:} images on serveral resolution levels $\rightarrow$ discrete version of
+scale-space with downsampling\\
+    \textbf{Properties:}
+\begin{itemize}
+\item damp high frequencies to avoid aliasing $\rightarrow$ low-pass, than sample with half
+of the freqency
+\item Lowpass: 
+\begin{itemize}
+\item Sampled Gaussian (linear diffusion)
+\item box filter (1D approximation of Gaussian)
+\end{itemize}
+\item more efficient than discrete scale-space due to downsampling
+\item optimal complexity: linear ?
+\item Drawbacks:
+\begin{itemize}
+\item which downsampling operator
+\item downsampling of sparse data
+\end{itemize}
+\end{itemize}
+
+\subsubsection{Laplacian Pyramid}
+\label{sec-2-2-2}
+\textbf{Goal:} decompose image into different frequency bands in \emph{spatial domain} \\
+    \textbf{Properties:}
+\begin{itemize}
+\item downsampling with gaussian low pass like in Gaussian Pyramids
+\item \emph{difference} of subsequent levels is a \textbf{band-pass}
+\item upsampling of later levels is needed $\rightarrow$ pixel doubling
+\end{itemize}
+\subsection{Derivative Filters}
+\label{sec-2-3}
+Strong change in grey values indicate edges $\rightarrow$ important image feature, but still
+low-level vision.
+\begin{itemize}
+\item derivative is calculated with finite differences
+\item increased stencil size increases order of consitency
+\item First order derivative: $\partial_x \approx \frac{1}{2h} [-1,0,1]$
+\begin{itemize}
+\item \textbf{Sobel} operator
+\item convolution of derivative with binomial kernel
+       \[ \partial_x \approx \frac{1}{4} \begin{bmatrix} 1 \\ 2 \\ 
+       1 \end{bmatrix} * \frac{1}{2h}[-1,0,1] = 
+       \frac{1}{8h} \begin{bmatrix} -1 & 0 & 1 \\ -2 & 0 & 2 \\ -1 & 0 & 1 \end{bmatrix} \]
+\item still consitency order 2
+\end{itemize}
+\item Second order derivative
+\begin{itemize}
+\item \textbf{Laplacian}
+       \[ \Delta u_{i,j} = \frac{1}{h^2} \begin{bmatrix} 
+          0&1&0 \\ 1&-4&1 \\ 0&1&0 \end{bmatrix} u_{i,j} -  
+	  \frac{1}{12}h^2(\partial_{xxxx}u_{i,j}+\partial_{yyyy}u_{i,j}) + O(h^4) \]
+\item first term is rotation invariant, second not
+\end{itemize}
+\end{itemize}
+
+\subsubsection{Edge Detection}
+\label{sec-2-3-1}
+\begin{itemize}
+\item Idea: convolve image with Gaussian and compute gradient magnitude using \textbf{Sobel}
+     $|\nabla u | = \sqrt{(\partial_x u)^2+(\partial_y u)^2}$
+\item Advantage:
+\begin{itemize}
+\item first order derivatives more robust to noise than second order
+\end{itemize}
+\item Disadvantage:
+\begin{itemize}
+\item additional threshold parameter for gradient magnitude (in addition to standard deviation)
+\item edges are to thick or below threshold
+\item no closed contours
+\end{itemize}
+\item Treshold can be chosen dependent on histogram
+\end{itemize}
+Canny Edge Detector:
+\begin{enumerate}
+\item Gaussian smoothing, gradient magnitude calculation, as well as oriention of gradient
+\begin{itemize}
+\item choose edges above threshold T$_{\text{1}}$
+\end{itemize}
+\item \textbf{Non-Maxima Suppresion} If there exists pixels in orthogonal direction 
+of edge with larger gradient, delete current pixel
+\item \textbf{Hysteresis Thresholding} choose second threshold $T_2>T_1$, choose 
+all pixel above $T_2$ and add all adjecent neighbors with threshold above $T_1$
+\end{enumerate}
+Laplacian of Gaussian:
+\begin{itemize}
+\item Gaussian smoothing, than compute Laplacian
+\item Edges are zero crossings, since Laplacian is second order derivative
+\item Advantages:
+\begin{itemize}
+\item closed contours
+\item no additional Treshold parameter
+\end{itemize}
+\item Disadvantages:
+\begin{itemize}
+\item also detects minima of first derivative
+\item more sensitive to noise
+\end{itemize}
+\end{itemize}
+\subsubsection{Corner Detection}
+\label{sec-2-3-2}
+\begin{itemize}
+\item corners are more characteristic than edges, intersection of edges
+\item calculated with \textbf{structure tensor}:
+     \[ J_\sigma = K_\sigma * (\nabla f \nabla f^T) = \begin{pmatrix}
+       K_\sigma*f_x^2 & K_\sigma f_xf_y \\
+       K_\sigma*f_xf_y & K_\sigma f_y^2 \end{pmatrix}
+     \]
+size of local neighbourhood $\sigma$ (also standard deviation of gaussian), * convolution
+\item Eigenvalues $\lambda_1, \lambda_2$ of J$_{\sigma}$ gives local structure
+\begin{itemize}
+\item \(\lambda_1, \lambda_2 \approx 0 \rightarrow \text{ flat area}\)
+\item \(\lambda_1 >> 0, \lambda_2 \approx 0 \rightarrow \text{ edge}\)
+\item \(\lambda_1, \lambda_2 >> 0 \rightarrow \text{corner} \)
+\end{itemize}
+\item less robust than Edge detection
+\end{itemize}
+\subsubsection{Extension to color images}
+\label{sec-2-3-3}
+\begin{itemize}
+\item calculation of gradient magnitude for each color channel seperatly makes no sense
+\item Edge detection:
+\begin{itemize}
+\item \textbf{joint color gradient}:
+\[ |\nabla f| = \sqrt{\sum_{i}|\nabla f_i|^2} \]
+for channels i
+\end{itemize}
+\item Corner detection:
+\begin{itemize}
+\item \textbf{joint color structure tensor}:
+\[ \sum_{i} J_{i,\sigma} = \sum_{i} \nabla f_i \nabla f_i^T \]
+for channels i
+\end{itemize}
+\end{itemize}
+\subsection{Hough Transform}
+\label{sec-2-4}
+\begin{itemize}
+\item detect simple geometric objects, with few parameters (radius, position, \ldots{})
+\item object boundaries satisfies $g(x,y, p_1,...,p_m) = 0$ with $p_i$ parameter
+\begin{itemize}
+\item Line: \( x cos(\phi) +y sin(\phi) -d = 0 \rightarrow \phi, d\) are parameter
+\item Circle: \( |x-a|^2 + |y-b|^2 -r^2 = 0 \rightarrow \) center (a,b) and 
+radius r are parameter
+\end{itemize}
+\item first select all points where gradient magnitude is larger than threshold
+\item Every remaining pixel votes for all objects it is part of
+\item The moste relevant parameter combination has most votes (\textbf{The majority rules})
+\item Advantages:
+\begin{itemize}
+\item no fully connected contours neccessary
+\item extremly robust
+\end{itemize}
+\item Disadvantage:
+\begin{itemize}
+\item memory and computional costs increase fast with number of parameters
+       $\rightarrow$ pyramid like approach
+\end{itemize}
+\end{itemize}
+\subsection{Moment Invariants}
+\label{sec-2-5}
+\textbf{Goal:} check if two objects from two images are identical, while the second
+object may have been applied to certain transformations (scale, translations, rotation, etc)
+\begin{itemize}
+\item Moment of order p+q:
+     \[ m_{p,q}:= \int_{-\infty}^{\infty}\int_{-\infty}^\infty x^p y^q f(x,y)dxdy = 
+        \sum_i \sum_j i^p j^q f_{i,j} \]
+\item \textbf{Uniqueness Theorem for Moments} if f is continous and 0 outside a bounded subdomain
+all moments exist $\rightarrow$ reverse also holds if moments satisfy certain growth
+condition
+\item \textbf{Central Moments} are translation invariant:
+\[ \mu_{p,q} := \int_{-\infty}^\infty \int_{-\infty}^\infty 
+        (x-\bar{x})^p (y-\bar{y})^q f(x,y) dx dy = 
+	\sum_i \sum_j (i-\bar{i})^p (j-\bar{j})^q f_{i,j}\]
+with $\bar{x}=\frac{m_{1,0}}{m_{0,0}}$ and $\bar{y}=\frac{m_{0,1}}{m_{0,0}}$
+as \textbf{center of gravity}
+\item \textbf{normalized central moments} are in \emph{addition} scale invariant
+\[ \eta_{p,q} := \frac{\mu_{p,q}}{(\mu_{0,0})^\gamma} \]
+with $\gamma = \frac{p+q}{2}+1$ and $p+q \ge 2$
+\item \textbf{seven moment invariants of Hu} are also rotation invariant (the first 6 are also
+invariant under mirroring, the 7th changes sign)
+\item also there exists invariant moments for \textbf{shearing} or all afine transformations
+\item Hu moments 3,4,5,7 are also invariant under motion blur
+\item Moments are \textbf{not exactly} invariant due to \emph{discretization}
+\end{itemize}
+\subsection{Photometric Invariants}
+\label{sec-2-6}
+one can also construct photometric invariants which are not influenced by certain
+lightning conditions, namely:
+\begin{itemize}
+\item Global multiplicative changes
+\item local multiplicative changes (shadows)
+\item local additive changes (highlights, specular reflections)
+\end{itemize}
+Examples:
+\begin{itemize}
+\item \textbf{Log-Derivative Transform}:
+\[ f \rightarrow \left(ln(f)_x, ln(f)_y \right)^T \]
+invariant under global multiplicative changes
+\item \textbf{Chromatic Space}
+\[ (R,G,B) \rightarrow \left( \frac{R}{N},\frac{G}{N},\frac{B}{N} \right) \]
+normalization $N=\frac{1}{3}(R+G+B)$, invariant under global and
+local multiplicative changes
+\item \textbf{HSV Color Space}: Hue component is invariant under global and local multiplicative
+changes as well as local additiv changes
+\end{itemize}
+\subsection{Texture Analysis}
+\label{sec-2-7}
+\begin{itemize}
+\item no formal definition
+\item local stochastic fluctations: size, shape, color, orientation etc may vary
+\item often empircally successful statistic expressions for analysis
+\item edge detectors not useful to seperate regions with different textures\\
+\end{itemize}
+\textbf{Goal}: describe complex structure with few parameters
+
+\subsubsection{Texture Analysis without neighborhood context}
+\label{sec-2-7-1}
+\begin{itemize}
+\item \textbf{central moment of histogram} (statistical moments) with order k:
+\[ M_k := \frac{1}{N}\sum_{i=1}^N(f_i-\mu)^k =
+         \sum_{i=1}^L(z_i - \mu)^k p(z_i)\]
+with N pixels, grey values $f_i = z_i$, mean $\mu$ and probability for greyvalue $p(z_i)$
+\item Important Examples:
+\begin{itemize}
+\item k=2 Variance
+\item k=3 Skewness (Schiefe)
+\item k=4 Kurtosis (Woelbung)
+\end{itemize}
+\item \textbf{Texture Discriminations}: replace greyvalues with texture attribute 
+(e.g. statistical moment) within some window $\rightarrow$ apply 
+classical edge detection on resulting image
+\item Disadvantage:
+\begin{itemize}
+\item Statistical moments are \textbf{global} description for region
+\item \textbf{spatial ordering} of pixel doesn't matter $\rightarrow$ checkerboard and
+block with half white and half black have same statistical moments
+\item texture descriptor without spatial information is called \textbf{first-order statistics}
+\end{itemize}
+\end{itemize}
+\subsubsection{Texture Analysis with neighborhood context}
+\label{sec-2-7-2}
+\textbf{Possiblity 1: Multiscale Representation}
+\begin{itemize}
+\item characterize image on different scales with
+\begin{itemize}
+\item scale spaces or
+\item pyramids
+\end{itemize}
+\item afterwards use first-order statistics texture descriptor
+\item Example: ?
+\end{itemize}
+\textbf{Possiblity 2: Coocurrence Matrices}
+\begin{itemize}
+\item Historgram of neighborhood relations
+\item displacement vector d specifies which points are compared
+\item \textbf{bivarite grey value histogram} specifies relative frequency of greyvalue i with
+greyvalue j in direction d
+\item Example:
+\includegraphics[width=10cm]{./occurence_matrix.png}
+\item information in coocurence matrix is dense, has to be condensed:
+\begin{itemize}
+\item \textbf{Largest Probability}: maximal p(i,j) is called \emph{mode}
+\item \textbf{Contrast}: $\sum_{i,j}(i-j)^2 p_{i,j} \rightarrow$ small if similar grey values
+in neighborhood
+\item \textbf{Homogeneity}: $\sum_{i,j} \frac{p_{i,j}}{1+|i-j|} \rightarrow$ large if 
+similar grey values in neighborhood
+\item \textbf{Entropy}: $-\sum_{i,j}p_{i,j} log(p_{i,j}) \rightarrow$ mesaure of randomness and
+is maximal if all possible configurations are equally likely
+\end{itemize}
+\end{itemize}
+\textbf{Possibility 3: Fourier Domain}
+\begin{itemize}
+\item good for periodic textures
+\item consider fourier spectrum in polar cooridnates $|f(r,\phi)|$
+\item compute $g(r)$ by integrating over $\phi$ and $\h(\phi)$ by integrating over r
+      $\rightarrow$ maximum, variance etc of these functions can discriminate textures
+\end{itemize}
+\subsection{Scale Invariant Feature Transform (SIFT)}
+\label{sec-2-8}
+\textbf{Goal:} detect \emph{feature points} and use descriptors to repesent them as unique as possible,
+while maintaining \emph{invariance under scaling, translation and rotation}
+\begin{enumerate}
+\item \textbf{Difference of Gaussians (DoG):}
+\begin{itemize}
+\item Consider Gaussian scale-space $K_\sigma * f$ for multiples of $\sigma$
+\item Calculate difference between consecutive levels of scale-space
+        $\rightarrow$ \emph{band-pass} filter
+\item Relation to \emph{Laplacian of Gaussian} (LoG):
+\begin{itemize}
+\item $\frac{\partial K_\sigma}{\partial \sigma} = \sigma \Delta K_\sigma
+	  \approx \frac{K_{k\sigma}-K_\sigma}{k\sigma -\sigma}$
+\item $K_{k\sigma}-K_\sigma \approx (k-1)\sigma^2 \Delta K_\sigma
+	  \approx \sigma^2 \Delta K_\sigma$
+\item $\sigma$$^{\text{2}}$ is needed for true scale invariance
+\item is called \emph{normalized LoG}
+\item normalized LoG has extremal value at \emph{characteristic scale} of feature
+\end{itemize}
+\item find extrema by comparing values of DoG in neigborhood of location and scale
+\end{itemize}
+\item \textbf{Taylor approximation for sub pixel accurency}
+\begin{itemize}
+\item at found extrema perform second order Taylor expansion:
+        \[ D(x_i+h)\approx D(x_i)+\nabla D(x_i)^T h + \frac{1}{2}h^T \mathcal{H}(D(x_i))h \]
+\item new extrema is found by setting derivative to zero and solving the resulting equation
+for $h$
+\item if $h>0.5 \rightarrow$ repeat process for closest interger location to new found extrema
+\item remove feature point if
+\begin{itemize}
+\item extremal value is not large enough (low contrast)
+\item if principal curvatures is too large (edge instead of corner)
+\item principal curvature is proportional to eigenvalues of Hessian \mathcal{H}
+$\rightarrow$ ratio of eigenvalues can be computed efficenlty by trace and
+determinant of hessian
+\end{itemize}
+\end{itemize}
+\item \textbf{Histogram of Gradients (HoG):}
+\begin{itemize}
+\item compute the gradient for every pixel in a circular neighborhood of a feature point
+at corresponding scale
+\item gradient is weighted with gaussian ($1.5\sigma$) centered at location of feature point
+\item generate histogram of orientation with 10 degree steps and weight each entry with
+magnitude of gradient
+\begin{itemize}
+\item largest entry is dominant orientation
+\item for every entry with >80\% in histogram $\rightarrow$ create additional feature point
+\end{itemize}
+\end{itemize}
+\item \textbf{SIFT Key point Descriptor:}
+\begin{itemize}
+\item for each feature point consider neighborhood of 16x16 pixels, divided into 16 blocks
+of 4x4 pixels
+\item for each 4x4 block calculate HoG with 45 degree steps (8 directions)
+(compensated for dominant direction and location?)
+\item store all 8 values of HoG for all 16 blocks in vector (128 entries)
+\item normalize it
+\end{itemize}
+\end{enumerate}
+\textbf{Invariance to scaling, shift and rotation:} neighborhood information computed at
+caracteristic scale relative to feature location and compensated by dominant orientation\\
+   \textbf{Invariance to illumination:} gradient is invariant to additive changes, final normlization
+of descriptor vector makes it invariant to multiplicative changes
+
+\section{Image Sequence Analysis I}
+\label{sec-3}
+\subsection{Local Methods}
+\label{sec-3-1}
+\textbf{Goal:} Given a image sequence $f(x,y,z)$ with time variable z, calculate displacment
+vector $(u(x,y,z),v(x,y,z))^T$ called \textbf{optical flow}\\
+   Examples:
+\begin{itemize}
+\item reconstruction of 3D-World from image sequence (structure-from-motion)
+\item deformation in material science
+\item video processing / video coding
+\item interlacing in cameras
+\end{itemize}
+
+\subsubsection{linearised optical flow constraint (OFC)}
+\label{sec-3-1-1}
+Properties:
+\begin{itemize}
+\item assume greyvalue does not change in consecutive images, therefore
+      \[ f(x+u,y+v,z+1) = f(x,y,z) \]
+\item linearisation with Taylor for small u,v gives \emph{linearized optical flow constraint:}
+      \[ 0=f(x+u,y+v,z+1)-f(x,y,z) = f_x(x,y,z)u+f_y(x,y,z)v+f_z(x,y,z)= 
+         f_xu+f_yv+f_z\]
+\item grey value constancy is often correct, illumination changes often very slowly
+over several frames
+\item linearisation assumption is violated more frequently
+\begin{itemize}
+\item either use OFC without linearisation (more difficult models) or
+\item use coarse-to-fine approaches with pyramids
+\end{itemize}
+\item OFC don't has unique solution (2 variables, 1 equation):
+\begin{itemize}
+\item OFC specifies parallel flow component to gradient
+        \[ 0= f_xu+f_yv+f_z=(u,v)\nabla f +f_z \]
+\item orthogonal flows to $\nabla f$ can be added without violating OFC
+\item \textbf{aperture problem}
+\item more constraints are needed
+\end{itemize}
+\item Normal flow (normal component of flow vector $(u,v)$):
+\begin{itemize}
+\item with $(u,v)\nabla f = -f_z$ can be caluclated (in contrast to tangential component)
+\[ (u_n,v_n) = (u,v)...  \]
+what ever\ldots{} TODO!!!
+\item Normal flow gives poor results
+\end{itemize}
+\end{itemize}
+
+\subsubsection{Spatial approach of Lucas and Kanade}
+\label{sec-3-1-2}
+\textbf{Model:}
+\begin{itemize}
+\item optical flow at specfic point is \textbf{constant vector} $(u,v)$ in 
+ballshaped neighborhood $B_r(x,y)$
+\item this flow vector minimizes the local energy
+      \[ E(u,v) = \frac{1}{2}\int_{B_r(x,y)} (f_xu+f_yv+f_z)^2 dxdy \]
+\item solution is vector which fullfills OFC best in least square sense in the
+neighborhood $B_r(x,y)$
+\item setting partial derivatives to zero yields 2x2 LGS:
+      \[ \begin{pmatrix} \int_{B_r}f_x^2 dxdy & \int_{B_r}f_xf_y dxdy \\ 
+      \int_{B_r}f_xf_y dxdy & \int_{B_r}f_y^2 dxdy \end{pmatrix}  \begin{pmatrix} 
+      u \\ v \end{pmatrix} 
+      = \begin{pmatrix} -\int_{B_r}f_x f_z dxdy \\ -\int_{B_r}f_y f_z dxdy \end{pmatrix} \]
+\end{itemize}
+\textbf{Practical considerations:}
+\begin{itemize}
+\item often one replaces "hard" window $B_r$ with Gaussian convolution $\rightarrow$
+fullfilling OFC in distance is not that important
+\item Matrix in LGS is \emph{structure tensor} $J_r$
+\item Problems:
+\begin{itemize}
+\item $rank(J_r) = 0$ both eigenvalues are zero, means \textbf{flat area}
+\item $rank(J_r) = 1$ one eigenvalue is zero, means same gradient in whole area
+        $\rightarrow$ infinitly many solutions, aperture problem persits
+        $\rightarrow$ one can only compute \textbf{normal flow}
+\end{itemize}
+\end{itemize}
+\textbf{Advantages:}
+\begin{itemize}
+\item simple and fast
+\item often good results for costs
+\end{itemize}
+\textbf{Disadvantages:}
+\begin{itemize}
+\item problems if local constant flow vector assumptions is violated (e.g rotations)
+\item local method $\rightarrow$ does not compute flow field at all locations
+\end{itemize}
+
+\subsubsection{Spatiotemporal approach of Lucas and Kanade}
+\label{sec-3-1-3}
+\begin{itemize}
+\item replace spatial local constancy with local spatiotemporal constancy
+(flow not only constant for one timestep, but for several?)
+\item same LGS, but with Gaussian convolution over entire sequence
+\item more robust
+\end{itemize}
+
+\subsubsection{Spatiotemporal approachh of Bigün}
+\label{sec-3-1-4}
+\textbf{Model:}
+\begin{itemize}
+\item Optical flow is regarded as orientation in space-time domain
+\item we search for direction with least grey value change in neighborhood
+      $B_r(x,y,z)$ (time variable z is now also considered)
+\item Minimizing Energy for vector $w=(w_1,w_2,w_3)^T$:
+      \[ E(w_1,w_2,w_3)= \int_{B_r(x,y,z)}(f_x w_1 + f_y w_2 + f_z w_3)^2 dx dy dz \]
+\item Afterwards normalize $w_3$ to get spatial optical flow:
+      \[ u=\frac{w_1}{w_3}, v=\frac{w_2}{w_3} \]
+\item In contrast to Lucas-Kanade Method, we also optimize time component (\emph{total least square})
+\end{itemize}
+\textbf{Minimization:}
+\begin{itemize}
+\item desired vector $w$ is normalized eigenvector to smallest eigenvalue of:
+      \[ \int_{B_r} \nabla_3 f \nabla_3 f^T dx dy dz \]
+\item if integral is replaced with gaussian convolution ($K_r *(\nabla_3 f \nabla_3 f^T)$)
+one gets 3D structure tensor $J_r$
+\end{itemize}
+\textbf{Flow classification:}
+\begin{itemize}
+\item $rank(J_r) = 0$, all eigenvalues are zero, no information about flow
+\item $rank(J_r) = 1$, two low contrast eigenvalues, no unique flow, \textbf{aperture problem}
+      $\rightarrow$ only normal flow can be calculated
+\item $rank(J_r) = 2$, one vanishing eigenvalue, optical flow is eigenvector of smallest eigenvalue
+normilized on the third component (as described above)
+\item $rank(J_r) = 3$, assumption of locally constant flow is violated, either
+      \textbf{flow discontinuity} or noise dominates
+\end{itemize}
+\textbf{Advantages:}
+\begin{itemize}
+\item high robustness to noise
+\item provides detailed information on optical flow because of spatiotemporal structure tensor
+\end{itemize}
+\textbf{Disadvantages:}
+\begin{itemize}
+\item more complicated than Lucas-Kanada (numerical principal component analysis of 3x3 matrix)
+\item also problems at flow discontinuites and non-translatory motion (e.g. rotation)
+\item also no global method
+\item more threshold parameters
+\end{itemize}
+
+\section{Image Sequence Analysis II}
+\label{sec-4}
+\subsection{Affine Lucas and Kanade Method}
+\label{sec-4-1}
+\begin{itemize}
+\item instead of assuming local constant flow, we assume now \textbf{locally affine} flow
+\item we consider affine parametrization of flow:
+     \[ w = (u,v,1)^T = \begin{pmatrix} ax+by+c \\ dx+ey+f \\ 1 \end{pmatrix}
+          = \begin{pmatrix} x&y&1&0&0&0&0 \\ 0&0&0&x&y&1&0 \\ 0&0&0&0&0&0&1 
+        \end{pmatrix} \begin{pmatrix} a\\b\\c\\d\\e\\f\\1 \end{pmatrix} = M\cdot p\]
+\item OFC can be rewritten as:
+     \[ f_xu+f_yv+f_z = \nabla_3 f^T w = \nabla_3 f^T (Mp) = (M^T\nabla_3f)^Tp = r^Tp \]
+\item locally affine model means \textbf{locally constant set of affine parameters}
+\item local energy:
+\[ E(p) = \int_{B_r}(p^Tr)^2 dxdy = p^T\int_{B_r}(rr^T dx dy)p = p^T J_r p  \]
+with $J_r$ 7x7 affine equivalent of saptiotemporal structure tensor
+\item Again setting partial derivative to zero yields 6x6 LGS
+\end{itemize}
+\subsection{KLT feature tracker}
+\label{sec-4-2}
+\textbf{Overview:}
+\begin{enumerate}
+\item feature selection
+\item inter frame displacement for each feature (spatial approach from Luca and Kanade)
+\item find new features at new places, discard features, which couln't be tracked
+\item goto 2
+\end{enumerate}
+KLT tracker dont use feature descriptor (as does SIFT), only compares windows 
+around features (corners), but does that efficently, because displacement
+of feature is computed via optical flow
+
+\subsubsection{Inter-frame displacement estimation}
+\label{sec-4-2-1}
+\begin{itemize}
+\item uses spatial approach from Lucas and Kanade
+\item motion between subsequent frames is small $\rightarrow$ linearisation is valid
+\item only 2 unknows have to be solved (instead of 6 with the affine model)
+\item since computed displacement is not perfect, use \textbf{iterative approach:}
+\begin{enumerate}
+\item \textbf{Start:} compute flow between subsequent frames
+\item \textbf{Resgistration:} compensate second image: $f*(x,y,z+1):= f(x+u^k,y+v^k, z+1)$
+\item \textbf{Correction}: compute flow $(du,dv)$ between $f$ and $f*$ 
+(remaining flow after compensation)
+\item \textbf{Update:} add correction to flow: $(u^{k+1},v^{k+1}) = (u^k, v^k)+(du,dv)$
+\item \textbf{Loop:} goto 2 until max steps of corrections
+\end{enumerate}
+\item iterative approach needs \emph{sub-pixel values} $\rightarrow$ use \textbf{bilinear interpolation}
+\end{itemize}
+\subsubsection{Feature selection}
+\label{sec-4-2-2}
+\begin{itemize}
+\item since we perform translational (spatial approach) Lucas/Kanade $\rightarrow$
+we solve 2x2 LGS with spatial structure tensor as system matrix
+\item reliable solution exists if:
+\begin{itemize}
+\item above noise level $\rightarrow$ both eigenvalues are large
+\item well coditioned $\rightarrow$ eigenvalue do not differ by orders of magnitude
+\end{itemize}
+\item in practice $\lambda_2 > treshold$
+\item comes down to \textbf{corner detection} (because system matrix is structure tensor)
+\item neighborhood size is 3 times standard deviation (99.7\% of information)
+\item only one feature in neighborhood
+\end{itemize}
+\subsubsection{Feature monitoring}
+\label{sec-4-2-3}
+\begin{itemize}
+\item feature is discarded if cumulative error between current and first frame of the
+neighborhood becomes too large
+\[ e = \int_{B_r} (f(x+u,y+v,t)-f(x,y,1))^2 dx dy \]
+\item complete motion may be complex, simple translation is not sufficent
+      $\rightarrow$ use affine method of Lucas and Kanade to compute cumulative errors only
+\end{itemize}
+\subsection{Feature matching}
+\label{sec-4-3}
+\begin{itemize}
+\item Match features points in different images (\textbf{not} neccessary in subsequent frames!)
+\item therefore \textbf{feature descriptor} for every feature point is computed (e.g SIFT)
+\item compare all feature descriptors in both images
+     \[ diff(a,b) = \|a-b\|^2 \]
+\item for each feature point in original image get best match in second image
+\end{itemize}
+\textbf{Advantages:}
+\begin{itemize}
+\item invariance properties of feature points $\rightarrow$ more accurate results
+\item estimate global motion model from few parameters (epipolar geometry needs 7)
+\end{itemize}
+\textbf{Disadvantages:}
+\begin{itemize}
+\item yields non-dense flow fields not useful for many tasks
+\end{itemize}
+
+\section{Image Sequence Analysis III}
+\label{sec-5}
+\subsection{Variational methods}
+\label{sec-5-1}
+\textbf{Problems of local methods:}
+\begin{itemize}
+\item non-dense flow fields (at low gradient nothing can be said)
+\item local constancy of optic flow not suitable for non-translatory motion
+\end{itemize}
+\textbf{Variational Methods:}
+\begin{itemize}
+\item also assume grey value constancy (yields OFC)
+\item to solve aparture problem, second contraint: \textbf{smoothness} of flow field
+     \[ \int_\Omega (|\nabla u|^2 + |\nabla v|^2) dx dy \quad \text{ is small} \]
+\item smoothness constraint holds \textbf{globally} (in contrast to local constancy contraint)
+\item can be relaxed to piecewise smoothness $\rightarrow$ requires nonquadratic penaliser
+\end{itemize}
+
+\subsubsection{Method of Horn and Schnuck}
+\label{sec-5-1-1}
+\begin{itemize}
+\item find function $(u(x,y),v(x,y))^T$ which minimizes the energy functional
+      \[ E(u,v) = \int_\Omega ((f_xu+f_yv+f_z)^2 + \alpha (|\nabla u|^2 + |\nabla v|^2)) dx dy \]
+\item regularisation parameter $\alpha > 0$ determines smoothnes of flow field
+\end{itemize}
+\textbf{Advantages:}
+\begin{itemize}
+\item also suitable for non-translatory motions
+\item transparent and flexible model: no hidden assumptions, assumptions can be modified
+\item dense flow field due to \textbf{filling-in effect} $\rightarrow$ smoothness dominates at
+locations where $|nabla f| \approx 0$, therefore propagation from the neighborhood
+\end{itemize}
+\textbf{Disadvantages:}
+\begin{itemize}
+\item only suitable for small displacement (with linearized OFC)
+\item simple algorithms are slow
+\end{itemize}
+\subsection{A simple algorithm}
+\label{sec-5-2}
+\begin{enumerate}
+\item Going to the Euler-Lagrange Equations
+\begin{itemize}
+\item Energy function
+        \[ E(u,v) = \int_\Omega F(x,y,u,v, u_x,u_y,v_x,v_y) dxdy \]
+\item satisfies Euler-Lagrange Equations
+\begin{align*} \partial_x F_{u_x} + \partial_y F_{u_y} - F_u &= 0 \\
+	   \partial_x F_{v_x} + \partial_y F_{v_y} - F_v &= 0 \end{align*}
+\end{itemize}
+\item Discretization:
+\begin{itemize}
+\item approximate derivates and laplacian by difference operators
+\item yields 2 difference equations for each pixel
+\item sparse but huge system of equations
+\end{itemize}
+\item Solving linear system:
+\begin{itemize}
+\item iterative method for example Jacobi method
+\begin{itemize}
+\item solve $Ax=b$
+\item divide $A=D-N$  into diagonal matrix $D$ and rest $N$
+\item Problem $Dx = Nx +b$ is solveable by fixed point iteration 
+          $x_{k+1} = D^{-1}(Nx_k+b)$
+\end{itemize}
+\end{itemize}
+\item Iteration step:
+\begin{itemize}
+\item iterate until stopping criteria (residium in Jacobi method)
+\end{itemize}
+\end{enumerate}
+\subsection{Extensions and Generalisations}
+\label{sec-5-3}
+\begin{itemize}
+\item Data term:
+\begin{itemize}
+\item other constraints (e.g sever illuminiation changes)
+\item higher order Taylor approximation
+\end{itemize}
+\item Smoothness term:
+\begin{itemize}
+\item spatiotemporal smoothness instead of spatial one
+\end{itemize}
+\item Algorithm:
+\begin{itemize}
+\item faster iterative solver (e.g SOR)
+\item coarse-to-fine warping with pyramid
+\end{itemize}
+\end{itemize}
+
+\section{3D Reconstruction}
+\label{sec-6}
+\subsection{Camera Geometry}
+\label{sec-6-1}
+\begin{itemize}
+\item Relation between Point $(X,Y,Z)$ and the mapping $(x,y)$ onto the virtual image plane
+\[ \frac{x}{X} = \frac{y}{Y} = \frac{f}{Z} \]
+with $f$ focal length
+\end{itemize}
+
+\subsubsection{Homogenous coordinates}
+\label{sec-6-1-1}
+\begin{itemize}
+\item since the relation is nonlinear, one uses \textbf{homogenous coordinates}
+\begin{itemize}
+\item additional coordinate as \emph{scaling factor}
+       \[ \begin{pmatrix} x\\y \end{pmatrix}
+          \rightarrow \begin{pmatrix} wx \\wy \\ w \end{pmatrix} \]
+\item yields projection matrix
+       \[ \begin{pmatrix} wx \\wy \\ w \end{pmatrix}
+          = \begin{pmatrix} f&0&0&0 \\ 0&f&0&0 \\ 0&0&1&0 
+            \end{pmatrix}\begin{pmatrix} X\\Y\\Z\\1 \end{pmatrix} \]
+\end{itemize}
+\end{itemize}
+\subsubsection{Extrinsic camera parameters}
+\label{sec-6-1-2}
+\begin{itemize}
+\item describe rotataion and  translation of camera in world frame
+\item are described in homogenous coordinates (rotation/translation matrix)
+\item 6 parameters (3 translation, 3 rotations)
+\end{itemize}
+\subsubsection{Intrinsic camera parameters}
+\label{sec-6-1-3}
+\begin{itemize}
+\item describe image plane inside the camera
+\item 5 parameters:
+\begin{itemize}
+\item origin of image plane (2)
+\item pixels size in each direction (2)
+\item angle of cooridnate axis (1)
+\end{itemize}
+\end{itemize}
+\subsubsection{Camera calibration}
+\label{sec-6-1-4}
+\begin{itemize}
+\item full projection matrix is retrived by
+      \[ M_{intrinsic} \cdot P \cdot M_{extrinsic} \]
+\item Many algorithms to find parameters in projection matrix
+\item Basic Idea:
+\begin{itemize}
+\item find corresponding points of known object and its image
+\item one point gives 2 contraints $\rightarrow$ 6 points are at least needed
+\item using more with least square yields less senstivity to errors
+\end{itemize}
+\item also consider model for \textbf{lens distortion}
+\end{itemize}
+\subsubsection{Projective Mappings}
+\label{sec-6-1-5}
+\begin{itemize}
+\item to get 2D coordinates divide by last coodinate of homogenous coordinates
+      $\rightarrow$ nonlinear transformation
+\begin{itemize}
+\item parrallel lines in 3D are intersection in 2D
+\item center of gravity in 3D is \textbf{not} mapped to c.o.g in 2D
+\item for $w \rightarrow 0$ small pertubations in 3D cann lead to large deviations in 2D
+\end{itemize}
+\item \textbf{Affine mapping}:
+\begin{itemize}
+\item linear approximation, good for small variation in depth (e.g. satellite images)
+\item $w$ is approximated with constant $c$
+\item no bad properties of nonlinear mapping, only 6 degrees of freedom
+\end{itemize}
+\item \textbf{Orthogonal mapping:}
+\begin{itemize}
+\item complete ignores depth information
+\item to crude for most applications, but applicable for some (e.g. shape from shading)
+\end{itemize}
+\end{itemize}
+
+\subsection{Epipolar Geometry, Stereo Matching}
+\label{sec-6-2}
+\begin{itemize}
+\item \textbf{baseline:} line connecting both optical centers (\textbf{length} $b$)
+\item \textbf{conjugated points:} two points in the two images from same 3D point
+\item \textbf{epipolar plane:} plane connecting point in 3D and both optical centers
+\item \textbf{epipolar lines:} intersection of epipolar plane and iamge plane
+\item \textbf{disparity:} difference of conjugated points
+\end{itemize}
+
+\subsubsection{Orthoparallel setup}
+\label{sec-6-2-1}
+\begin{itemize}
+\item two cameras with parallel optical axis
+\item epipolar lines are parrallel
+\item depth calculation with conjugates points $x_1,x_2$:
+      \[ z = \frac{bf}{x_1 - x_2} \]
+\item \textbf{Problem:} disparity is often hard to measure, only pixel size distance
+\end{itemize}
+\subsubsection{Converging camera setup}
+\label{sec-6-2-2}
+\begin{itemize}
+\item epipolar lines are not neccessary parrallel anymore
+\item conjugated points must satisfy \textbf{epipolar constraint}:
+\[ \tilde{x_1}^T F \tilde{x_2} = 0 \]
+with $\tilde{x_1}$ in homogenous coordinates, $F$ 3x3 fundamental matrix
+\item $F$ has rank 2 $\rightarrow$ 7 degrees of freedom
+\item not possible to extract intrinsic and extrinsic parameters from $F$
+\item if $F$ is known, one can find epipolar line in other image via
+      \[ \tilde{x_1}^Tl_1 \quad \text{with}\quad l_1 = Fx_2 \]
+\item creates reduced 1D search space for stereo matching
+\end{itemize}
+\subsubsection{Estimation of fundamental matrix}
+\label{sec-6-2-3}
+\begin{itemize}
+\item epipolar constraint can be rewritten into form with vector $s$ containing all coordiantes
+of the conjugated points and vector $f$, containing the 9 entries of the $F$ matrix
+\[ 0=\tilde{x_2}^T F \tilde{x_1} = s^Tf \]
+\item at least 8 conjugated points are needed to get entries of f
+\item solve LGS
+      \[ Sf = 0 \quad \text{with} \quad S=\begin{pmatrix}s_1^T \\ \vdots \\ s_N^T \end{pmatrix} \]
+\item Problems:
+\begin{itemize}
+\item $f=0$ always works
+\item $N>8$ no solution, over-determined system
+\item $N<8$ or linear dependent constraints leads to infinitely many solutions
+\end{itemize}
+\item Smallest sum of squares to get f:
+      \[ \min_f \sum_{i=1}^N (s_i^tf)^2 \quad \text{with}\quad |f|=1 \]
+\item since F has rank 2, we enforce this by setting the smallest singular value in SVD to 0
+(rank 2 projection?)
+\end{itemize}
+\subsubsection{Stereo reconstruction as correspondence problem}
+\label{sec-6-2-4}
+\begin{itemize}
+\item finding conjugated points is \textbf{correspondence problem} similar to optical flow,
+but with large displacements
+\item but epipolar constraint $\rightarrow$ smaller search space (1D)
+\item \textbf{Correlation-Based methods (local method):}
+\begin{itemize}
+\item epipolar constraint $\rightarrow$ 1D search space
+\item limited maximum displacement
+\item neighborhood is similiar $\rightarrow$ computed via \textbf{correlation coefficient}
+\item simple and fast, but unreliable in flat regions $\rightarrow$ structured illumination
+(project grid on object)
+\end{itemize}
+\item \textbf{Variational methods (global method):}
+\begin{itemize}
+\item similar to variational methods in optical flow computation
+\item minimize energy functional (here only disparites/displacement in x direction):
+        \[ E(u) = \int_\Omega ((f_2(x+u,y)-f_1(x,y))^2 + \alpha |\nabla u|^2)dx dy \]
+\item data term $(f_2 - f_1)^2$ may not be convex $\rightarrow$ local minima
+        $\rightarrow$ no global convergence for numerical methods
+\item Possible solution: use gaussian smoothing to reduce local minima
+(\textbf{gradually reduce gaussian} and use previous solution as initialization)
+\item again use Euler-Lagrange equations and iterative algorithm to solve resulting
+system of nonlinear equations
+\item Advantage: \textbf{filling-in effect} gives dense disparity maps
+\item Disadvantage: high computional effort
+\end{itemize}
+\end{itemize}
+\subsection{Shape from shading}
+\label{sec-6-3}
+\begin{itemize}
+\item get shape from single illuminated photograph, with know reflectance properites and
+light source position
+\item important in astronomy $\rightarrow$ no stero reconstruction possible (too far away)
+\end{itemize}
+
+\subsubsection{Illumination and Reflectance}
+\label{sec-6-3-1}
+\begin{itemize}
+\item radiation from surface is dependent on
+\begin{itemize}
+\item illumination direction
+\item reflectance properties
+\end{itemize}
+\item BRDF describes ratio between incoming light and outgoing light (dependent on angle)
+\item special cases
+\begin{itemize}
+\item ideally reflecting surface: reflects incoming ray in only one direction (mirror)
+\item Lambertian Surface: light is reflected in \textbf{all} directions, \textbf{albedo} $\rho$
+describes the ratio of reflected light
+\end{itemize}
+\end{itemize}
+\subsubsection{Basic Assumptions}
+\label{sec-6-3-2}
+\begin{itemize}
+\item \textbf{Lamberitan surface:}
+\begin{itemize}
+\item reflected radiance $R$ is proportional ($\rho$) to the cosine between light direction $s$
+and surface normal $n$:
+\[ R(X,Y,Z) = \rho s^Tn \]
+\item we assume $s$ and $p$ are known
+\end{itemize}
+\item \textbf{Orthographic camera model}:
+\begin{itemize}
+\item image coordinates $(x,y)$ can be directly identified with world coordinates $(X,Y)$
+\item reflected radiance $R$ corresponds to greyvalue of image (\textbf{image irradiance equation})
+        \[ f(x,y) = R(X,Y,Z) \]
+\end{itemize}
+\item \textbf{Depth reconstruction:}
+\begin{itemize}
+\item consider partial derivative of depth $Z$: $p=\partial_x Z, q=\partial_y Z$
+\item differenting the surface wrt. x and z gives two tangential vectors
+        \[ (1,0,p)^T, (0,1,q)^T \]
+\item outer product gives normal vector on surface (normalized):
+        \[ \frac{1}{\sqrt{1+p^2+q^2}} \begin{pmatrix} -p \\ -q \\ 1 \end{pmatrix} \]
+\item relation between grey values and partial derivates:
+        \[ f(x,y) = R(X,Y,Z) = \rho s^T n = \frac{\rho}{\sqrt{1+p^2+q^2}} 
+	   s^T \begin{pmatrix} -p \\ -q \\ 1 \end{pmatrix} \]
+\end{itemize}
+\end{itemize}
+\subsubsection{Variational method by Ikeuchi and Horn}
+\label{sec-6-3-3}
+\textbf{Assumption}: $p$ and $q$ vary smoothly in space
+\begin{itemize}
+\item Energy functional(\textbf{global method}):
+      \[ E(p,q) = \int_\Omega ((R(p,q)-f(x,y))^2 + \alpha (|\nabla p|^2 + |\nabla q|^2))dx dy \]
+\item As with stereo reconstruction, data term maybe not convex $\rightarrow$ multiple minima
+\item use gaussian smoothing, gradually reduce scale
+\item Again use Euler-Lagrange equation and solve resulting nonlinear difference equations
+with iterative solver
+\item Problem: $p$ and $q$ are not independent
+\begin{itemize}
+\item yields inconsitencies?
+\item solution 1: additional consistency term $(p_y -q_x)^2$ in energy functional
+\item solution 2: after each iteration project $p$ and $q$ to closest integrable pair
+of functions $\rightarrow$ does not garantee stability
+\item solution 3: use variational model for Z instead for $p$ and $q$ $\rightarrow$
+more complicated data term
+\end{itemize}
+\end{itemize}
+\subsubsection{Photometeric reconstruction}
+\label{sec-6-3-4}
+\begin{itemize}
+\item photograhps of same object in same position, but \textbf{different illuminations}
+\item new energy functional (for $m$ images):
+      \[ E(p,q) = \int_\Omega \left( \sum_{i=1}^m (R_i(p,q)-f_i(x,y))^2 +
+         \alpha (|\nabla p|^2 + |\nabla q |^2) \right) dx dy \]
+\item basically same functional, but sum over all images
+\item \textbf{Advantage:}
+\begin{itemize}
+\item no correspondece problem like in stero reconstruction
+\item more robust and precise to single image shape-shape-from-shading, since
+error are averaged
+\end{itemize}
+\end{itemize}
+
+\section{Foundations}
+\label{sec-7}
+\subsection{Isotropic nonlinear diffusion}
+\label{sec-7-1}
+\textbf{Idea:}
+\begin{itemize}
+\item avoid drawbacks of linear diffusion: delocalization and blurring of edges
+\item linear diffusion does \textbf{not} allow edge-enhancing
+\item intraregional better than interregoinal smoothing
+\item modifiy flux function with function $g(|\nabla u|^2)$ (was $-I\nabla u$ in linear case):
+     \[ \partial_t u = \text{div}(g(|\nabla u|^2) \nabla u) \]
+\item function $g$ is called \emph{diffusivity} and is decreasing with increasing $|\nabla u|^2$ ?
+\end{itemize}
+
+\subsubsection{Perona-Malik-filter:}
+\label{sec-7-1-1}
+\begin{itemize}
+\item special $g$ function:
+     \[ g(|\nabla u|^2) = \frac{1}{1+|\nabla u|^2/\lambda^2} \]
+\item yields \emph{flux function} (multiplication with $\nabla u$)
+     \[ \Phi(\nabla u) = \frac{\nabla u}{1+|\nabla u|^2/\lambda^2} \]
+\item for 1D case this yields
+     \[ \partial_t u = \text{div}(\Phi(u_x)) = \partial_x(\Phi(u_x)) = \Phi'(u_x)u_{xx} \]
+\item therefore
+\begin{itemize}
+\item \textbf{foreward diffusion} (smoothing) for $\Phi'(u_x) >0 \rightarrow |u_x| < \lambda$
+\item \textbf{backward diffusion} (edge-enhancing) for $\Phi'(u_x) <0 \rightarrow |u_x| > \lambda$
+\end{itemize}
+\item properties of $g$:
+\begin{itemize}
+\item negative exponential function
+\item g(0)=1
+\end{itemize}
+\end{itemize}
+\subsubsection{Regularised nonlinear diffusion}
+\label{sec-7-1-2}
+\textbf{Goal:}
+\begin{itemize}
+\item become more independent of the choice of discretization
+\item reduce starcaising artifacts and problems with noise
+\item \textbf{well posedness} ?
+\end{itemize}
+Use \textbf{gaussian smoothed image} for \emph{diffusivity}:
+\begin{itemize}
+\item more robust under noise
+\item still able to enhance edges
+\item mathematical results:
+\begin{itemize}
+\item well posedness: unique solution $u \in C^\infty$
+\item preservation of average grey value
+\item minimum-maximum principle: u is bounded by infimum and supremum of initial image $f$
+\item for $t \rightarrow \infty$ converges $u$ to average grey value
+\end{itemize}
+\item numerical results:
+\begin{itemize}
+\item $g\leq 1$ yields explicit scheme if time stepsize $< 0.25$
+\end{itemize}
+\end{itemize}
+
+\subsection{Anisotropic nonlinear diffusion}
+\label{sec-7-2}
+\begin{itemize}
+\item isotropic nonlinear diffusion has problems with noisy edges
+\item anisotropic nonlinear diffusion takes direction of edge into account
+\item replaces scalar-valued diffusivity $g$ with \textbf{diffusion tensor D}
+\end{itemize}
+
+\subsubsection{Edge-enhancing anisotropic diffusion (EED)}
+\label{sec-7-2-1}
+\begin{itemize}
+\item smooting within regions, while inhibiting diffusion orthogonal to edges
+\item Choice of diffusion tensor:
+\begin{itemize}
+\item one eigenvector $v_1$ orthogonal to $\nabla u_\sigma$
+\item one eigenvector $v_2$ parallel to $\nabla u_\sigma$
+\item eigenvalue $\lambda$$_{\text{1}}$ is similar to diffusivity $g$ (orthogonal to edge)
+\item eigenvalue $\lambda$$_{\text{2}}$ is 1 (along edge)
+\item resulting diffusin tensor:
+        \[ D(\nabla u_\sigma) = (v_1, v_2) \cdot diag(\lambda_1, \lambda_2)
+	   \cdot \begin{pmatrix} v_1^T \\ v_2^T \end{pmatrix} \]
+\end{itemize}
+\item EED is not good for closing interrupted lines in flow like structures
+\begin{itemize}
+\item Gaussian convolution cancel adjacent gradients with same direction
+but opposite orientation
+\item smoothed flow field is of no use
+\end{itemize}
+\end{itemize}
+\subsubsection{Coherence-enhancing anisotropic diffusion (CED)}
+\label{sec-7-2-2}
+\begin{itemize}
+\item try to smooth along coherent structures (edges)
+\item diffusion tensor is based on properties of structure tensor
+\begin{itemize}
+\item eigenvectors are the same as of structure tensor ($J_\rho(u_\sigma)$)
+\item eigenvalue $\lambda_1 = \alpha >0$ small (orthogonal to edges)
+\item eigenvalue $\lambda_2$ dependent on \textbf{coherence}
+\item coherence: $(\mu_1 - \mu_2)^2$ (eigenvalues of structure tensor)
+\end{itemize}
+\item numerical properties:
+\begin{itemize}
+\item mixed derivatives
+\item standard space discretization violate non-negativity (no convex combination?)
+        $\rightarrow$ many important properties (e.g. minimum-maximum priciple) don't hold
+\end{itemize}
+\end{itemize}
+
+\section{Segmentation}
+\label{sec-8}
+\subsection{Mumford-Shah model}
+\label{sec-8-1}
+\begin{itemize}
+\item \emph{the} prototype of \textbf{energy based} segementation
+\item energy function:
+\[ E(u,K) = \int_\Omega (u-f)^2 dxdy + \alpha \int_{\Omega\setminus K} |\nabla u|^2
+        dx dy + \lambda l(K) \]
+with $u$ smoothed version of $f$, and K are edges
+\item first term is called \textbf{similarity term} and penalises deviations from original image
+\item second term is called \textbf{smoothness term}
+\item third term is called \textbf{contour term} and penalises edge length ($l(K)$ is length of edges)
+\item mathematical challencing due to free segementation bounderies
+\end{itemize}
+
+\subsubsection{Mumford-Shah cartoon model}
+\label{sec-8-1-1}
+\begin{itemize}
+\item approximation, with $\alpha \rightarrow \infty$, therefore one assumes that $u$ is
+      \textbf{constant} in each segement
+\item energy function:
+      \[ E(u,K) = \int_{\Omega\setminus K} (u-f)^2 dxdy +\lambda l(K) \]
+\item \textbf{properties:}
+\begin{itemize}
+\item \emph{preservation of mean:} within one segement $f$ and $u$ have the same mean
+\item \emph{existence of gobal minimiser:} global minimum exits, but also many local ones
+\item \emph{regularity of boundaries:}  boundaries are at least $C^1$
+\end{itemize}
+\end{itemize}
+\subsubsection{Approximation method}
+\label{sec-8-1-2}
+\begin{itemize}
+\item segmentation is called \textbf{2-normal} if every new segmentation K' which results from
+merging two segments of K has larger energy
+\item restriction to 2-normal segmentation yields following properties:
+\begin{itemize}
+\item \textbf{limited number} of regions
+\item \textbf{elimination of small regions:} area of each region is lower bounded by constant
+\item \textbf{elimination of thin regions:} region boundary length is upper bounded
+\item \textbf{smoothness of boudnaries:} all boundaries are (almost) everwhere $C^1$
+\end{itemize}
+\end{itemize}
+\subsubsection{Algorithmic realisation}
+\label{sec-8-1-3}
+\begin{enumerate}
+\item initialization: each pixel is one segment
+\item for each pair of neighboring segments: 
+\begin{itemize}
+\item compute $\lambda$ for which merging would decrease energy
+\item energy for merged segments can be calculated without evaluating whole functional
+\item new energy is old + difference in greyvalus - length of merged boundaries
+\end{itemize}
+\item merge segments with smallest $\lambda$ value
+\item repeat steps 2-3 until desired number of regions or specific value for $\lambda$ is reached
+\end{enumerate}
+\subsubsection{Ambrosio-Tortorelli model}
+\label{sec-8-1-4}
+WHAT EVER!!!!
+
+\subsection{Continous scaled morphology}
+\label{sec-8-2}
+\subsubsection{Classical morphology}
+\label{sec-8-2-1}
+\begin{itemize}
+\item process images by computing maxima (dilation) or minimum (erosion) in neighborhood
+(structuring element)
+\item basic morphological processes:
+\begin{itemize}
+\item dilation: $(f\oplus B)(x):= \sup \{f(x-y)|y \in B\}$
+\item erosion: $(f\ominus B)(x):= \inf \{f(x+y)|y \in B\}$
+\item opening: $(f\circ B)(x):= ((f\ominus B)\oplus B)(x)$
+\item closing: $(f\bullet B)(x):= ((f\oplus B)\ominus B)(x)$
+\end{itemize}
+\item invariant under monotonically increasing grey level rescaling $\rightarrow$ constrast
+does not matter
+\item \textbf{not able to enhance edges}
+\end{itemize}
+\subsubsection{Mophological curve evolution}
+\label{sec-8-2-2}
+\begin{itemize}
+\item consider binary image with boundary curve $c_0 = (x(p),y(p))^T$
+\item dilate it with a structuring element
+\begin{itemize}
+\item e.g. disc with radius $t$ gives parital derivate of curve $c(t)$
+\[ \partial_t c = n \]
+with n normal vector
+\item for abritary structuring elements:
+\[ \partial_t c = \beta(\kappa) \cdot n \]
+with speed function $\beta(\kappa)$
+\end{itemize}
+\item applying level set ideas, one embeds $c$ in a smooth image $u(x,t)$
+\item differentiation wrt. $t$ and $\partial_t c = \beta(\kappa)n$ yields
+      \[ \partial_t u = \beta(\kappa)|\nabla u| \]
+\end{itemize}
+\subsubsection{PDEs for continous-scale morphology}
+\label{sec-8-2-3}
+\begin{itemize}
+\item consider disc as structuring elements
+\item yields speed function $\beta(\kappa) = \pm 1$
+\begin{itemize}
+\item $+$ for dilation, $-$ for erosion
+\end{itemize}
+\item difference to diffusion:
+\begin{itemize}
+\item only first order derivatives
+\item forward and backward evolution equally stable ?
+\end{itemize}
+\item \textbf{Theoretical results:}
+\begin{itemize}
+\item well-posedness
+\item minimum-maximum principle
+\item \emph{scale-space property} $\rightarrow$ reduce number of local  minima/maxima, while preserving
+their location
+\item but noise sensitivity
+\end{itemize}
+\item \textbf{Numerical methods:}
+\begin{itemize}
+\item normal difference fail quickly (why?)
+\item use of \emph{upwind schemes} $\rightarrow$ one-sided differences
+\item if derivative is positiv $\rightarrow$ use finte differece from point in positive direction,
+otherwise negtive direction
+\end{itemize}
+\item \textbf{Advantages:}
+\begin{itemize}
+\item sub-pixel accurency
+\item good results for non-digitally scalable structuring elements (elements which are
+easy rescaleable?)
+\end{itemize}
+\item \textbf{Disadvantage:}
+\begin{itemize}
+\item slower
+\item dissipative effects: shocks became blurred $\rightarrow$ use 
+        \emph{flux-corrected transport schemes (FCT)} (yields sharp edges)
+\end{itemize}
+\end{itemize}
+
+\subsubsection{Shock filtering}
+\label{sec-8-2-4}
+\begin{itemize}
+\item morpholgical deblurring technique
+\item dilation around maxima ($\Delta u < 0$)
+\item erosion around minima ($\Delta u > 0$)
+\item creates shocks around edge locations ($\Delta u = 0$)
+\item noise sensitivity
+\item image enhancment method
+\item many forms:
+\begin{itemize}
+\item simplest: $\partial_t u = -\text{sign}(\Delta u) |\nabla u|$
+\item typ 1 with $\eta || \nabla u$: $\partial_t u = -\text{sign}(u_{\eta\eta}) |\nabla u|$
+\item or gaussian smoothed version of typ 1
+\item \emph{coherence-enhancing shock filter}: replace $u_{\eta\eta}$ with normalized dominant
+eigenvector of structure tensor
+\end{itemize}
+\end{itemize}
+\subsection{Mean curvature motion}
+\label{sec-8-3}
+\begin{itemize}
+\item curve evolutions has speed function $\beta(\kappa)$ which depends on curvature $\kappa$
+\item until now $\kappa$ was ignored $\rightarrow$ speedfunction constant
+\item MCM performs anisotropic smoothing along \textbf{isophotes} (orthogonal to gradient)
+     \[ \partial_t u = \partial_{\xi\xi}u \quad \text{with} \quad \xi \perp \nabla u \]
+\item other forms:
+     \[ \partial_t u = \partial_{\xi\xi}u = |\nabla u| \text{div}\frac{\nabla u}{|\nabla u|} 
+        =  \text{curv}(u) |\nabla u| \]
+\item unlike diffusion filter does \textbf{not} preserve average grey value
+\item depending on sign of curvature curv(u) acting as erosion and dilation
+\item not first order hyperbolic PDE, it is second order parabolic PDE $\rightarrow$
+unstable in backward time direction
+\end{itemize}
+
+\subsubsection{corresponding curve evolution}
+\label{sec-8-3-1}
+\begin{itemize}
+\item evolution of a shape $c(p)$ is given by \textbf{geometric heat equation} or
+      \textbf{Euclidean shortening flow}
+\begin{align*}
+  \partial_t c(p,t) &= \kappa(p,t)\cdot n(p,t) \\
+  c(p,0) &= c_0(p)
+\end{align*}
+\item propagates isophotes in normal direction
+\item Euclidean invariant diffusion of isophotes???
+\end{itemize}
+\subsubsection{Theoretical results}
+\label{sec-8-3-2}
+\textbf{curve evolution:}
+\begin{itemize}
+\item smooth solution for finite intervall
+\item number of extrema and inflection points of curvature is non increasing
+\item shapes become \textbf{convex}
+\item shapes shrink to \textbf{circular point}
+\item if shape is inside another, it stays there the whole evolution
+\end{itemize}
+\textbf{image evolution:}
+\begin{itemize}
+\item well posedness
+\item minimum-maximum principle
+\item does not create 2D extreme (unline diffusion filters)
+\item no contrast enhancement (no edge enhancement)
+\end{itemize}
+\textbf{extensions:}
+\begin{itemize}
+\item in 3D topological changes may occur
+\item can be expanded to vector valued images $\rightarrow$ joint smoothing direction
+\end{itemize}
+\subsection{Self-snakes}
+\label{sec-8-4}
+\begin{itemize}
+\item Linear diffusion does not allow edge enhancment $\rightarrow$ nonlinear diffusion was introduced
+\item Same with MCM, we use same diffusivity term as in isotropic nonlinear diffusion:
+\[ \partial_t u = |\nabla u| \text{div}\left( g(|\nabla u_\sigma|^2)
+        \frac{\nabla u}{|\nabla u|}\right) \]
+where $g$ is called \textbf{edge-stopping function}
+\item introduces a \textbf{shock term}, which is responsible for edge-enhancment
+(shock term means $sign(\Delta u)$ in some form)
+\end{itemize}
+\subsection{Geodesic active contours}
+\label{sec-8-5}
+\begin{itemize}
+\item interactive technique
+\item start with initial curve $c_0$
+\item create (binary?) image $f$ with filled curve
+\item evolve f with self snakes, where edge-stopping term depends on original image h
+     \[ \partial_t u = |\nabla u| \left( g(|\nabla h_\sigma|^2) 
+        \frac{\nabla u}{|\nabla u|} \right) \]
+\item steady-state of evolution are the Euler-Lagrange equations for the energy function
+\[ E_h(c):= \oint_{c(\rho)} g(|\nabla u|^2) |c_\rho(\rho)| d\rho \]
+where $g$ is a weighting and $|c_\rho(\rho)|$ is arc length
+\item minimizing $E_h$ means:
+\begin{itemize}
+\item finding curve with minimal length
+\item wrt. to some image induced metric (weight)
+\end{itemize}
+\item curve is attracted to by image edges were weight $g$ is small
+\item convergence to \textbf{next local minimum}
+\end{itemize}
+\subsection{Region based active contours}
+\label{sec-8-6}
+\begin{itemize}
+\item use \textbf{region based information} instead of edge-based
+\begin{itemize}
+\item more robust under noise
+\item convergence behaviour more global
+\item include other features within region, e.g. texture features
+\end{itemize}
+\end{itemize}
+
+\subsubsection{Chan-Vese Model}
+\label{sec-8-6-1}
+\begin{itemize}
+\item Energy functional:
+\[ E_{CV}(c,u_{in}, u_{out}) = \int_{x\in c} (f(x)-u_{in})^2 dx +
+         \int_{x \not \in c} (f(x)-u_{out})^2 dx + \lambda l(c) \]
+where $u_{in}$ is arithmetic mean of $f$ in $c$ (same with $_{out}$),
+$l(c)$ is contour length
+\item minimizing energy functional drives initinal curve towards segment boundaries
+\item equivalent to \emph{Mumford-Shah cartoon} model with only \textbf{two} regions
+\item create binary image $v$ according do inital contour $c_0$
+\item new energy functional:
+\[ E_I(v) = \int_\Omega (f-u_{in})^2 H(v) + (f-u_{out})^2 (1-H(v)) +
+         \lambda |\nabla H(v)| dx \]
+with Heavyside function $H(v)$
+\end{itemize}
+
+\subsubsection{Extension of Chan-Vese model}
+\label{sec-8-6-2}
+\begin{itemize}
+\item so far regions modeled by their mean grey value, but also possible:
+\begin{itemize}
+\item higher order statistics (staticstical moments)
+\item color information
+\item texture models
+\item motion information
+\item etc.
+\end{itemize}
+\item one can also use probabilities to describe how likely a value of $f$ is inside
+this curve
+\item if shape of region is now, one can add additional energy term which describes
+difference between actual shape and desired (least square)
+\end{itemize}
+
+\section{Pattern recognition}
+\label{sec-9}
+\subsection{Basics}
+\label{sec-9-1}
+\begin{itemize}
+\item performance of classifier can be evaluated with
+\begin{itemize}
+\item standard procedure (use trainend classifier on unseen test data)
+\item shuffle procedure  (shuffle test and training data)
+\item k-fold cross validation
+\end{itemize}
+\end{itemize}
+\subsection{Bayes decision theory}
+\label{sec-9-2}
+\subsubsection{Normal distribution}
+\label{sec-9-2-1}
+\begin{itemize}
+\item Mahalanobis distance:
+      \[ r:= \sqrt{(x-\mu)^T\Sigma^{-1}(x-\mu)} \]
+\end{itemize}
+
+\subsubsection{Bayes decision theory}
+\label{sec-9-2-2}
+\begin{itemize}
+\item statistically \textbf{best} classifier
+\item assuming priors and likelihood are known
+\item choose class with highest posterior
+\item if feature is not scalar, but \textbf{vector} special considerations:
+\begin{itemize}
+\item likelihood $P(x|w_j)=P(x_1,...,x_d|w_j)$
+\item if components of $x$ are independant: $P(x_1,...,x_d|w_j)=\prod_i P(x_i|w_j)$
+and effort grow \textbf{lineary}
+\item if not independant $\rightarrow$ \textbf{exponentially} more trainings data is needed
+\item \textbf{curse of dimensionality}
+\item consider PCA
+\end{itemize}
+\end{itemize}
+
+\subsubsection{Bayes risk and Bayes decision rule}
+\label{sec-9-2-3}
+\begin{itemize}
+\item consider costs for correct and wrong answers $\rightarrow$ \textbf{loss function}
+\item for each possible action associate a loss
+\item yields loss function for action $a_i$ under (true) state $w_j$:
+      \[ \lambda(a_i|w_j) \]
+\item conditional risk:
+\[ R(a_i|x) = \sum_{j=1}^c \lambda(a_i|w_j)P(w_j|x) \]
+Note: we expect that costs for incorrect classifciation is higher than normal one
+\item \textbf{Bayes Risk:}
+\[ R= \int R(a_{k(x)}|x) \cdot p(x) dx \]
+where $a_{k(x)}$ is best possible action for $x$
+\item Bayes Risk ist the minimum possible risk by any classifier
+\item Bayes criterion with \emph{likelihood ratio test (LRT)} for binary class case:
+\[ \Lambda(x) = \frac{P(x|w_1)}{P(x|w_2} \gtrless 
+         \frac{\lambda_{1,2} - \lambda_{2,2}}{\lambda_{2,1}-\lambda_{1,1}} \cdot
+         \frac{P(w_2)}{P(w_1)} \]
+choose $w_1$ if left side is bigger, otherwise $w_2$
+\item for \emph{multi-class case} no simple LRT, normally riscs have to be computed
+\begin{itemize}
+\item exception: \textbf{zero-one} loss (0 cost for correct, 1 cost for false)
+\item Risk: $R(a_i|x) = 1-P(w_i|x)$
+\item \textbf{maximum a posterior criterion:}
+        \[ \Lambda_{MAP}(x) = \frac{P(w_i|x)}{P(w_j|x)} \gtrless 1 \Leftrightarrow 
+	   \frac{P(x|w_i)}{P(x|w_j)} \gtrless \frac{P(w_j)}{P(w_i)} \]
+\item is called \textbf{maximum likelihood criterion} if priors are equal
+\end{itemize}
+\end{itemize}
+
+\subsubsection{Discriminant based classification}
+\label{sec-9-2-4}
+\begin{itemize}
+\item use \textbf{discriminant functions} $g$ to decides between several classes
+\item choose class $i$ if $g_i(x)>g_j(x) \; \forall j, j\neq i$
+\item Bayes rules: $g_i(x) = P(w_i|x)$
+\item discriminant functions so far (bayes decision with risk):
+\begin{itemize}
+\item for Bayes classifier (with risks): $g_i(x) = -R(a_i|x)$
+\item for MAP classifier (symmetrical costs): $g_i(x) = P(w_i|x)$
+\item for maximum likelihood classifier (equal priors): $g_i(x) = P(x|w_i)$
+\end{itemize}
+\item decision boundarys of discriminant functions don't change under $f(g_i(x))$
+if $f$ is monotonically increasing (e.g. \emph{logarithm})
+\item considering \textbf{normally distributed} likelihoods
+      \[ P(x|w_i)=\frac{1}{(2\pi)^{d/2}|\Sigma_i|^{1/2}}e^{-\frac{1}{2}(x-\mu_i)^T
+         \Sigma_i^{-1}(x-\mu_i)} \]
+\item resulting discriminant function is (logarithm of posterior):
+      \[ g_i(x) = -\frac{1}{2}(x-\mu_i)^T \Sigma_i^{-1}(x-\mu_i) - 
+         \frac{d}{2}ln(2\pi) - \frac{1}{2}ln(|\Sigma_i|)+ln(P(w_i)) \]
+\end{itemize}
+Three cases:
+\begin{itemize}
+\item $\Sigma_i = \sigma I$: 
+\[ g_i(x) = -\frac{\|x-\mu_i\|^2}{2\sigma}+ln(P(w_i)) = w_i^Tx+w_{i0} \]
+with $w_i = \frac{1}{\sigma}\mu_i$
+\begin{itemize}
+\item Minimum Distance Classifier (Euclidean)
+\item linear discriminant
+\end{itemize}
+\item $\Sigma_i = \Sigma$ (same for all clases but arbitrary):
+\[ g_i(x) = -\frac{1}{2}(x-\mu_i)^T \Sigma^{-1}(x-\mu_i) + ln(P(w_i)) = w_i^T x+w_{i0} \]
+with $w_i = \Sigma^{-1}\mu_i$
+\begin{itemize}
+\item Minimum Distance Classifier (Mahalanobis)
+\item also linear discriminant
+\end{itemize}
+\item $\Sigma_i$ =  Arbitrary:
+\[ g_i(x) = x^T W_i x +w_i^t x + w_{i,0} \]
+with $W_i = -\frac{1}{2}\Sigma_i^{-1}$, $w_i = \Sigma_i^{-1}\mu_i$
+\begin{itemize}
+\item disciminant is \textbf{quadratic}
+\end{itemize}
+\end{itemize}
+\subsection{Parameter estimation}
+\label{sec-9-3}
+\subsubsection{Maximum likelihood estimation (MLE)}
+\label{sec-9-3-1}
+\begin{itemize}
+\item find parameter set $\theta$, which maximize likelihood of observed data $P(D|\theta)$
+\item if parameters $\theta_j$ are independant: $P(D|\theta) = \prod_{k=1}^n P(x_k|\theta)$
+\item likelihood und \textbf{log-likelihood} have same maxima
+      \[ ln(P(D|\theta))=ln(\prod_k p(x_k|\theta)) = \sum_k ln(P(x_k|\theta)) \]
+\item find maxima by setting gradient to zero:
+      \[ \sum_k \nabla_\theta ln(P(x_k|\theta))=0 \]
+\item two main errors:
+\begin{itemize}
+\item \textbf{Bias:} How close is the estimate to the true value (\textbf{goodness})
+\item \textbf{Variance:} How much would the estimate change with different dataset (\textbf{reliability})
+\end{itemize}
+\item often practical for most application
+\end{itemize}
+\subsubsection{Bayesian estimation (BE)}
+\label{sec-9-3-2}
+\begin{itemize}
+\item Parameters $\theta$ are Random variables which have priors
+\item calculate posterior $P(\theta|D)$ $\rightarrow$ gives the probability for the parameters
+\end{itemize}
+\subsubsection{Problems}
+\label{sec-9-3-3}
+\begin{itemize}
+\item we assume probability distribution for parameters or model
+\item often invidiual features are not independant
+\item Idea: estimate \textbf{distribution function}
+\item \emph{geometric approach:} take middle $x^*$ of region $R$ and estimate $p(x)= x^* vol(R)$
+\item \emph{frequency approach:} number of samples in region $R$
+\item Region has to be:
+\begin{itemize}
+\item large enough to contain sufficent amount of samples
+\item small enough to justify constancy assumptions of $p(x)$ in $R$
+\end{itemize}
+\item LAST PARTS MISSING (neccessary conditions for R or vol or p)
+\end{itemize}
+\subsection{Non-parametric techniques}
+\label{sec-9-4}
+\subsubsection{Parzen windows}
+\label{sec-9-4-1}
+% Emacs 23.4.1 (Org mode 8.0.6)
+\end{document}

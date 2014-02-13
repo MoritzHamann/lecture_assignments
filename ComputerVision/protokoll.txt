@@ -1,0 +1,88 @@
+- wie kann man edges detektieren?
+  -> betrag vom gradient
+- gradient hinschreiben
+- wie kann man den ausrechnen
+  -> finite differenzen
+  -> ableitung 1. ordnung explizit hinschreiben
+- was gibts sonst noch?
+  -> hatte ich dann canny edge
+- wie funktioniert der canny?
+  -> grob die einzelnen schritte erklaeren und wozu sie gut sind
+- wie macht man corner detection?
+  -> structur tensor (Achtung: im script ist f_xx, bedeutet aber nicht
+     2. ableitung nach x, sonder 1. ableitung nach x im quadrat)
+- was ist hough transform?
+  -> grob hough transform erklaeren mit parameter space, und dass
+     man die geometrischen struktueren parametrisieren muss
+- wenn man mit hough line detection macht, wie sieht ein punkt im parameter
+  space aus?
+  -> trignometrische kurve
+
+- bei der 3d rekonstruktion was gibts da zu kamera zu sagen?
+  -> intrisic und extrinsic parameter (alle benennen)
+- wie setzt sich die komplette projection matrix zusammen?
+  -> intrinsic * projection * extrinsic wenn man von world nach image koordinaten
+     transformiert
+- was sind homogenous coordinates?
+  -> extra komponente, alle punkte auf einem strahl von kamera werden auf den
+     gleichen bildpunkt abgebildet, man teilt durch die extra komponente um image
+     koordinaten zu bekommen
+
+- welche annahmen werden beim shape vom shading gemacht?
+  -> man kennt lichtrichtung, orthogonale kamera, lambertsche oberflaeche
+- wie funktioniert shape from shading?
+  -> man leitet die oberflaeche nach x und y ab, bekommt dann 2 ableitungen,
+     kreuzprodukt gibt normalenvektor (wichtig, wollte er hoeren),
+     dann kann man reflektion ausrechnen (lambertsche oberflaeche -> reflektion
+     ist normalenvektor mal lichtrichtung (cosinuns zusammenhang))
+     anschliesend variational method und energy funktional minimieren
+
+- warum macht man nonlinear diffusion?
+  -> edge enhancing
+- diffusions gleichung hinschreiben, sowie perona-malik term
+- wie sieht der perona-malik term ungefaehr aus?
+  -> streng monoton fallend, bei 0 ist er 1
+- warum sieht er so aus?
+  -> wenn gradient gross ist liegt kante vor, deswegen geringe diffusion
+- kurz noch die idee von anisotropic diffusion am beispiel von EED (CED wollte er nicht mehr)
+
+- was ist Mean Curvature Motion?
+  -> smoothing entlang von isophotes
+- diffusionsterm hinschreiben (Achtung im script steht \Delta_xx, ist aber einfach nur
+  2. Ableitung und nicht laplace)
+- er hatte dann eine curve hingemalt, und wollte wissen wie sich die punkte auf der kurve
+  unter mcm veraendern
+  -> nicht konvexe flaechen werden konvex
+  -> punkte gehen unterschiedlich schnell nach innen
+  -> alles geht auf punkt zu
+- dann noch kurz die idee von geodesic active contours
+  -> mcm kann kein edge enhancing, deshalb wieder perona-malik term hinzufuegen
+  -> man macht initiale contour, macht draus binary image, und macht morpholgy,
+     aber mit perona-malik term des orignalen bildes
+  -> contour geht zu lokalem minima
+
+- was ist bayes theorem?
+  -> posteriour = (likelihood * prior)/evidence
+- welche klasse nimmt man?
+  -> die mit maximalem posterior, wenn noch loss, dann die mit kleinstem risiko
+- wenn man verteilung nicht weiss was kann man machen?
+  -> parameter basierter ansatz oder non-parametric
+- was ist parameter basierter ansatz?
+  -> man ersetzt likelihood/prior durch z.b. Normalverteilung
+- was muss man dann bestimmen?
+  -> mean und variance/standard deviation
+- wie macht man das?
+  -> maximum likelihood estimation oder bayes estimation
+  -> bayes estimation ist schwerer da prior gebraucht wird, gibt aber wahrscheinlichkeits-
+     verteilung ueber parameter, nicht nur die besten
+- was gibts fuer non-parameteric moeglichkeiten?
+  -> parzen window und kNN
+- was ist die grundidee?
+  -> parzen window: festes volumen, samples zaehlen
+  -> kNN: feste anzahl an samples, voluen zaehlen
+- wie wuerde man klasse festlegen bei kNN?
+  -> war ich mir nicht sicher, hab dann gesagt, die jenige klasse, die in den k Nachbarn
+     die meisten hat (war er dann zufrieden mit)
+- gegen was strebt das alles wenn man unendlich viele samples hat (und irgendwie likelihood
+  und prior mit non-parametric abschaetzt)?
+  -> gegen die posterior
